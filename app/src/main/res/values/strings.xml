@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">fakelauncher</string>
+    <string name="charging" translatable="true">Charging</string>
+    <string name="notcharging" translatable="true">Not Charging</string>
 </resources>

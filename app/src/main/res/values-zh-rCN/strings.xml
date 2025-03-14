@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="charging">正在充电</string>
+    <string name="notcharging">未在充电</string>
+</resources>

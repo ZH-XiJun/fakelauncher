@@ -1,5 +1,8 @@
 package com.wtbruh.fakelauncher;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -63,5 +66,25 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }, 0, 1000);
+    }
+    String batteryInfo(boolean target){
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = registerReceiver(null, ifilter);
+        if (target) {
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+            float batteryPct = level * 100 / (float) scale;
+            return String.format("%d", batteryPct);
+        } else {
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                    status == BatteryManager.BATTERY_STATUS_FULL;
+            if (isCharging) {
+                return "正在充电";
+            } else {
+                return "未在充电";
+            }
+        }
     }
 }

@@ -69,7 +69,8 @@
                 android:text="1234年56月78日"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="34sp" />
+                android:textSize="40sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

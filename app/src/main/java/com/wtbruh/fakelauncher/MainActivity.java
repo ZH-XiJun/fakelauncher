@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PowerConnectionReceiver.getstat {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +33,20 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        updateTime();
+        // Start data updater
+        updateInfo();
+        // Register the receiver
+        receiverRegister(true);
     }
+
+    // Unregister the receiver on destroy
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        receiverRegister(false);
+    }
+
+    // Get time info
     String getTime(boolean target){
         long rawtime = System.currentTimeMillis();
         Date d = new Date(rawtime);
@@ -48,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
             return date;
         }
     }
-    void updateTime() {
+
+    // Automatically update data
+    void updateInfo() {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -58,33 +72,54 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         TextView time_view = findViewById(R.id.time);
                         TextView date_view = findViewById(R.id.date);
+                        TextView battery_view = findViewById(R.id.battery);
                         String time = getTime(true);
                         String date = getTime(false);
+                        String battery = getBattery();
                         time_view.setText(time);
                         date_view.setText(date);
+                        battery_view.setText(battery+"%");
                     }
                 });
             }
         }, 0, 1000);
     }
-    String batteryInfo(boolean target){
+
+    // Get battery percent
+    String getBattery() {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
-        if (target) {
-            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-            float batteryPct = level * 100 / (float) scale;
-            return String.format("%d", batteryPct);
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+        float batteryPct = level * 100 / (float) scale;
+        return String.format("%.0f", batteryPct);
+
+    }
+
+    // Get data from PowerConnectionReceiver
+    @Override
+    public void getConnectionStatus(String status) {
+        TextView connection_view = findViewById(R.id.connection);
+        if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
+            connection_view.setText(R.string.charging);
+        } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+            connection_view.setText(R.string.notcharging);
+        }
+    }
+
+    // Implement of dynamically register the PowerConnectionReceiver
+    void receiverRegister(boolean operation) {
+        IntentFilter ifilter = new IntentFilter();
+        ifilter.addAction(Intent.ACTION_POWER_CONNECTED);
+        ifilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+        PowerConnectionReceiver receiver = new PowerConnectionReceiver();
+        if (operation) {
+            registerReceiver(receiver, ifilter);
+            receiver.setstat(this);
         } else {
-            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                    status == BatteryManager.BATTERY_STATUS_FULL;
-            if (isCharging) {
-                return "正在充电";
-            } else {
-                return "未在充电";
-            }
+            unregisterReceiver(receiver);
         }
     }
 }

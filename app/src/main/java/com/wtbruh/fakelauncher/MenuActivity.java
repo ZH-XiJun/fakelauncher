@@ -40,6 +40,7 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_LEFT:
                 if (number == 0) {
                     number = 4;
@@ -48,6 +49,7 @@ public class MenuActivity extends AppCompatActivity {
                 }
                 switchSection(number);
                 break;
+            case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 if (number == 4) {
                     number = 0;

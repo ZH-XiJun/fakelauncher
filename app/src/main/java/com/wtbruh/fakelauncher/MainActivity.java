@@ -6,7 +6,7 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         updateInfo();
         // Register the receiver
         receiverRegister(true);
+
+        getBattery(false);
     }
 
     // Unregister the receiver on destroy
@@ -44,6 +46,20 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
     protected void onDestroy() {
         super.onDestroy();
         receiverRegister(false);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_MENU:
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, MenuActivity.class);
+                startActivity(intent);
+                // Disable transition anim
+                MainActivity.this.overridePendingTransition(0,0);
+                break;
+        }
+        return true;
     }
 
     // Get time info
@@ -75,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
                         TextView battery_view = findViewById(R.id.battery);
                         String time = getTime(true);
                         String date = getTime(false);
-                        String battery = getBattery();
+                        String battery = getBattery(true);
                         time_view.setText(time);
                         date_view.setText(date);
                         battery_view.setText(battery+"%");
@@ -86,16 +102,27 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
     }
 
     // Get battery percent
-    String getBattery() {
+    String getBattery(boolean target) {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
+        if (target) {
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-
-        float batteryPct = level * 100 / (float) scale;
-        return String.format("%.0f", batteryPct);
-
+            float batteryPct = level * 100 / (float) scale;
+            return String.format("%.0f", batteryPct);
+        } else {
+            TextView connection_view = findViewById(R.id.connection);
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                    status == BatteryManager.BATTERY_STATUS_FULL;
+            if (isCharging) {
+                connection_view.setText(R.string.charging);
+            } else {
+                connection_view.setText(R.string.notcharging);
+            }
+            return "";
+        }
     }
 
     // Get data from PowerConnectionReceiver

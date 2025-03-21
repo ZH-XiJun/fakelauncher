@@ -2,4 +2,12 @@
 <resources>
     <string name="charging">正在充电</string>
     <string name="notcharging">未在充电</string>
+    <string name="main_leftbutton">菜单</string>
+    <string name="menu_leftbutton">确定</string>
+    <string name="menu_rightbutton">返回</string>
+    <string name="menu_call">电话</string>
+    <string name="menu_camera">相机</string>
+    <string name="menu_contact">联系人</string>
+    <string name="menu_sms">短信</string>
+    <string name="menu_set">设置</string>
 </resources>

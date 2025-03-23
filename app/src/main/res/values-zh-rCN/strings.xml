@@ -3,11 +3,16 @@
     <string name="charging">正在充电</string>
     <string name="notcharging">未在充电</string>
     <string name="main_leftbutton">菜单</string>
-    <string name="menu_leftbutton">确定</string>
-    <string name="menu_rightbutton">返回</string>
+    <string name="common_leftbutton">确定</string>
+    <string name="common_rightbutton">返回</string>
+    <string name="edittext_rightbutton">删除</string>
     <string name="menu_call">电话</string>
     <string name="menu_camera">相机</string>
     <string name="menu_contact">联系人</string>
     <string name="menu_sms">短信</string>
     <string name="menu_set">设置</string>
+    <string name="enter_password">请输入安全密码</string>
+    <string name="password_wrong">密码错误！</string>
+    <string name="password_empty">请输入密码！</string>
+    <string name="dialer_empty">请输入电话号码</string>
 </resources>

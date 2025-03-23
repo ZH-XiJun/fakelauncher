@@ -3,11 +3,16 @@
     <string name="charging" translatable="true">Charging</string>
     <string name="notcharging" translatable="true">Not Charging</string>
     <string name="main_leftbutton" translatable="true">Menu</string>
-    <string name="menu_leftbutton" translatable="true">Enter</string>
-    <string name="menu_rightbutton" translatable="true">Back</string>
+    <string name="common_leftbutton" translatable="true">OK</string>
+    <string name="common_rightbutton" translatable="true">Back</string>
+    <string name="edittext_rightbutton" translatable="true">Delete</string>
     <string name="menu_call" translatable="true">Call</string>
     <string name="menu_camera" translatable="true">Camera</string>
     <string name="menu_contact" translatable="true">Contacts</string>
     <string name="menu_sms" translatable="true">SMS</string>
     <string name="menu_set" translatable="true">Settings</string>
+    <string name="enter_password" translatable="true">Please enter password</string>
+    <string name="password_wrong" translatable="true">Wrong password!</string>
+    <string name="password_empty" translatable="true">Please input password!</string>
+    <string name="dialer_empty" translatable="true">Please input phone number</string>
 </resources>

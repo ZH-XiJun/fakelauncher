@@ -13,6 +13,18 @@
         android:theme="@style/Theme.Fakelauncher"
         tools:targetApi="31">
         <activity
+            android:name=".DialerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FakeScreenOffActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".MenuActivity"
             android:exported="false" />
         <activity
@@ -22,6 +34,8 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

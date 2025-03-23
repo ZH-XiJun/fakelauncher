@@ -1,5 +1,6 @@
 package com.wtbruh.fakelauncher;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.ImageView;
@@ -33,10 +34,13 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         // Disable transition anim
+        // 去掉过渡动画
         overridePendingTransition(0,0);
         super.onPause();
     }
 
+    // implement of app switching, using var "number" as index
+    // 应用切换实现，以变量number作为索引
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
@@ -58,43 +62,67 @@ public class MenuActivity extends AppCompatActivity {
                 }
                 switchSection(number);
                 break;
-//            case KeyEvent.KEYCODE_ENTER:
-//                Intent intent = new Intent();
-//                intent.setClass(MenuActivity.this, MenuActivity.class);
-//                startActivity(intent);
-//                // Disable transition anim
-//                MenuActivity.this.overridePendingTransition(0,0);
-            default:
+            case KeyEvent.KEYCODE_MENU:
+            case KeyEvent.KEYCODE_ENTER:
+                startApp(number);
+                break;
         }
         super.onKeyUp(keyCode, event);
         return true;
     }
-
-    void switchSection(int number) {
+    // Display the corresponding icon and name when switching
+    // 切换时显示对应的图标和名字
+    void switchSection (int number) {
         appicon = findViewById(R.id.appIcon);
         appname = findViewById(R.id.appName);
         switch (number) {
-            case 0:
+            case 0: // Call 电话
                 appicon.setImageResource(R.drawable.menu_call);
                 appname.setText(R.string.menu_call);
                 break;
-            case 1:
+            case 1: // Camera 相机
                 appicon.setImageResource(R.drawable.menu_camera);
                 appname.setText(R.string.menu_camera);
                 break;
-            case 2:
+            case 2: // Contact 联系人
                 appicon.setImageResource(R.drawable.menu_contact);
                 appname.setText(R.string.menu_contact);
                 break;
-            case 3:
+            case 3: // SMS 短信
                 appicon.setImageResource(R.drawable.menu_sms);
                 appname.setText(R.string.menu_sms);
                 break;
-            case 4:
+            case 4: // Settings 设置
                 appicon.setImageResource(R.drawable.menu_set);
                 appname.setText(R.string.menu_set);
                 break;
         }
+    }
+    // Launch the corresponding activity using the var "number"
+    // 通过number启动对应的Activity
+    void startApp (int number) {
+        Intent intent = new Intent();
+        Class<?> clazz = null;
+        switch (number) {
+            case 0:
+                clazz = DialerActivity.class;
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                clazz = PasswordActivity.class;
+                break;
+        }
+        if (clazz == null) {
+            return;
+        }
+        intent.setClass(MenuActivity.this, clazz);
+        startActivity(intent);
+        MenuActivity.this.overridePendingTransition(0,0);
     }
 
 }

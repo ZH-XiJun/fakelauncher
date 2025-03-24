@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="XposedDescription">屏蔽触控，检测/拦截按键</string>
     <string name="charging">正在充电</string>
     <string name="notcharging">未在充电</string>
     <string name="main_leftbutton">菜单</string>

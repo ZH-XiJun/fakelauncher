@@ -1,26 +1,26 @@
 package com.wtbruh.fakelauncher.utils;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.ComponentName;
-import android.content.Context;
-import android.text.TextUtils;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityHelper {
-    public static boolean isForeground(Activity context, String className) {
-        if (context == null || TextUtils.isEmpty(className)) {
-            return false;
-        }
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(1);
-        if (list != null && list.size() > 0) {
-            ComponentName cpn = list.get(0).topActivity;
-            if (className.equals(cpn.getClassName())) {
-                return true;
-            }
-        }
-        return false;
+public class ActivityHelper extends Activity {
+    public boolean isMyLauncherDefault() {
+        IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
+        filter.addCategory(Intent.CATEGORY_HOME);
+        List<IntentFilter> filters = new ArrayList<>();
+        filters.add(filter);
+
+        List<ComponentName> preferredActivities = new ArrayList<>();
+        PackageManager pm = getPackageManager();
+        pm.getPreferredActivities(filters, preferredActivities, null);
+
+        return preferredActivities.contains(new ComponentName(this, this.getClass().getName()));
     }
+    
 }

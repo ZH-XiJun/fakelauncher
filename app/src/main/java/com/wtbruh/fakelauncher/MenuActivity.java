@@ -3,6 +3,7 @@ package com.wtbruh.fakelauncher;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -70,9 +71,15 @@ public class MenuActivity extends AppCompatActivity {
         super.onKeyUp(keyCode, event);
         return true;
     }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return false;
+    }
+
     // Display the corresponding icon and name when switching
     // 切换时显示对应的图标和名字
-    void switchSection (int number) {
+    private void switchSection (int number) {
         appicon = findViewById(R.id.appIcon);
         appname = findViewById(R.id.appName);
         switch (number) {
@@ -100,7 +107,7 @@ public class MenuActivity extends AppCompatActivity {
     }
     // Launch the corresponding activity using the var "number"
     // 通过number启动对应的Activity
-    void startApp (int number) {
+    private void startApp (int number) {
         Intent intent = new Intent();
         Class<?> clazz = null;
         switch (number) {

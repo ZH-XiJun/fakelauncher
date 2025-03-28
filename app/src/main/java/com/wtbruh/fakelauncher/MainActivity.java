@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
     }
 
     // Get time info 获取时间信息
-    String getTime(boolean target){
+    private String getTime(boolean target){
         long rawtime = System.currentTimeMillis();
         Date d = new Date(rawtime);
         if (target) {
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
     }
 
     // Automatically update data 定时更新数据
-    void updateInfo() {
+    private void updateInfo() {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
     }
 
     // Get battery percent 获取电量百分比
-    String getBattery(boolean target) {
+    private String getBattery(boolean target) {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
         if (target) {
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
 
     // Implement of dynamically register the PowerConnectionReceiver
     // 为PowerConnectionReceiver实现动态注册
-    void receiverRegister(boolean operation) {
+    private void receiverRegister(boolean operation) {
         IntentFilter ifilter = new IntentFilter();
         ifilter.addAction(Intent.ACTION_POWER_CONNECTED);
         ifilter.addAction(Intent.ACTION_POWER_DISCONNECTED);

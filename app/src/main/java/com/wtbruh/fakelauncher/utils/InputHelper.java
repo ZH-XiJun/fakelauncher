@@ -2,8 +2,6 @@ package com.wtbruh.fakelauncher.utils;
 
 import android.view.KeyEvent;
 
-import com.wtbruh.fakelauncher.R;
-
 public class InputHelper {
     public String textEditor(int keyCode, String content) {
         switch (keyCode) {

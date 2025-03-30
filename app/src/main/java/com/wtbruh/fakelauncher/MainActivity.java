@@ -2,6 +2,8 @@ package com.wtbruh.fakelauncher;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -172,4 +174,5 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
             unregisterReceiver(receiver);
         }
     }
+
 }

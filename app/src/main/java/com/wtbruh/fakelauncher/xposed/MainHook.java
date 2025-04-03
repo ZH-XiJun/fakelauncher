@@ -23,9 +23,9 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class MainHook implements IXposedHookLoadPackage {
-    Context context;
+    static String TAG = "MainHook";
     ApplicationHelper helper = new ApplicationHelper();
-
+    Context context;
     public boolean isMyLauncherDefault(Context context) {
 
         PackageManager pm = context.getPackageManager();
@@ -37,7 +37,6 @@ public class MainHook implements IXposedHookLoadPackage {
         if (homeActivities == null) return false;
         return context.getPackageName().equals(homeActivities.activityInfo.packageName);
     }
-
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         // get context
@@ -49,47 +48,42 @@ public class MainHook implements IXposedHookLoadPackage {
             }
         });
         // hook method
-        // hook(lpparam);
+        hook(lpparam);
     }
     private void hook(XC_LoadPackage.LoadPackageParam lpparam) {
-        Timer timer = new Timer();
-        Log.d("HOOK","im running!");
-        Log.d("HOOK", lpparam.packageName);
-        Class<?> ViewGroup = XposedHelpers.findClass("android.view.ViewGroup", lpparam.classLoader);
-        Class<?> View = XposedHelpers.findClass("android.view.View", lpparam.classLoader);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        XposedHelpers.findAndHookMethod(ViewGroup, "onInterceptTouchEvent", MotionEvent.class, new XC_MethodHook() {
-                            @Override
-                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                super.beforeHookedMethod(param);
-                                if (isMyLauncherDefault(context)) {
-                                    Log.d("HOOK1","im default launcher, disable touchscreen!");
-                                    param.setResult(true);
-                                } else {
-                                    Log.d("HOOK1","im not default launcher, dont disable touchscreen!");
-                                }
-                            }
-                        });
-                        XposedHelpers.findAndHookMethod(View, "onTouchEvent", MotionEvent.class, new XC_MethodHook() {
-                            @Override
-                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                super.beforeHookedMethod(param);
-                                if (isMyLauncherDefault(context)) {
-                                    Log.d("HOOK2","im default launcher, disable touchscreen!");
-                                    param.setResult(true);
-                                } else {
-                                    Log.d("HOOK2","im not default launcher, dont disable touchscreen!");
-                                }
-                            }
-                        });
-                    }
-                });
+        Log.d(TAG, lpparam.packageName);
+        if (lpparam.packageName.equals("com.android.systemui")) {
+            Log.d(TAG, "Hooked systemui!");
+            int state = 0;
+            while (true) {
+                if (state == 0 && isMyLauncherDefault(context)) {
+                    state = 1;
+                    disableTouch(lpparam, true);
+                    Log.d(TAG, "Disable touch");
+                } else if (state == 1 && !isMyLauncherDefault(context)) {
+                    state = 0;
+                    disableTouch(lpparam, false);
+                    Log.d(TAG, "Enable touch");
+                }
             }
-        }, 0, 1000);
+        }
+    }
+    private void disableTouch(XC_LoadPackage.LoadPackageParam lpparam, boolean mode) {
+        Class<?> view = XposedHelpers.findClass("android.view.View", lpparam.classLoader);
+        XposedHelpers.findAndHookMethod(view, "onTouchEvent", MotionEvent.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                param.setResult(mode);
+            }
+        });
+        Class<?> viewGroup = XposedHelpers.findClass("android.view.ViewGroup", lpparam.classLoader);
+        XposedHelpers.findAndHookMethod(viewGroup, "onInterceptTouchEvent", MotionEvent.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                param.setResult(mode);
+            }
+        });
     }
 }

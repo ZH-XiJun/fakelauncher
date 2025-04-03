@@ -5,6 +5,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".SettingsActivity">
 
+    <ListView
+        android:id="@+id/settings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ListView>
 </androidx.constraintlayout.widget.ConstraintLayout>

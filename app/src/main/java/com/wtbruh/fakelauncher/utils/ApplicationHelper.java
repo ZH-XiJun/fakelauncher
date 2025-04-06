@@ -10,6 +10,11 @@ import android.util.Log;
 
 public class ApplicationHelper extends Application {
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+
     public boolean isMyLauncherDefault(Context context) {
 
         PackageManager pm = context.getPackageManager();

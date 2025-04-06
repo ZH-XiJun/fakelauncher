@@ -1,18 +1,21 @@
 package com.wtbruh.fakelauncher;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -25,6 +28,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements PowerConnectionReceiver.getstat {
+    int taskId;
+    int count = 0;
+    String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         receiverRegister(true);
         // Manually flash connection status at first 先手动刷新下充电状态
         getBattery(false);
+        getTaskID();
+
     }
 
     // Unregister the receiver on destroy
@@ -54,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        counter(keyCode);
         Intent intent = new Intent();
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             intent.setClass(MainActivity.this, MenuActivity.class);
@@ -174,5 +183,76 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
             unregisterReceiver(receiver);
         }
     }
+    // Key counter 按键计数器
+    // Expected key operation: up, up, down, down, left, right, left, right
+    // 预计的按键操作：上上下下左右左右
+    private void counter(int keycode) {
+        if (count < 0 || count > 7) count = 0;
+        switch (keycode) {
+            case KeyEvent.KEYCODE_DPAD_UP:
+                Log.d(TAG, "Pressed key UP");
+                if (count <= 1) count++; else count = 1;
+                break;
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                Log.d(TAG, "Pressed key DOWN");
+                if (count == 2 || count == 3) count++; else count = 0;
+                break;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                Log.d(TAG, "Pressed key LEFT");
+                if (count == 4 || count == 6) count++; else count = 0;
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                Log.d(TAG, "Pressed key RIGHT");
+                if (count == 5) count ++; else if (count == 7 ) {
+                    count = 0;
+                    // do exit app
+                } else count = 0;
+                break;
+            default:
+                count = 0;
+        }
+        Log.d(TAG,"count="+String.format("%d", count));
+    }
 
+    private int getTaskID() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
+
+                }
+
+                @Override
+                public void onActivityStarted(@NonNull Activity activity) {
+
+                }
+
+                @Override
+                public void onActivityResumed(@NonNull Activity activity) {
+                    taskId = activity.getTaskId();
+                }
+
+                @Override
+                public void onActivityPaused(@NonNull Activity activity) {
+
+                }
+
+                @Override
+                public void onActivityStopped(@NonNull Activity activity) {
+
+                }
+
+                @Override
+                public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {
+
+                }
+
+                @Override
+                public void onActivityDestroyed(@NonNull Activity activity) {
+
+                }
+            });
+        }
+    return taskId;
+    }
 }

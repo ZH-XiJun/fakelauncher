@@ -19,51 +19,27 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 
 public class PinningHook extends HookHelper {
-
+    public static Context CONTEXT;
     private static int taskId;
     private boolean isObserver = false;
     boolean isLock = false;
     String TAG = PinningHook.class.getSimpleName();
-    static Context CONTEXT;
     @Override
     public void init() {
-        // Get context
-        findAndHookMethod("com.android.server.wm.ActivityTaskManagerService", "onSystemReady", new HookAction() {
-                    @Override
-                    protected void after(XC_MethodHook.MethodHookParam param) {
-                        try {
-                            CONTEXT = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
-                            if (CONTEXT == null) {
-                                CONTEXT = findContext(FlAG_ONLY_ANDROID);
-                                if (CONTEXT == null) {
-                                    logE(tag, "onSystemReady context is null!!");
-                                }
-                            }
-                        } catch (Throwable e) {
-                            logE(tag, "E: " + e);
-                        }
-                    }
-                });
-        // Get task id and do changes to setting "fakelauncher_pinmode"
-        findAndHookMethod("com.wtbruh.fakelauncher.MainActivity", "onCreate", new HookAction() {
-            @Override
-            protected void after(MethodHookParam param) {
-                super.after(param);
-                Log.d(TAG, "testTEST");
-                taskId = (int) callMethod(param.thisObject, "getTaskID");
-            }
-        });
-
         // Observe the changes of settings "fakelauncher_pinmode" and call system methods to start/stop pin mode
         findAndHookMethod("com.android.server.wm.ActivityTaskManagerService", "onSystemReady", new HookAction() {
             @Override
             protected void after(XC_MethodHook.MethodHookParam param) {
-                Context context = CONTEXT;
                 try {
+                    Context context = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
                     if (context == null) {
-                        logE(tag, "onSystemReady context is null!!");
-                        return;
+                        context = findContext(FlAG_ONLY_ANDROID);
+                        if (context == null) {
+                            logE(tag, "onSystemReady context is null!!");
+                            return;
                         }
+                    }
+                    CONTEXT = context;
                     if (!isObserver) {
                         Context finalContext = context;
                         ContentObserver contentObserver = new ContentObserver(new Handler(finalContext.getMainLooper())) {

@@ -1,21 +1,19 @@
 package com.wtbruh.fakelauncher;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -28,7 +26,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements PowerConnectionReceiver.getstat {
-    int taskId;
     int count = 0;
     String TAG = MainActivity.class.getSimpleName();
 
@@ -48,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         receiverRegister(true);
         // Manually flash connection status at first 先手动刷新下充电状态
         getBattery(false);
-        getTaskID();
-
+        // Check Permission 检查权限
+        if (! ChkPermission()) this.onDestroy();
     }
 
     // Unregister the receiver on destroy
@@ -90,6 +87,27 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
             // 去掉过渡动画
             MainActivity.this.overridePendingTransition(0, 0);
         }
+        return true;
+    }
+
+    // Get taskId for xposed hook
+    // 帮xposed hook获取taskId
+    public int taskId() {
+        return getTaskId();
+    }
+
+    private boolean ChkPermission () {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(MainActivity.this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                        Uri.parse("package:" + getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivityForResult(intent, 200);
+                return Settings.System.canWrite(MainActivity.this);
+            }
+            } else {
+                return true;
+            }
         return true;
     }
 
@@ -205,7 +223,8 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
                 Log.d(TAG, "Pressed key RIGHT");
                 if (count == 5) count ++; else if (count == 7 ) {
                     count = 0;
-                    // do exit app
+                    // kill myself
+                    this.onDestroy();
                 } else count = 0;
                 break;
             default:
@@ -214,45 +233,4 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         Log.d(TAG,"count="+String.format("%d", count));
     }
 
-    private int getTaskID() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-                @Override
-                public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
-
-                }
-
-                @Override
-                public void onActivityStarted(@NonNull Activity activity) {
-
-                }
-
-                @Override
-                public void onActivityResumed(@NonNull Activity activity) {
-                    taskId = activity.getTaskId();
-                }
-
-                @Override
-                public void onActivityPaused(@NonNull Activity activity) {
-
-                }
-
-                @Override
-                public void onActivityStopped(@NonNull Activity activity) {
-
-                }
-
-                @Override
-                public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {
-
-                }
-
-                @Override
-                public void onActivityDestroyed(@NonNull Activity activity) {
-
-                }
-            });
-        }
-    return taskId;
-    }
 }

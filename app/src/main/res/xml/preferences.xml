@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_category_permissions">
+
+        <ListPreference
+            android:defaultValue="None"
+            android:entries="@array/pref_privilege_provider"
+            android:entryValues="@array/pref_privilege_provider"
+            android:key="privilege_provider"
+            android:summary="123"
+            android:title="@string/pref_privilege_provider" />
+        <Preference
+            android:key="pref_check_privilege"
+            android:title="@string/pref_check_privilege" />
+    </PreferenceCategory>
+</PreferenceScreen>

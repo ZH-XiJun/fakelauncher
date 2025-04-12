@@ -2,9 +2,7 @@ package com.wtbruh.fakelauncher;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +17,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
+import com.wtbruh.fakelauncher.utils.UIHelper;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -26,8 +27,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements PowerConnectionReceiver.getstat {
+
+    Timer timer;
     int count = 0;
-    String TAG = MainActivity.class.getSimpleName();
+    PowerConnectionReceiver receiver = new PowerConnectionReceiver();
+    private final static String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,22 +43,31 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // Start data updater 自动更新数据
+        // Check Permission 检查权限
+        /*
+        if (! PrivilegeProvider.ChkPermission(MainActivity.this, 0)) {
+            PrivilegeProvider.requestPermission(MainActivity.this, 0);
+        }
+         */
+        // Start timer 启动计时任务
         updateInfo();
         // Register the receiver 注册接收器
         receiverRegister(true);
         // Manually flash connection status at first 先手动刷新下充电状态
         getBattery(false);
-        // Check Permission 检查权限
-        if (! ChkPermission()) this.onDestroy();
+        // Start pin mode 启用屏幕固定
+        setLockApp(getTaskId());
     }
 
-    // Unregister the receiver on destroy
-    // 关掉app时注销掉接收器
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        if (getLockApp() != -1) setLockApp(-1);
+        // Unregister the receiver on destroy
+        // 关掉app时注销掉接收器
         receiverRegister(false);
+        // 停止计时任务 Stop timer
+        if (timer != null) timer.cancel();
+        super.onDestroy();
     }
 
     @Override
@@ -62,14 +75,14 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         counter(keyCode);
         Intent intent = new Intent();
         if (keyCode == KeyEvent.KEYCODE_MENU) {
-            intent.setClass(MainActivity.this, MenuActivity.class);
-            startActivity(intent);
-            // Disable transition anim
-            // 去掉过渡动画
-            MainActivity.this.overridePendingTransition(0, 0);
+            // Open menu UI
+            // 打开菜单界面
+            UIHelper.intentStarter(MainActivity.this, MenuActivity.class);
+
         } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
+            // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
+            // 模拟老人机逻辑：主界面按数字键打开拨号盘
             String extra;
-            intent.setClass(MainActivity.this, DialerActivity.class);
             switch (keyCode) {
                 case KeyEvent.KEYCODE_POUND:
                     extra = "#";
@@ -78,58 +91,39 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
                     extra = "*";
                     break;
                 default:
+                    // Key 0~9 0到9键
                     extra = String.format("%d", keyCode - KeyEvent.KEYCODE_0);
                     break;
             }
-            intent.putExtra("key", extra);
-            startActivity(intent);
-            // Disable transition anim
-            // 去掉过渡动画
-            MainActivity.this.overridePendingTransition(0, 0);
+            UIHelper.intentStarter(MainActivity.this, DialerActivity.class, "key", extra);
         }
-        return true;
+        return super.onKeyUp(keyCode, event);
     }
 
-    // Get taskId for xposed hook
-    // 帮xposed hook获取taskId
-    public int taskId() {
-        return getTaskId();
-    }
 
-    private boolean ChkPermission () {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.System.canWrite(MainActivity.this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                        Uri.parse("package:" + getPackageName()));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivityForResult(intent, 200);
-                return Settings.System.canWrite(MainActivity.this);
-            }
-            } else {
-                return true;
-            }
-        return true;
-    }
-
-    // Get time info 获取时间信息
+    /**
+     * Get time info 获取时间信息
+     * @param target true为获取时间，false为获取日期
+     * @return 返回时间/日期信息
+     */
     private String getTime(boolean target){
         long rawtime = System.currentTimeMillis();
         Date d = new Date(rawtime);
         if (target) {
             SimpleDateFormat time_format = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
-            String time = time_format.format(d);
-            return time;
+            return time_format.format(d);
         } else {
             SimpleDateFormat date_format = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
-            String date = date_format.format(d);
-            return date;
+            return date_format.format(d);
         }
     }
 
-    // Automatically update data 定时更新数据
+    /**
+     * Automatically update data 定时更新数据
+     */
     private void updateInfo() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -150,7 +144,11 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         }, 0, 1000);
     }
 
-    // Get battery percent 获取电量百分比
+    /**
+     * Get battery percent 获取电量百分比
+     * @param target 操作类型，true为获取电量百分比，false为获取充电状态
+     * @return 返回电量百分比，如获取充电状态则为空字符串
+     */
     private String getBattery(boolean target) {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
@@ -175,8 +173,11 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         }
     }
 
-    // Get data from PowerConnectionReceiver
-    // 从PowerConnectionReceiver里获取连接状态
+    /**
+     * Get data from PowerConnectionReceiver<br>
+     * 从PowerConnectionReceiver里获取连接状态
+     * @param status PowerConnectionReceiver返回的充电状态
+     */
     @Override
     public void getConnectionStatus(String status) {
         TextView connection_view = findViewById(R.id.connection);
@@ -187,23 +188,33 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         }
     }
 
-    // Implement of dynamically register the PowerConnectionReceiver
-    // 为PowerConnectionReceiver实现动态注册
+    /**
+     * <h3>Receiver Register | 接收器动态注册</h3>
+     * Implement of dynamically register the PowerConnectionReceiver<br>
+     * 为PowerConnectionReceiver实现动态注册
+     * @param operation 操作类型，true为注册，false为注销
+     */
     private void receiverRegister(boolean operation) {
         IntentFilter ifilter = new IntentFilter();
         ifilter.addAction(Intent.ACTION_POWER_CONNECTED);
         ifilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-        PowerConnectionReceiver receiver = new PowerConnectionReceiver();
         if (operation) {
             registerReceiver(receiver, ifilter);
             receiver.setstat(this);
+            Log.d(TAG, "Receiver registered!");
         } else {
             unregisterReceiver(receiver);
+            Log.d(TAG, "Receiver unregistered!");
         }
     }
-    // Key counter 按键计数器
-    // Expected key operation: up, up, down, down, left, right, left, right
-    // 预计的按键操作：上上下下左右左右
+
+    /**
+     * <h3>Key counter | 按键计数器</h3>
+     * Expected key operation: up, up, down, down, left, right, left, right<br>
+     * 预计的按键操作：上上下下左右左右
+     *
+     * @param keycode 键值
+     */
     private void counter(int keycode) {
         if (count < 0 || count > 7) count = 0;
         switch (keycode) {
@@ -223,14 +234,72 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
                 Log.d(TAG, "Pressed key RIGHT");
                 if (count == 5) count ++; else if (count == 7 ) {
                     count = 0;
-                    // kill myself
-                    this.onDestroy();
+                    exit();
                 } else count = 0;
                 break;
             default:
                 count = 0;
         }
-        Log.d(TAG,"count="+String.format("%d", count));
+        Log.d(TAG,"count="+count);
     }
 
+    /**
+     * do necessary codes before calling onDestroy()<br>
+     * 调用onDestroy()之前需要执行的代码
+     */
+    private void exit() {
+        // Disable pin mode
+        // 关闭屏幕固定
+        setLockApp(-1);
+        // Wait for pin mode disabled, or finishAndRemoveTask() won't work
+        // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
+        try {
+            while (getLockApp() != -1) {
+                Thread.sleep(10);
+            }
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "An error was occurred while exiting app: "+e);
+        }
+        // kill myself
+        finishAndRemoveTask();
+    }
+
+    /**
+     * Set my TaskId to settings database to trigger pin mode<br>
+     * 将TaskId存到Settings数据库以启用屏幕固定
+     * <h5>Thanks: HChenX/PinningApp</h5>
+     * @param id 当前TaskId（-1为关闭屏幕固定）
+     */
+    private void setLockApp(int id) {
+        // Check permission
+        if (! PrivilegeProvider.ChkPermission(MainActivity.this, 1)) {
+            try {
+                PrivilegeProvider.requestPermission(MainActivity.this, 1);
+            } catch (RuntimeException ex) {
+                Log.e(TAG, "Get permission WRITE_SECURE_SETTINGS failed! " + ex);
+            }
+        }
+
+        try {
+            Settings.Global.putInt(getContentResolver(), "fakelauncher_pinmode", id);
+            Log.d(TAG, "Set fakelauncher_pinmode to "+String.format("%d", id));
+        } catch (SecurityException e) {
+            Log.e(TAG, "No WRITE_SECURE_SETTINGS! "+e);
+        }
+    }
+
+    /**
+     * Read TaskId from settings database to confirm if pin mode is triggered<br>
+     * 读取设置数据库中的TaskId以确定屏幕固定状态
+     * <h5>Thanks: HChenX/PinningApp</h5>
+     */
+    private int getLockApp() {
+        try {
+            return Settings.Global.getInt(getContentResolver(), "fakelauncher_pinmode");
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e(TAG, "getLockApp() will return -1 because: "+ e);
+            return -1;
+        }
+    }
 }

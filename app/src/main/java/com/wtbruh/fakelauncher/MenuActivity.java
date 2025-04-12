@@ -13,6 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.wtbruh.fakelauncher.utils.UIHelper;
+
 public class MenuActivity extends AppCompatActivity {
 
     int number = 0;
@@ -72,13 +74,12 @@ public class MenuActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        return false;
-    }
-
-    // Display the corresponding icon and name when switching
-    // 切换时显示对应的图标和名字
+    /**
+     * Display the corresponding icon and name when switching<br>
+     * 切换时显示对应的图标和名字
+     *
+     * @param number 第几个app
+     */
     private void switchSection (int number) {
         appicon = findViewById(R.id.appIcon);
         appname = findViewById(R.id.appName);
@@ -108,12 +109,12 @@ public class MenuActivity extends AppCompatActivity {
     // Launch the corresponding activity using the var "number"
     // 通过number启动对应的Activity
     private void startApp (int number) {
-        Intent intent = new Intent();
         Class<?> clazz = null;
         switch (number) {
             case 0:
                 clazz = DialerActivity.class;
                 break;
+            // work in progress...
             case 1:
                 break;
             case 2:
@@ -127,9 +128,7 @@ public class MenuActivity extends AppCompatActivity {
         if (clazz == null) {
             return;
         }
-        intent.setClass(MenuActivity.this, clazz);
-        startActivity(intent);
-        MenuActivity.this.overridePendingTransition(0,0);
+        UIHelper.intentStarter(MenuActivity.this, clazz);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.wtbruh.fakelauncher.utils;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.view.KeyEvent;
 
 public class UIHelper {
@@ -7,11 +9,13 @@ public class UIHelper {
     private final static String TAG = UIHelper.class.getSimpleName();
 
     /**
-     * Custom input method, accepts back key, star key, pound key, and 0~9.
-     * <p>
-     * 自定义小输入法，接受Back键、*#键和0~9键
+     * <h3>Text editor | 文本内容编辑器</h3>
+     * <p>Custom input method for scenes that require input,<br>
+     * accepts back key, star key, pound key, and 0~9.</p>
+     * 为程序内需要输入文本的场景而自定义的小输入法，<br>
+     * 接受Back键、*#键和0~9键</p>
      *
-     * @param keyCode 键值
+     * @param keyCode 输入的键值
      * @param content 输入前文本框里的文本内容
      * @return 最终文本内容
      */
@@ -30,9 +34,9 @@ public class UIHelper {
     }
 
     /**
-     * Simple package for starting intent
-     * <p>
-     * 启动intent的简单封装
+     * <h3>Intent Starter | Intent启动器</h3>
+     * <p>Simple package for starting intent<br>
+     * 启动intent的简单封装</p>
      *
      * @param activity 你的Activity对象
      * @param cls 要启动的Activity的class
@@ -47,9 +51,9 @@ public class UIHelper {
     }
 
     /**
-     * Simple package for starting intent, which will send extra message
-     * <p>
-     * 启动intent的简单封装，会发送额外信息
+     * <h3>Intent Starter | Intent启动器</h3>
+     * <p>Simple package for starting intent, which will send extra message<br>
+     * 启动intent的简单封装，会发送额外信息</p>
      *
      * @param activity 你的Activity对象
      * @param cls 要启动的Activity的class

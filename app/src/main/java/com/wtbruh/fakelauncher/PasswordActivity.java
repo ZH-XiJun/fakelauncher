@@ -13,14 +13,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.wtbruh.fakelauncher.utils.InputHelper;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class PasswordActivity extends AppCompatActivity {
 
     EditText editText;
     TextView rightbutton;
     TextView error;
-    InputHelper input = new InputHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,7 @@ public class PasswordActivity extends AppCompatActivity {
                 rightbutton = findViewById(R.id.password_rightButton);
                 rightbutton.setText(R.string.edittext_rightbutton);
             }
-            editText.setText(input.textEditor(keyCode, content));
+            editText.setText(UIHelper.textEditor(keyCode, content));
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             // When there's no chars, right button will be used as "back" key
             // 文本框里没有字，右键应作为返回键
@@ -61,7 +60,7 @@ public class PasswordActivity extends AppCompatActivity {
             } else {
                 // When there're some chars, right button will be used to delete chars
                 // 如果有字，右键应该是删除键
-                editText.setText(input.textEditor(keyCode, content));
+                editText.setText(UIHelper.textEditor(keyCode, content));
                 if (content.length() == 1) {
                     rightbutton = findViewById(R.id.password_rightButton);
                     rightbutton.setText(R.string.common_rightbutton);
@@ -75,17 +74,15 @@ public class PasswordActivity extends AppCompatActivity {
         return true;
     }
     void passwordCheck (String passwd) {
-        Intent intent;
         error = findViewById(R.id.passwdError);
         if (passwd.equals("1145141919810")) {
             error.setVisibility(View.INVISIBLE);
-            intent = getPackageManager().getLaunchIntentForPackage("com.android.settings");
+            Intent intent = getPackageManager().getLaunchIntentForPackage("com.android.settings");
             startActivity(intent);
         } else if (passwd.equals("5418814250")) {
             error.setVisibility(View.INVISIBLE);
-            intent = new Intent();
-            intent.setClass(PasswordActivity.this, SettingsActivity.class);
-            startActivity(intent);
+            UIHelper.intentStarter(PasswordActivity.this, SettingsActivity.class);
+            finish();
         } else if (passwd.isEmpty()) {;
             error.setText(R.string.password_empty);
             error.setVisibility(View.VISIBLE);

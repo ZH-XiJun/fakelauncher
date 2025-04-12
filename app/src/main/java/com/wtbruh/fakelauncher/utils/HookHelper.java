@@ -23,6 +23,16 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+/**
+ *
+ * Package of Xposed Hook
+ * <p>
+ * Xposed Hook封装
+ *
+ * @author HChenX
+ *
+ */
+
 public abstract class HookHelper extends LogHelper {
     public String tag = getClass().getSimpleName(); // 获取继承类的类名
 
@@ -51,8 +61,8 @@ public abstract class HookHelper extends LogHelper {
             setLoadPackageParam(loadPackageParam);
             init();
             logI(tag, "Hook Done!");
-        } catch (Throwable s) {
-//            logE(tag, "Hook Failed: " + e);
+        } catch (Throwable e) {
+            logE(tag, "Hook Failed: " + e);
         }
     }
 

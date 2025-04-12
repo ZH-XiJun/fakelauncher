@@ -11,13 +11,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.wtbruh.fakelauncher.utils.InputHelper;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class DialerActivity extends AppCompatActivity {
 
     TextView rightbutton;
     TextView editText;
-    InputHelper input = new InputHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +48,9 @@ public class DialerActivity extends AppCompatActivity {
             if (content.equals(getString(R.string.dialer_empty))) {
                 rightbutton = findViewById(R.id.dialer_rightButton);
                 rightbutton.setText(R.string.edittext_rightbutton);
-                editText.setText(input.textEditor(keyCode, ""));
+                editText.setText(UIHelper.textEditor(keyCode, ""));
             } else {
-                editText.setText(input.textEditor(keyCode, content));
+                editText.setText(UIHelper.textEditor(keyCode, content));
             }
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             // When there's no chars, right button will be used as "back" key
@@ -66,16 +65,17 @@ public class DialerActivity extends AppCompatActivity {
                     rightbutton.setText(R.string.common_rightbutton);
                     editText.setText(R.string.dialer_empty);
                 } else {
-                    editText.setText(input.textEditor(keyCode, content));
+                    editText.setText(UIHelper.textEditor(keyCode, content));
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
-            // passwordCheck(content);
+            // maybe do something?
         } else {
-            super.onKeyUp(keyCode, event);
+            return super.onKeyUp(keyCode, event);
         }
         return true;
     }
+
     void getExtra () {
         Intent intent = getIntent();
         String data = intent.getStringExtra("key");
@@ -84,5 +84,7 @@ public class DialerActivity extends AppCompatActivity {
         }
         editText = findViewById(R.id.dialer);
         editText.setText(data);
+        rightbutton = findViewById(R.id.dialer_rightButton);
+        rightbutton.setText(R.string.edittext_rightbutton);
     }
 }

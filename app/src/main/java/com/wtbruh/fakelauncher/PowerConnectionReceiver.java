@@ -5,6 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+/**
+ * Power connection status receiver<br>
+ * 获取电源连接状态相关广播的广播接收器
+ */
+
 public class PowerConnectionReceiver extends BroadcastReceiver {
 
     private getstat stat;

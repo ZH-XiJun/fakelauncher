@@ -27,9 +27,9 @@ public class MainHook extends LogHelper implements IXposedHookLoadPackage, IXpos
                 initHook(new PinningHook(), lpparam);
                 logI(TAG, "Android framework hooked");
                 break;
-            case "com.wtbruh.fakelauncher":
-                initHook(new SelfHook(), lpparam);
-                logI(TAG, "Myself hooked");
+            case "com.android.systemui":
+                initHook(new SystemUIHook(), lpparam);
+                logI(TAG, "Android SystemUI hooked");
                 break;
         }
     }

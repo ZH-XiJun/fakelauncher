@@ -4,4 +4,10 @@
         <item>android</item>
         <item>com.android.systemui</item>
     </string-array>
+
+    <string-array name="pref_privilege_provider">
+        <item>None</item> <!-- It's the default value -->
+        <item>Root</item>
+        <item>Shizuku</item>
+    </string-array>
 </resources>

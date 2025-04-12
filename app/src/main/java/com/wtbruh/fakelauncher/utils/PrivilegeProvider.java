@@ -1,15 +1,30 @@
 package com.wtbruh.fakelauncher.utils;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
 
 import java.io.IOException;
 
+import rikka.shizuku.Shizuku;
+import rikka.sui.Sui;
+
+/**
+ *
+ * Privilege provider
+ * <p>
+ * 提权管理
+ *
+ * @author ZH-XiJun
+ *
+ */
+
 public class PrivilegeProvider {
     public final static String TAG = "PrivilegeProvider";
-    // Fail message
-    public final static String FAIL_ROOT = "FAIL_ROOT";
-    public final static String FAIL_SHIZUKU = "FAIL_SHIZUKU";
-    public final static String FAIL_RUN = "FAIL_RUN";
     // Run method to int
     public final static int METHOD_NORMAL = 0;
     public final static int METHOD_ROOT = 1;
@@ -18,36 +33,131 @@ public class PrivilegeProvider {
     public final static String CMD_SU = "su";
     public final static String CMD_BUSYBOX = "busybox";
     public final static String CMD_SH = "sh";
+    public final static String CMD_SH_FULL = "/system/bin/sh";
     public final static String CMD_RISH= "rish";
 
-    private static String prefix(int method) {
-        switch (method) {
-            case METHOD_NORMAL:
-                return "";
-            case METHOD_ROOT:
-                return CMD_SU+"-c ";
-            case METHOD_SHIZUKU:
-                return CMD_RISH+" ";
+    /**
+     * Check if permission has been granted
+     * <p>
+     * 检查是否已获得权限
+     *
+     * @param context Activity的上下文数据
+     * @param item 要请求的权限
+     * @return true或false
+     */
+    public static boolean ChkPermission(Context context, int item) {
+        switch (item) {
+            case 0: // WRITE_SETTINGS 修改系统设置权限
+                return Settings.System.canWrite(context);
+            case 1: // WRITE_SECURE_SETTINGS 修改系统安全设置权限
+                PackageManager pm = context.getPackageManager();
+                int result = pm.checkPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS,
+                        context.getPackageName());
+                return result == PackageManager.PERMISSION_GRANTED;
             default:
-                return "";
-        }
-    }
-    public static void get_root() {
-        try {
-            Runtime.getRuntime().exec(CMD_SU);
-        } catch (IOException e) {
-            Log.e(TAG, "Get root failed!");
-            throw new RuntimeException(FAIL_ROOT);
+                return false;
         }
     }
 
-    // Single cmd running
-    public static void runCmd(String cmd, int method) {
-        try {
-            Runtime.getRuntime().exec(prefix(method)+cmd);
-        } catch (IOException e) {
-            throw new RuntimeException(FAIL_RUN);
+    /**
+     * Request permission
+     * <p>
+     * 请求权限
+     *
+     * @param context Activity的上下文数据
+     * @param item 要请求的权限
+     */
+    public static void requestPermission(Context context, int item) {
+        switch (item) {
+            case 0: // WRITE_SETTINGS 修改系统设置权限
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                    Uri.parse("package:" + context.getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            case 1: // WRITE_SECURE_SETTINGS 修改系统安全设置权限
+                String[] args = {"pm", "grant", context.getPackageName(), Manifest.permission.WRITE_SECURE_SETTINGS};
+                try {
+                    runCmd(args, 1);
+                } catch (RuntimeException e) {
+                    Log.e(TAG, "Grant WRITE_SECURE_SETTINGS permission failed: "+e);
+                }
         }
     }
 
+    /**
+     * Add prefix for command
+     * <p>
+     * 为指令添加前缀
+     *
+     * @param method 要添加什么样的前缀
+     * @param cmd 你的指令（字符串数组）
+     * @return 添加了前缀的指令（字符串数组）
+     */
+    private static String[] prefix(int method, String[] cmd) {
+        String[] prefix;
+        switch (method) {
+            case METHOD_ROOT:
+                prefix = new String[]{CMD_SU, "-c"};
+                break;
+            // case METHOD_SHIZUKU:
+                // wip
+            case METHOD_NORMAL:
+            default:
+                return cmd;
+        }
+
+        String[] result = new String[cmd.length + prefix.length];
+        System.arraycopy(prefix, 0, result, 0, prefix.length);
+        System.arraycopy(cmd, 0, result, prefix.length, cmd.length);
+        return result;
+    }
+    public static boolean checkPrivilege(String str) {
+        switch (str) {
+            case "Root":
+                try {
+                    Log.d(TAG, "Checking root permission");
+                    return runCmd(new String[]{"id"}, METHOD_ROOT) == 0;
+                } catch (RuntimeException e) {
+                    return false;
+                }
+            case "Shizuku":
+                if (Shizuku.isPreV11()) {
+                    // Pre-v11 is unsupported
+                    return false;
+                }
+                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+                    // Granted
+                    return true;
+                } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+                    // Users choose "Deny and don't ask again"
+                    return false;
+                } else {
+                    // Request the permission
+                    Shizuku.requestPermission(114514);
+                    return false;
+                }
+            default:
+                return false;
+        }
+    }
+
+    /**
+     *
+     * Single command running<br>
+     * 单条指令运行
+     *
+     * @param cmd 指令（字符串数组）
+     * @param method 想以什么权限运行（会调用prefix方法添加对应前缀）
+     * @return 指令运行完成的返回值
+     */
+    public static int runCmd(String[] cmd, int method){
+        ProcessBuilder psb = new ProcessBuilder();
+        psb.command(prefix(method, cmd));
+        try {
+            Process ps = psb.start();
+            return ps.waitFor();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

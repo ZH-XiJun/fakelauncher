@@ -34,14 +34,6 @@ public class PasswordActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        // Disable transition anim
-        // 去掉过渡动画
-        overridePendingTransition(0,0);
-        super.onPause();
-    }
-
-    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         editText = findViewById(R.id.editText);
         String content = editText.getText().toString();

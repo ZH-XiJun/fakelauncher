@@ -1,19 +1,31 @@
 <resources>
     <string name="app_name" translatable="false">fakelauncher</string>
-    <string name="XposedDescription" translatable="true">Disable touchscreen, detect/catch keys etc.</string>
+    <string name="XposedDescription" translatable="false">通过Xposed触发屏幕固定以限制应用使其不可退出，从而达到伪装目的</string>
+    <!-- Power connection -->
     <string name="charging" translatable="true">Charging</string>
     <string name="notcharging" translatable="true">Not Charging</string>
+    <!-- Button hint -->
     <string name="main_leftbutton" translatable="true">Menu</string>
     <string name="common_leftbutton" translatable="true">OK</string>
     <string name="common_rightbutton" translatable="true">Back</string>
     <string name="edittext_rightbutton" translatable="true">Delete</string>
+    <!-- Menu items -->
     <string name="menu_call" translatable="true">Call</string>
     <string name="menu_camera" translatable="true">Camera</string>
     <string name="menu_contact" translatable="true">Contacts</string>
     <string name="menu_sms" translatable="true">SMS</string>
     <string name="menu_set" translatable="true">Settings</string>
+    <!-- Password UI hint -->
     <string name="enter_password" translatable="true">Please enter password</string>
     <string name="password_wrong" translatable="true">Wrong password!</string>
     <string name="password_empty" translatable="true">Please input password!</string>
+    <!-- Dialer UI hint -->
     <string name="dialer_empty" translatable="true">Please input phone number</string>
+    <!-- Preferences -->
+    <string name="pref_category_permissions" translatable="true">Permissions and privileges</string>
+    <string name="pref_privilege_provider" translatable="true">Privilege provider</string>
+    <string name="pref_check_privilege" translatable="true">Check if privilege has been granted</string>
+    <string name="pref_check_privilege_granted" translatable="true">Granted</string>
+    <string name="pref_check_privilege_not_granted" translatable="true">NOT granted</string>
+    <string name="pref_check_privilege_none" translatable="true">You have no privilege provider, so why do you tap me?</string>
 </resources>

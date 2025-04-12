@@ -2,8 +2,20 @@ package com.wtbruh.fakelauncher.utils;
 
 import android.view.KeyEvent;
 
-public class InputHelper {
-    public String textEditor(int keyCode, String content) {
+public class UIHelper {
+
+    private final static String TAG = UIHelper.class.getSimpleName();
+
+    /**
+     * Custom input method, accepts back key, star key, pound key, and 0~9.
+     * <p>
+     * 自定义小输入法，接受Back键、*#键和0~9键
+     *
+     * @param keyCode 键值
+     * @param content 输入前文本框里的文本内容
+     * @return 最终文本内容
+     */
+    public static String textEditor(int keyCode, String content) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 return content.substring(0, content.length() - 1);

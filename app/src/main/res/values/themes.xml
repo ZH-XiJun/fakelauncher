@@ -6,6 +6,11 @@
     </style>
 
     <style name="Theme.Fakelauncher" parent="Base.Theme.Fakelauncher">
+        <!--
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="statusBarBackground">@android:color/transparent</item>
+        -->
     </style>
 </resources>

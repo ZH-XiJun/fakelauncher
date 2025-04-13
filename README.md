@@ -1,11 +1,14 @@
 <div align="center">
-  
+<img src="readme-assets/app-icon.png" width=128 />
+
 ## fakelauncher
 *I swear, it is really just a feature phone, not a smart phone!*
 
+**Disguise your feature-phone-like smart phone (feature phone style but uses Android system) as a real feature phone.**
+
 </div>
 
-## Features
+## Function
 Disguise your feature-phone-like smart phone (feature phone style but uses Android system) as a real feature phone.
 
 For example, here's a feature-phone-like smart phone appears in China: 

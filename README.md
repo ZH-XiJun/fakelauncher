@@ -9,9 +9,23 @@
 </div>
 
 ## Function
+
+> [!Caution]
+> **DON'T USE THE APP ON YOUR SMARTPHONE BECAUSE EXIT THE APP REQUIRES HARDWARE KEYS**
+> 
+> **I AM NOT RESPONSIBLE FOR ANY DAMAGE TO YOUR PHONE**
+
 Disguise your feature-phone-like smart phone (feature phone style but uses Android system) as a real feature phone.
 
-For example, here's a feature-phone-like smart phone appears in China: 
+Once you open it, you will be brought to a feature phone UI and not able to open any apps. Status bar will disabled. Touchscreen operation is not allowed, only keys take effect.
+
+If you want to exit, go to main screen, and press DPAD keys: Up, Up, Down, Down, Left, Right, Left, Right. Program will exit after pressing these keys. 
+
+So, when do you need the App? What kinds of devices are suitable for the App? I'll give an example.
+
+## What kind of devices is suitable for the App?
+
+Here's a feature-phone-like smart phone appears in China: 
 <div align="center">
 
 ![TCL T508N](readme-assets/E1.jpg)
@@ -31,4 +45,10 @@ This feature attracted a number of senior high students in China to choose it an
 
 But what if teachers notice its **UI**? It is just a common smartphone UI. So if your teachers find out your feature phone is actually a smartphone, **you're done.**
 
-As a result, `fakelauncher` is developed by me to solve this problem
+As a result, `fakelauncher` is developed by me to solve this problem. 
+
+## How does it work?
+
+Take a look of a function that natively supported by Android: [Screen Pinning](https://support.google.com/android/answer/9455138)
+
+That's why the App can disable status bar and prevent you from exiting itself and open any other apps.

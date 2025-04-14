@@ -42,6 +42,9 @@ dependencies {
     def shizuku_version = "13.1.5"
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
+    // Dhizuku API
+    def dhizuku_version = "2.5.3"
+    implementation "io.github.iamr0s:Dhizuku-API:$dhizuku_version"
     // Xposed API
     compileOnly 'de.robv.android.xposed:api:82'
 }

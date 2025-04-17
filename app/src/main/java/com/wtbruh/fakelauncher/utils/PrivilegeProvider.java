@@ -7,6 +7,12 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.rosan.dhizuku.api.Dhizuku;
+import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
+import com.wtbruh.fakelauncher.MainActivity;
+import com.wtbruh.fakelauncher.R;
 
 import java.io.IOException;
 
@@ -24,7 +30,7 @@ import rikka.sui.Sui;
  */
 
 public class PrivilegeProvider {
-    public final static String TAG = "PrivilegeProvider";
+    private final static String TAG = PrivilegeProvider.class.getSimpleName();
     // Run method to int
     public final static int METHOD_NORMAL = 0;
     public final static int METHOD_ROOT = 1;
@@ -37,8 +43,7 @@ public class PrivilegeProvider {
     public final static String CMD_RISH= "rish";
 
     /**
-     * Check if permission has been granted
-     * <p>
+     * Check if permission has been granted<br>
      * 检查是否已获得权限
      *
      * @param context Activity的上下文数据
@@ -60,8 +65,7 @@ public class PrivilegeProvider {
     }
 
     /**
-     * Request permission
-     * <p>
+     * Request permission<br>
      * 请求权限
      *
      * @param context Activity的上下文数据
@@ -85,8 +89,7 @@ public class PrivilegeProvider {
     }
 
     /**
-     * Add prefix for command
-     * <p>
+     * Add prefix for command<br>
      * 为指令添加前缀
      *
      * @param method 要添加什么样的前缀
@@ -111,6 +114,13 @@ public class PrivilegeProvider {
         System.arraycopy(cmd, 0, result, prefix.length, cmd.length);
         return result;
     }
+
+    /**
+     * Check privilege 检查特殊权限
+     *
+     * @param str 权限名
+     * @return 是否已获得授权
+     */
     public static boolean checkPrivilege(String str) {
         switch (str) {
             case "Root":
@@ -140,6 +150,33 @@ public class PrivilegeProvider {
                 return false;
         }
     }
+    /**
+     * Check device admin 检查设备管理员权限
+     * @param type true为Dhizuku方式，False为普通Device Admin
+     * @param context 应用上下文
+     * @return 是否已获得授权
+     */
+    public static boolean checkDeviceAdmin(boolean type, Context context) {
+        if (type) {
+            if (!Dhizuku.init(context)) return false;
+            if (Dhizuku.isPermissionGranted()) return true;
+            if (MainActivity.getLockApp(context) != -1 ) {
+                Toast.makeText(context, R.string.toast_open_settings_from_launcher, Toast.LENGTH_LONG).show();
+                return false;
+            }
+            Log.d(TAG, "Requesting dhizuku");
+            Dhizuku.requestPermission(new DhizukuRequestPermissionListener() {
+                @Override
+                public void onRequestPermission(int grantResult){
+                }
+            });
+
+        } else {
+
+        }
+        return false;
+    }
+
 
     /**
      *

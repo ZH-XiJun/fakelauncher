@@ -15,14 +15,14 @@ import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 
-    final static String TAG = SettingsActivity.class.getSimpleName();
+    private final static String TAG = SettingsActivity.class.getSimpleName();
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
+
         super.onPostCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         initPreferences();
-
     }
 
     @Override
@@ -51,9 +51,19 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         // Init of pref "privilege_provider"
         pref = findPreference("privilege_provider");
         pref.setSummary(defaultPref.getString("privilege_provider", "None"));
-        // Init of pref "pref_check_privilege"
-        pref = findPreference("pref_check_privilege");
+        // Init of pref "check_privilege"
+        pref = findPreference("check_privilege");
         pref.setOnPreferenceClickListener(this);
+        // Init of pref "check_device_admin"
+        pref = findPreference("check_device_admin");
+        pref.setOnPreferenceClickListener(this);
+        // Init of pref "check_xposed"
+        pref = findPreference("check_xposed");
+        if (MainActivity.isXposedModuleActivated()) {
+            pref.setSummary(R.string.pref_xposed_activated);
+        } else {
+            pref.setSummary(R.string.pref_xposed_not_activated);
+        }
     }
 
     @Override
@@ -64,6 +74,11 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         switch (key) {
             case "privilege_provider":
                 pref.setSummary(sharedPreferences.getString(key, "None"));
+                findPreference("check_privilege").setSummary("");
+                break;
+            case "enable_dhizuku":
+                findPreference("check_device_admin").setSummary("");
+                break;
         }
     }
 
@@ -71,18 +86,29 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     public boolean onPreferenceClick(Preference pref) {
         SharedPreferences defaultPref = pref.getSharedPreferences();
         String key = pref.getKey();
-        String value;
-        if ("pref_check_privilege".equals(key)){
-            value = defaultPref.getString("privilege_provider", "None");
-            if (! "None".equals(value)) {
-                if (PrivilegeProvider.checkPrivilege(value)) {
-                    pref.setSummary(R.string.pref_check_privilege_granted);
+        switch (key) {
+            case "check_privilege":
+                String value = defaultPref.getString("privilege_provider", "None");
+                if (!"None".equals(value)) {
+                    if (PrivilegeProvider.checkPrivilege(value)) {
+                        pref.setSummary(R.string.pref_check_privilege_granted);
+                    } else {
+                        pref.setSummary(R.string.pref_check_privilege_not_granted);
+                    }
                 } else {
-                    pref.setSummary(R.string.pref_check_privilege_not_granted);
+                    pref.setSummary(R.string.pref_check_privilege_none);
                 }
-            } else {
-                pref.setSummary(R.string.pref_check_privilege_none);
-            }
+                break;
+            case "check_device_admin":
+                boolean dhizuku = defaultPref.getBoolean("enable_dhizuku", false);
+                boolean result = PrivilegeProvider.checkDeviceAdmin(dhizuku, SettingsActivity.this);
+                if (! result) {
+                    pref.setSummary(R.string.pref_check_privilege_not_granted);
+                } else if (dhizuku){
+                    pref.setSummary(R.string.pref_check_privilege_granted_dhizuku);
+                } else {
+                    pref.setSummary(R.string.pref_check_privilege_granted);
+                }
         }
         return false;
     }

@@ -28,9 +28,9 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements PowerConnectionReceiver.getstat {
 
-    Timer timer;
-    int count = 0;
-    PowerConnectionReceiver receiver = new PowerConnectionReceiver();
+    private Timer mTimer;
+    private int count = 0;
+    private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
     private final static String TAG = MainActivity.class.getSimpleName();
 
     @Override

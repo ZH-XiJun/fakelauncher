@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">fakelauncher</string>
+    <string name="app_settings_name" translatable="true">FakeL Settings</string>
     <string name="XposedDescription" translatable="false">通过Xposed触发屏幕固定以限制应用使其不可退出，从而达到伪装目的</string>
     <!-- Power connection -->
     <string name="charging" translatable="true">Charging</string>
@@ -22,10 +23,19 @@
     <!-- Dialer UI hint -->
     <string name="dialer_empty" translatable="true">Please input phone number</string>
     <!-- Preferences -->
+    <string name="pref_check_xposed">Xposed module activation status</string>
+    <string name="pref_xposed_activated">Xposed module is activated! </string>
+    <string name="pref_xposed_not_activated">Xposed module is not activated yet</string>
     <string name="pref_category_permissions" translatable="true">Permissions and privileges</string>
     <string name="pref_privilege_provider" translatable="true">Privilege provider</string>
     <string name="pref_check_privilege" translatable="true">Check if privilege has been granted</string>
     <string name="pref_check_privilege_granted" translatable="true">Granted</string>
+    <string name="pref_check_privilege_granted_dhizuku" translatable="true">Granted - Dhizuku</string>
     <string name="pref_check_privilege_not_granted" translatable="true">NOT granted</string>
     <string name="pref_check_privilege_none" translatable="true">You have no privilege provider, so why do you tap me?</string>
+    <string name="pref_enable_dhizuku">Use Dhizuku</string>
+    <string name="pref_check_device_admin" translatable="true">Check device admin</string>
+
+    <!-- Toast message -->
+    <string name="toast_open_settings_from_launcher" translatable="true">Please open settings from launcher to grant Dhizuku.</string>
 </resources>

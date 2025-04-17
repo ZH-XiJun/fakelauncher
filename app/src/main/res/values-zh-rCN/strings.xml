@@ -21,10 +21,18 @@
     <!-- 拨号盘文字提示 -->
     <string name="dialer_empty">请输入电话号码</string>
     <!-- 软件设置文字提示 -->
+    <string name="pref_check_xposed">Xposed模块激活状态</string>
+    <string name="pref_xposed_not_activated">Xposed模块尚未激活</string>
     <string name="pref_category_permissions">权限</string>
     <string name="pref_privilege_provider">授权器</string>
     <string name="pref_check_privilege">检查授权</string>
     <string name="pref_check_privilege_granted">已授权</string>
+    <string name="pref_check_privilege_granted_dhizuku">已授权 - Dhizuku</string>
     <string name="pref_check_privilege_not_granted">尚未授权</string>
     <string name="pref_check_privilege_none">你都没授权器了，你检查你妈呢</string>
+    <string name="pref_enable_dhizuku">使用Dhizuku</string>
+    <string name="pref_check_device_admin">检查设备管理员权限</string>
+    <string name="toast_open_settings_from_launcher">请从启动器打开设置，才能授权Dhizuku</string>
+    <string name="app_settings_name">FakeL 设置</string>
+    <string name="pref_xposed_activated">Xposed模块已激活！</string>
 </resources>

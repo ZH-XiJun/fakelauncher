@@ -17,10 +17,6 @@ import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class PasswordActivity extends AppCompatActivity {
 
-    EditText editText;
-    TextView rightbutton;
-    TextView error;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,13 +39,14 @@ public class PasswordActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        editText = findViewById(R.id.editText);
+        EditText editText = findViewById(R.id.editText);
         String content = editText.getText().toString();
 
+        TextView rightButton;
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {
             if (content.isEmpty()) {
-                rightbutton = findViewById(R.id.password_rightButton);
-                rightbutton.setText(R.string.edittext_rightbutton);
+                rightButton = findViewById(R.id.password_rightButton);
+                rightButton.setText(R.string.edittext_rightbutton);
             }
             editText.setText(UIHelper.textEditor(keyCode, content));
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -62,8 +59,8 @@ public class PasswordActivity extends AppCompatActivity {
                 // 如果有字，右键应该是删除键
                 editText.setText(UIHelper.textEditor(keyCode, content));
                 if (content.length() == 1) {
-                    rightbutton = findViewById(R.id.password_rightButton);
-                    rightbutton.setText(R.string.common_rightbutton);
+                    rightButton = findViewById(R.id.password_rightButton);
+                    rightButton.setText(R.string.common_rightbutton);
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
@@ -74,7 +71,7 @@ public class PasswordActivity extends AppCompatActivity {
         return true;
     }
     void passwordCheck (String passwd) {
-        error = findViewById(R.id.passwdError);
+        TextView error = findViewById(R.id.passwdError);
         if (passwd.equals("1145141919810")) {
             error.setVisibility(View.INVISIBLE);
             Intent intent = getPackageManager().getLaunchIntentForPackage("com.android.settings");

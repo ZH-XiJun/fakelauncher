@@ -21,10 +21,10 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 
 public class PinningHook extends HookHelper {
-    public static Context CONTEXT;
-    private static int taskId;
-    private boolean isObserver = false;
-    boolean isLock = false;
+    // public static Context CONTEXT;
+    private static int mTaskId;
+    private boolean mObserver = false;
+    private boolean mLock = false;
     @Override
     public void init() {
         // Observe the changes of settings "fakelauncher_pinmode" and call system methods to start/stop pin mode
@@ -40,16 +40,16 @@ public class PinningHook extends HookHelper {
                             return;
                         }
                     }
-                    CONTEXT = context;
-                    if (!isObserver) {
+                    // CONTEXT = context;
+                    if (!mObserver) {
                         Context finalContext = context;
                         ContentObserver contentObserver = new ContentObserver(new Handler(finalContext.getMainLooper())) {
                             @Override
                             public void onChange(boolean selfChange, @Nullable Uri uri, int flags) {
-                                isLock = getLockApp(finalContext) != -1;
-                                if (isLock) {
-                                    taskId = getLockApp(finalContext);
-                                    callMethod(param.thisObject, "startSystemLockTaskMode", taskId);
+                                mLock = getLockApp(finalContext) != -1;
+                                if (mLock) {
+                                    mTaskId = getLockApp(finalContext);
+                                    callMethod(param.thisObject, "startSystemLockTaskMode", mTaskId);
                                 } else {
                                     callMethod(param.thisObject, "stopSystemLockTaskMode");
                                 }
@@ -58,7 +58,7 @@ public class PinningHook extends HookHelper {
                         context.getContentResolver().registerContentObserver(
                             Settings.Global.getUriFor("fakelauncher_pinmode"), false, contentObserver
                         );
-                        isObserver = true;
+                        mObserver = true;
                     }
                 } catch (Throwable e) {
                     logE(tag, "E: " + e);
@@ -223,3 +223,4 @@ public class PinningHook extends HookHelper {
     }
 
 }
+

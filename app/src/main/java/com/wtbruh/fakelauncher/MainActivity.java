@@ -1,5 +1,6 @@
 package com.wtbruh.fakelauncher;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
@@ -56,17 +57,17 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         // Manually flash connection status at first 先手动刷新下充电状态
         getBattery(false);
         // Start pin mode 启用屏幕固定
-        setLockApp(getTaskId());
+        setLockApp(MainActivity.this, getTaskId());
     }
 
     @Override
     protected void onDestroy() {
-        if (getLockApp() != -1) setLockApp(-1);
+        if (getLockApp(MainActivity.this) != -1) setLockApp(MainActivity.this, -1);
         // Unregister the receiver on destroy
         // 关掉app时注销掉接收器
         receiverRegister(false);
         // 停止计时任务 Stop timer
-        if (timer != null) timer.cancel();
+        if (mTimer != null) mTimer.cancel();
         super.onDestroy();
     }
 
@@ -100,6 +101,13 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         return super.onKeyUp(keyCode, event);
     }
 
+    /**
+     * Xposed 模块自检测
+     * @return 如果已激活，返回结果会被hook修改为true
+     */
+    public static boolean isXposedModuleActivated() {
+        return false;
+    }
 
     /**
      * Get time info 获取时间信息
@@ -122,8 +130,8 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
      * Automatically update data 定时更新数据
      */
     private void updateInfo() {
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -199,11 +207,11 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
         ifilter.addAction(Intent.ACTION_POWER_CONNECTED);
         ifilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         if (operation) {
-            registerReceiver(receiver, ifilter);
-            receiver.setstat(this);
+            registerReceiver(mReceiver, ifilter);
+            mReceiver.setstat(this);
             Log.d(TAG, "Receiver registered!");
         } else {
-            unregisterReceiver(receiver);
+            unregisterReceiver(mReceiver);
             Log.d(TAG, "Receiver unregistered!");
         }
     }
@@ -250,11 +258,11 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
     private void exit() {
         // Disable pin mode
         // 关闭屏幕固定
-        setLockApp(-1);
+        setLockApp(MainActivity.this, -1);
         // Wait for pin mode disabled, or finishAndRemoveTask() won't work
         // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
         try {
-            while (getLockApp() != -1) {
+            while (getLockApp(MainActivity.this) != -1) {
                 Thread.sleep(10);
             }
             Thread.sleep(500);
@@ -269,23 +277,23 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
      * Set my TaskId to settings database to trigger pin mode<br>
      * 将TaskId存到Settings数据库以启用屏幕固定
      * <h5>Thanks: HChenX/PinningApp</h5>
+     * @param context 应用上下文
      * @param id 当前TaskId（-1为关闭屏幕固定）
      */
-    private void setLockApp(int id) {
+    public static void setLockApp(Context context, int id) {
         // Check permission
-        if (! PrivilegeProvider.ChkPermission(MainActivity.this, 1)) {
+        if (! PrivilegeProvider.ChkPermission(context, 1)) {
             try {
-                PrivilegeProvider.requestPermission(MainActivity.this, 1);
+                PrivilegeProvider.requestPermission(context, 1);
             } catch (RuntimeException ex) {
                 Log.e(TAG, "Get permission WRITE_SECURE_SETTINGS failed! " + ex);
             }
         }
-
         try {
-            Settings.Global.putInt(getContentResolver(), "fakelauncher_pinmode", id);
+            Settings.Global.putInt(context.getContentResolver(), "fakelauncher_pinmode", id);
             Log.d(TAG, "Set fakelauncher_pinmode to "+String.format("%d", id));
         } catch (SecurityException e) {
-            Log.e(TAG, "No WRITE_SECURE_SETTINGS! "+e);
+            Log.e(TAG, "No permission WRITE_SECURE_SETTINGS! "+e);
         }
     }
 
@@ -294,9 +302,9 @@ public class MainActivity extends AppCompatActivity implements PowerConnectionRe
      * 读取设置数据库中的TaskId以确定屏幕固定状态
      * <h5>Thanks: HChenX/PinningApp</h5>
      */
-    private int getLockApp() {
+    public static int getLockApp(Context context) {
         try {
-            return Settings.Global.getInt(getContentResolver(), "fakelauncher_pinmode");
+            return Settings.Global.getInt(context.getContentResolver(), "fakelauncher_pinmode");
         } catch (Settings.SettingNotFoundException e) {
             Log.e(TAG, "getLockApp() will return -1 because: "+ e);
             return -1;

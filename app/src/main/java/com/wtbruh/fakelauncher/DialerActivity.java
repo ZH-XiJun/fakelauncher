@@ -15,8 +15,8 @@ import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class DialerActivity extends AppCompatActivity {
 
-    TextView rightbutton;
-    TextView editText;
+    private TextView mRightButton;
+    private TextView mEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

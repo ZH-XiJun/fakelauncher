@@ -17,6 +17,16 @@
         android:theme="@style/Theme.Fakelauncher"
         tools:targetApi="31">
         <activity
+            android:name=".SettingsEntranceActivity"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_settings_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".DialerActivity"
             android:exported="false" />
         <activity
@@ -30,16 +40,14 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <!-- <category android:name="android.intent.category.HOME" /> -->
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </activity>
-
         <receiver
             android:name=".PowerConnectionReceiver"
             android:exported="true">
@@ -52,24 +60,23 @@
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
-            android:multiprocess="false"
             android:enabled="true"
             android:exported="true"
+            android:multiprocess="false"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
         <!-- Xposed module -->
         <meta-data
             android:name="xposedmodule"
-            android:value="true"/>
+            android:value="true" />
         <meta-data
             android:name="xposeddescription"
             android:value="@string/XposedDescription" />
         <meta-data
             android:name="xposedminversion"
-            android:value="54"/>
+            android:value="54" />
         <meta-data
             android:name="xposedscope"
-            android:resource="@array/xposedscope"/>
-
+            android:resource="@array/xposedscope" />
     </application>
 
 </manifest>

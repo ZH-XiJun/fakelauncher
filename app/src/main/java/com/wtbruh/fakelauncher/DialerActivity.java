@@ -41,16 +41,16 @@ public class DialerActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        editText = findViewById(R.id.dialer);
-        String content = editText.getText().toString();
+        mEditText = findViewById(R.id.dialer);
+        String content = mEditText.getText().toString();
 
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
             if (content.equals(getString(R.string.dialer_empty))) {
-                rightbutton = findViewById(R.id.dialer_rightButton);
-                rightbutton.setText(R.string.edittext_rightbutton);
-                editText.setText(UIHelper.textEditor(keyCode, ""));
+                mRightButton = findViewById(R.id.dialer_rightButton);
+                mRightButton.setText(R.string.edittext_rightbutton);
+                mEditText.setText(UIHelper.textEditor(keyCode, ""));
             } else {
-                editText.setText(UIHelper.textEditor(keyCode, content));
+                mEditText.setText(UIHelper.textEditor(keyCode, content));
             }
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             // When there's no chars, right button will be used as "back" key
@@ -58,14 +58,14 @@ public class DialerActivity extends AppCompatActivity {
             if (content.equals(getString(R.string.dialer_empty))) {
                 super.onKeyUp(keyCode, event);
             } else {
-                // When there're some chars, right button will be used to delete chars
+                // When there are some chars, right button will be used to delete chars
                 // 如果有字，右键应该是删除键
                 if (content.length() == 1) {
-                    rightbutton = findViewById(R.id.dialer_rightButton);
-                    rightbutton.setText(R.string.common_rightbutton);
-                    editText.setText(R.string.dialer_empty);
+                    mRightButton = findViewById(R.id.dialer_rightButton);
+                    mRightButton.setText(R.string.common_rightbutton);
+                    mEditText.setText(R.string.dialer_empty);
                 } else {
-                    editText.setText(UIHelper.textEditor(keyCode, content));
+                    mEditText.setText(UIHelper.textEditor(keyCode, content));
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
@@ -82,9 +82,9 @@ public class DialerActivity extends AppCompatActivity {
         if (data == null) {
             return;
         }
-        editText = findViewById(R.id.dialer);
-        editText.setText(data);
-        rightbutton = findViewById(R.id.dialer_rightButton);
-        rightbutton.setText(R.string.edittext_rightbutton);
+        mEditText = findViewById(R.id.dialer);
+        mEditText.setText(data);
+        mRightButton = findViewById(R.id.dialer_rightButton);
+        mRightButton.setText(R.string.edittext_rightbutton);
     }
 }

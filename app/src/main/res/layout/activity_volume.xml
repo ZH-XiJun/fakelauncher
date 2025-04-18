@@ -5,6 +5,22 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".VolumeActivity">
 
+    <LinearLayout
+        android:id="@+id/volume"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/volume_adjust"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/volume_adjust"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="60sp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

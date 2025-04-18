@@ -21,6 +21,7 @@
     <!-- 拨号盘文字提示 -->
     <string name="dialer_empty">请输入电话号码</string>
     <!-- 软件设置文字提示 -->
+    <string name="volume_adjust">音量调节</string>
     <string name="pref_check_xposed">Xposed模块激活状态</string>
     <string name="pref_xposed_not_activated">Xposed模块尚未激活</string>
     <string name="pref_category_permissions">权限</string>

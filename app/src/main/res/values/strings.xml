@@ -22,6 +22,8 @@
     <string name="password_empty" translatable="true">Please input password!</string>
     <!-- Dialer UI hint -->
     <string name="dialer_empty" translatable="true">Please input phone number</string>
+    <!-- Volume UI hint -->
+    <string name="volume_adjust" translatable="true">Volume adjust</string>
     <!-- Preferences -->
     <string name="pref_check_xposed">Xposed module activation status</string>
     <string name="pref_xposed_activated">Xposed module is activated! </string>

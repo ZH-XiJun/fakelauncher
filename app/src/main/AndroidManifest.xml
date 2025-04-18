@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
 
     <application
@@ -12,17 +13,22 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".utils.ApplicationHelper"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Fakelauncher"
         tools:targetApi="31">
         <activity
+            android:name=".VolumeActivity"
+            android:exported="false" />
+        <activity
             android:name=".SettingsEntranceActivity"
+            android:exported="true"
             android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_settings_name"
-            android:exported="true">
+            android:label="@string/app_settings_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -48,6 +54,7 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </activity>
+
         <receiver
             android:name=".PowerConnectionReceiver"
             android:exported="true">
@@ -55,16 +62,14 @@
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
-        </receiver>
-        <!-- Shizuku -->
+        </receiver> <!-- Shizuku -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
             android:enabled="true"
             android:exported="true"
             android:multiprocess="false"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
-        <!-- Xposed module -->
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" /> <!-- Xposed module -->
         <meta-data
             android:name="xposedmodule"
             android:value="true" />

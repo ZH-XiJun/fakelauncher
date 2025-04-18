@@ -1,21 +1,19 @@
 package com.wtbruh.fakelauncher;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends MyAppCompatActivity {
 
     int number = 0;
     ImageView appicon;
@@ -32,14 +30,6 @@ public class MenuActivity extends AppCompatActivity {
             return insets;
         });
         switchSection(number);
-    }
-
-    @Override
-    protected void onPause() {
-        // Disable transition anim
-        // 去掉过渡动画
-        overridePendingTransition(0,0);
-        super.onPause();
     }
 
     // implement of app switching, using var "number" as index

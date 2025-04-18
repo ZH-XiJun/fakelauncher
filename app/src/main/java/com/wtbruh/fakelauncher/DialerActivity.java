@@ -6,14 +6,14 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
-public class DialerActivity extends AppCompatActivity {
+public class DialerActivity extends MyAppCompatActivity {
 
     private TextView mRightButton;
     private TextView mEditText;
@@ -29,14 +29,6 @@ public class DialerActivity extends AppCompatActivity {
             return insets;
         });
         getExtra();
-    }
-
-    @Override
-    protected void onPause() {
-        // Disable transition anim
-        // 去掉过渡动画
-        overridePendingTransition(0, 0);
-        super.onPause();
     }
 
     @Override
@@ -76,7 +68,7 @@ public class DialerActivity extends AppCompatActivity {
         return true;
     }
 
-    void getExtra () {
+    private void getExtra () {
         Intent intent = getIntent();
         String data = intent.getStringExtra("key");
         if (data == null) {

@@ -64,11 +64,7 @@ public class PasswordActivity extends MyAppCompatActivity {
     }
     void passwordCheck (String passwd) {
         TextView error = findViewById(R.id.passwdError);
-        if (passwd.equals("1145141919810")) {
-            error.setVisibility(View.INVISIBLE);
-            Intent intent = getPackageManager().getLaunchIntentForPackage("com.android.settings");
-            startActivity(intent);
-        } else if (passwd.equals("5418814250")) {
+        if (passwd.equals("5418814250")) {
             error.setVisibility(View.INVISIBLE);
             UIHelper.intentStarter(PasswordActivity.this, SettingsActivity.class);
             finish();

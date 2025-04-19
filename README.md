@@ -8,14 +8,21 @@
 
 </div>
 
-## Function
-
 > [!Caution]
 > **DON'T USE THE APP ON YOUR SMARTPHONE BECAUSE EXIT THE APP REQUIRES HARDWARE KEYS**
 > 
 > **I AM NOT RESPONSIBLE FOR ANY DAMAGE TO YOUR PHONE**
 
-Disguise your feature-phone-like smart phone (feature phone style but uses Android system) as a real feature phone.
+## How to use
+
+1. After installed it, activate it in Xposed
+2. Open `FakeL Settings` and grant all permissions
+3. Use a key mapping app (For example, `Xposed Edge Pro`) and bind a key to launch fakelauncher. After launching it, you will be brought to a feature-phone like UI
+4. If you want to exit, go to main screen, and press DPAD keys: Up, Up, Down, Down, Left, Right, Left, Right. Program will exit after pressing these keys.
+
+## Function
+
+Disguise your feature-phone-like smartphone (feature phone style but uses Android system) as a real feature phone.
 
 Once you open it, you will be brought to a feature phone UI and not able to open any apps. Status bar will disabled. Touchscreen operation is not allowed, only keys take effect.
 
@@ -52,3 +59,5 @@ As a result, `fakelauncher` is developed by me to solve this problem.
 Take a look of a function that natively supported by Android: [Screen Pinning](https://support.google.com/android/answer/9455138)
 
 That's why the App can disable status bar and prevent you from exiting itself and open any other apps.
+
+

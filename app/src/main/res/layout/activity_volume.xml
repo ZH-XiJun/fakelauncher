@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
     tools:context=".VolumeActivity">
 
     <LinearLayout
@@ -22,5 +24,58 @@
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="60sp" />
+
+        <ImageView
+            android:id="@+id/volume_logo"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/volume_speaker_on" />
+
+        <ProgressBar
+            android:id="@+id/volumeBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:indeterminate="false"
+            android:max="100"
+            android:maxHeight="48dip"
+            android:minHeight="48dip"
+            android:progress="50" />
+
+        <TextView
+            android:id="@+id/volumeLevel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="48sp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/volume_ActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/volume_rightButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/common_rightbutton"
+                android:textColor="@color/white"
+                android:textSize="48sp" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

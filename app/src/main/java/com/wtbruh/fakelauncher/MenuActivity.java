@@ -14,10 +14,7 @@ import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class MenuActivity extends MyAppCompatActivity {
-
-    int number = 0;
-    ImageView appicon;
-    TextView appname;
+    private int mNumber = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +26,7 @@ public class MenuActivity extends MyAppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        switchSection(number);
+        switchSection(mNumber);
     }
 
     // implement of app switching, using var "number" as index
@@ -39,25 +36,25 @@ public class MenuActivity extends MyAppCompatActivity {
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_LEFT:
-                if (number == 0) {
-                    number = 4;
+                if (mNumber == 0) {
+                    mNumber = 4;
                 } else {
-                    number--;
+                    mNumber--;
                 }
-                switchSection(number);
+                switchSection(mNumber);
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (number == 4) {
-                    number = 0;
+                if (mNumber == 4) {
+                    mNumber = 0;
                 } else {
-                    number++;
+                    mNumber++;
                 }
-                switchSection(number);
+                switchSection(mNumber);
                 break;
             case KeyEvent.KEYCODE_MENU:
             case KeyEvent.KEYCODE_ENTER:
-                startApp(number);
+                startApp(mNumber);
                 break;
         }
         super.onKeyUp(keyCode, event);
@@ -71,28 +68,28 @@ public class MenuActivity extends MyAppCompatActivity {
      * @param number 第几个app
      */
     private void switchSection (int number) {
-        appicon = findViewById(R.id.appIcon);
-        appname = findViewById(R.id.appName);
+        ImageView appIcon = findViewById(R.id.appIcon);
+        TextView appName = findViewById(R.id.appName);
         switch (number) {
             case 0: // Call 电话
-                appicon.setImageResource(R.drawable.menu_call);
-                appname.setText(R.string.menu_call);
+                appIcon.setImageResource(R.drawable.menu_call);
+                appName.setText(R.string.menu_call);
                 break;
             case 1: // Camera 相机
-                appicon.setImageResource(R.drawable.menu_camera);
-                appname.setText(R.string.menu_camera);
+                appIcon.setImageResource(R.drawable.menu_camera);
+                appName.setText(R.string.menu_camera);
                 break;
             case 2: // Contact 联系人
-                appicon.setImageResource(R.drawable.menu_contact);
-                appname.setText(R.string.menu_contact);
+                appIcon.setImageResource(R.drawable.menu_contact);
+                appName.setText(R.string.menu_contact);
                 break;
             case 3: // SMS 短信
-                appicon.setImageResource(R.drawable.menu_sms);
-                appname.setText(R.string.menu_sms);
+                appIcon.setImageResource(R.drawable.menu_sms);
+                appName.setText(R.string.menu_sms);
                 break;
             case 4: // Settings 设置
-                appicon.setImageResource(R.drawable.menu_set);
-                appname.setText(R.string.menu_set);
+                appIcon.setImageResource(R.drawable.menu_set);
+                appName.setText(R.string.menu_set);
                 break;
         }
     }

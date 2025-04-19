@@ -177,7 +177,6 @@ public class PrivilegeProvider {
         return false;
     }
 
-
     /**
      *
      * Single command running<br>

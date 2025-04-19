@@ -12,7 +12,7 @@ import android.text.TextUtils;
 
 public class PowerConnectionReceiver extends BroadcastReceiver {
 
-    private getstat stat;
+    private getStat stat;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -24,11 +24,11 @@ public class PowerConnectionReceiver extends BroadcastReceiver {
         stat.getConnectionStatus(action);
     }
 
-    interface getstat {
+    interface getStat {
         public void getConnectionStatus (String str);
     }
 
-    public void setstat (getstat str) {
+    public void setStat (getStat str) {
         this.stat = str;
     }
 }

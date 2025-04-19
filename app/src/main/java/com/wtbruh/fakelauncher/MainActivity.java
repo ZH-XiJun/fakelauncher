@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getstat {
+public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
 
     private Timer mTimer;
     private int count = 0;
@@ -74,7 +74,6 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         counter(keyCode);
-        Intent intent = new Intent();
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             // Open menu UI
             // 打开菜单界面
@@ -93,7 +92,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
                     break;
                 default:
                     // Key 0~9 0到9键
-                    extra = String.format("%d", keyCode - KeyEvent.KEYCODE_0);
+                    extra = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
                     break;
             }
             UIHelper.intentStarter(MainActivity.this, DialerActivity.class, "key", extra);
@@ -115,8 +114,8 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @return 返回时间/日期信息
      */
     private String getTime(boolean target){
-        long rawtime = System.currentTimeMillis();
-        Date d = new Date(rawtime);
+        long rawTime = System.currentTimeMillis();
+        Date d = new Date(rawTime);
         if (target) {
             SimpleDateFormat time_format = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
             return time_format.format(d);
@@ -134,19 +133,16 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView time_view = findViewById(R.id.time);
-                        TextView date_view = findViewById(R.id.date);
-                        TextView battery_view = findViewById(R.id.battery);
-                        String time = getTime(true);
-                        String date = getTime(false);
-                        String battery = getBattery(true);
-                        time_view.setText(time);
-                        date_view.setText(date);
-                        battery_view.setText(battery+"%");
-                    }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    TextView time_view = findViewById(R.id.time);
+                    TextView date_view = findViewById(R.id.date);
+                    TextView battery_view = findViewById(R.id.battery);
+                    String time = getTime(true);
+                    String date = getTime(false);
+                    String battery = getBattery(true);
+                    time_view.setText(time);
+                    date_view.setText(date);
+                    battery_view.setText(battery+"%");
                 });
             }
         }, 0, 1000);
@@ -165,7 +161,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
             float batteryPct = level * 100 / (float) scale;
-            return String.format("%.0f", batteryPct);
+            return String.valueOf((int) batteryPct);
         } else {
             // 另外加了个获取充电状态的，只会在刚打开时有用
             TextView connection_view = findViewById(R.id.connection);
@@ -208,7 +204,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         ifilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         if (operation) {
             registerReceiver(mReceiver, ifilter);
-            mReceiver.setstat(this);
+            mReceiver.setStat(this);
             Log.d(TAG, "Receiver registered!");
         } else {
             unregisterReceiver(mReceiver);

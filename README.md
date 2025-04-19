@@ -8,6 +8,8 @@
 
 </div>
 
+我是[中国人](README-ZH.md)
+
 > [!Caution]
 > **DON'T USE THE APP ON YOUR SMARTPHONE BECAUSE EXIT THE APP REQUIRES HARDWARE KEYS**
 > 

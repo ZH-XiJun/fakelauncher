@@ -32,7 +32,7 @@ public class VolumeActivity extends MyAppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        initVolume();
+        init();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class VolumeActivity extends MyAppCompatActivity {
     /**
      * Init of volume data 初始化音量相关
      */
-    private void initVolume() {
+    private void init() {
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         bar = findViewById(R.id.volumeBar);
         icon = findViewById(R.id.volume_logo);

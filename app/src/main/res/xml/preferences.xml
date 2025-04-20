@@ -2,6 +2,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/pref_category_permissions">
         <Preference
+            android:key="grant_all_permissions"
+            android:title="@string/pref_grant_all_permissions" />
+        <Preference
+            android:key="permission_grant_status"
+            android:title="@string/pref_permission_grant_status" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_category_privileges">
+        <Preference
             android:key="check_xposed"
             android:title="@string/pref_check_xposed" />
         <ListPreference

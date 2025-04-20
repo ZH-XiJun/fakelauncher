@@ -10,4 +10,11 @@
         <item>Root</item>
         <item>Shizuku</item>
     </string-array>
+
+    <string-array name="clickable_prefs">
+        <item>check_privilege</item>
+        <item>check_device_admin</item>
+        <item>grant_all_permissions</item>
+        <item>permission_grant_status</item>
+    </string-array>
 </resources>

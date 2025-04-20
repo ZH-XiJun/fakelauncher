@@ -50,18 +50,10 @@ public class PrivilegeProvider {
      * @param item 要请求的权限
      * @return true或false
      */
-    public static boolean ChkPermission(Context context, int item) {
-        switch (item) {
-            case 0: // WRITE_SETTINGS 修改系统设置权限
-                return Settings.System.canWrite(context);
-            case 1: // WRITE_SECURE_SETTINGS 修改系统安全设置权限
-                PackageManager pm = context.getPackageManager();
-                int result = pm.checkPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS,
-                        context.getPackageName());
-                return result == PackageManager.PERMISSION_GRANTED;
-            default:
-                return false;
-        }
+    public static boolean CheckPermission(Context context, String item) {
+        PackageManager pm = context.getPackageManager();
+        int result = pm.checkPermission(item, context.getPackageName());
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
@@ -71,17 +63,17 @@ public class PrivilegeProvider {
      * @param context Activity的上下文数据
      * @param item 要请求的权限
      */
-    public static void requestPermission(Context context, int item) {
+    public static void requestPermission(Context context, String item) {
         switch (item) {
-            case 0: // WRITE_SETTINGS 修改系统设置权限
+            case Manifest.permission.WRITE_SETTINGS: // WRITE_SETTINGS 修改系统设置权限
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
                     Uri.parse("package:" + context.getPackageName()));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
-            case 1: // WRITE_SECURE_SETTINGS 修改系统安全设置权限
+            case Manifest.permission.WRITE_SECURE_SETTINGS: // WRITE_SECURE_SETTINGS 修改系统安全设置权限
                 String[] args = {"pm", "grant", context.getPackageName(), Manifest.permission.WRITE_SECURE_SETTINGS};
                 try {
-                    runCmd(args, 1);
+                    runCmd(args, METHOD_ROOT);
                 } catch (RuntimeException e) {
                     Log.e(TAG, "Grant WRITE_SECURE_SETTINGS permission failed: "+e);
                 }

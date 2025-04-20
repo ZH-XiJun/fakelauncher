@@ -1,5 +1,6 @@
 package com.wtbruh.fakelauncher;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.provider.Telephony;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
@@ -19,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
+import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.text.SimpleDateFormat;
@@ -28,10 +32,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
-
     private Timer mTimer;
     private int count = 0;
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
+    private TelephonyHelper mTelHelper;
     private final static String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -44,20 +48,8 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // Check Permission 检查权限
-        /*
-        if (! PrivilegeProvider.ChkPermission(MainActivity.this, 0)) {
-            PrivilegeProvider.requestPermission(MainActivity.this, 0);
-        }
-         */
-        // Start timer 启动计时任务
-        updateInfo();
-        // Register the receiver 注册接收器
-        receiverRegister(true);
-        // Manually flash connection status at first 先手动刷新下充电状态
-        getBattery(false);
-        // Start pin mode 启用屏幕固定
-        setLockApp(MainActivity.this, getTaskId());
+        init();
+        mTelHelper.getProvidersName();
     }
 
     @Override
@@ -98,6 +90,48 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             UIHelper.intentStarter(MainActivity.this, DialerActivity.class, "key", extra);
         }
         return super.onKeyUp(keyCode, event);
+    }
+    /**
+     * Init of MainActivity | MainActivity初始化
+     */
+    private void init() {
+        // Check Permission 检查权限
+        /*
+        if (! PrivilegeProvider.ChkPermission(MainActivity.this, 0)) {
+            PrivilegeProvider.requestPermission(MainActivity.this, 0);
+        }
+         */
+        mTelHelper = new TelephonyHelper(this);
+        // Start timer 启动计时任务
+        updateInfo();
+        // Register the receiver 注册接收器
+        receiverRegister(true);
+        // Manually flash connection status at first 先手动刷新下充电状态
+        getBattery(false);
+        // Start pin mode 启用屏幕固定
+        setLockApp(MainActivity.this, getTaskId());
+    }
+
+    /**
+     * do necessary codes before calling onDestroy()<br>
+     * 调用onDestroy()之前需要执行的代码
+     */
+    private void exit() {
+        // Disable pin mode
+        // 关闭屏幕固定
+        setLockApp(MainActivity.this, -1);
+        // Wait for pin mode disabled, or finishAndRemoveTask() won't work
+        // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
+        try {
+            while (getLockApp(MainActivity.this) != -1) {
+                Thread.sleep(10);
+            }
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "An error was occurred while exiting app: "+e);
+        }
+        // kill myself
+        finishAndRemoveTask();
     }
 
     /**
@@ -248,28 +282,6 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     }
 
     /**
-     * do necessary codes before calling onDestroy()<br>
-     * 调用onDestroy()之前需要执行的代码
-     */
-    private void exit() {
-        // Disable pin mode
-        // 关闭屏幕固定
-        setLockApp(MainActivity.this, -1);
-        // Wait for pin mode disabled, or finishAndRemoveTask() won't work
-        // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
-        try {
-            while (getLockApp(MainActivity.this) != -1) {
-                Thread.sleep(10);
-            }
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "An error was occurred while exiting app: "+e);
-        }
-        // kill myself
-        finishAndRemoveTask();
-    }
-
-    /**
      * Set my TaskId to settings database to trigger pin mode<br>
      * 将TaskId存到Settings数据库以启用屏幕固定
      * <h5>Thanks: HChenX/PinningApp</h5>
@@ -278,9 +290,9 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      */
     public static void setLockApp(Context context, int id) {
         // Check permission
-        if (! PrivilegeProvider.ChkPermission(context, 1)) {
+        if (! PrivilegeProvider.CheckPermission(context, Manifest.permission.WRITE_SECURE_SETTINGS)) {
             try {
-                PrivilegeProvider.requestPermission(context, 1);
+                PrivilegeProvider.requestPermission(context, Manifest.permission.WRITE_SECURE_SETTINGS);
             } catch (RuntimeException ex) {
                 Log.e(TAG, "Get permission WRITE_SECURE_SETTINGS failed! " + ex);
             }

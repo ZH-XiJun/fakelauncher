@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App -->
+    <string name="app_settings_name">FakeL 设置</string>
     <!-- 电源连接状态 -->
     <string name="charging">正在充电</string>
     <string name="notcharging">未在充电</string>
@@ -14,17 +16,30 @@
     <string name="menu_contact">联系人</string>
     <string name="menu_sms">短信</string>
     <string name="menu_set">设置</string>
+    <!-- 主界面文字 -->
+    <string name="provider_china_mobile">中国移动</string>
+    <string name="provider_china_unicom">中国联通</string>
+    <string name="provider_china_telecom">中国电信</string>
+    <string name="sim_inseted">已插入</string>
+    <string name="sim_removed">未插入</string>
     <!-- 密码界面文字提示 -->
     <string name="enter_password">请输入安全密码</string>
     <string name="password_wrong">密码错误！</string>
     <string name="password_empty">请输入密码！</string>
     <!-- 拨号盘文字提示 -->
     <string name="dialer_empty">请输入电话号码</string>
-    <!-- 软件设置文字提示 -->
+    <!-- 音量调节文字 -->
     <string name="volume_adjust">音量调节</string>
+    <!-- 软件设置文字提示 -->
+    <string name="pref_category_permissions">普通权限</string>
+    <string name="pref_grant_all_permissions">使用授权器授权所有权限</string>
+    <string name="pref_grant_all_permissions_summary">记得先选择一个授权器</string>
+    <string name="pref_permission_grant_status">权限授权状态</string>
+
+    <string name="pref_category_privileges">特殊权限</string>
     <string name="pref_check_xposed">Xposed模块激活状态</string>
+    <string name="pref_xposed_activated">Xposed模块已激活！</string>
     <string name="pref_xposed_not_activated">Xposed模块尚未激活</string>
-    <string name="pref_category_permissions">权限</string>
     <string name="pref_privilege_provider">授权器</string>
     <string name="pref_check_privilege">检查授权</string>
     <string name="pref_check_privilege_granted">已授权</string>
@@ -33,7 +48,7 @@
     <string name="pref_check_privilege_none">你都没授权器了，你检查你妈呢</string>
     <string name="pref_enable_dhizuku">使用Dhizuku</string>
     <string name="pref_check_device_admin">检查设备管理员权限</string>
+
+    <!-- Toast 消息 -->
     <string name="toast_open_settings_from_launcher">请从启动器打开设置，才能授权Dhizuku</string>
-    <string name="app_settings_name">FakeL 设置</string>
-    <string name="pref_xposed_activated">Xposed模块已激活！</string>
 </resources>

@@ -1,4 +1,5 @@
 <resources>
+    <!-- App -->
     <string name="app_name" translatable="false">fakelauncher</string>
     <string name="app_settings_name" translatable="true">FakeL Settings</string>
     <string name="XposedDescription" translatable="false">通过Xposed触发屏幕固定以限制应用使其不可退出，从而达到伪装目的</string>
@@ -16,6 +17,12 @@
     <string name="menu_contact" translatable="true">Contacts</string>
     <string name="menu_sms" translatable="true">SMS</string>
     <string name="menu_set" translatable="true">Settings</string>
+    <!-- Main UI hint -->
+    <string name="provider_china_mobile" translatable="true">China Mobile</string>
+    <string name="provider_china_unicom" translatable="true">China Unicom</string>
+    <string name="provider_china_telecom" translatable="true">China Telecom</string>
+    <string name="sim_inseted" translatable="true">Inserted</string>
+    <string name="sim_removed">Removed</string>
     <!-- Password UI hint -->
     <string name="enter_password" translatable="true">Please enter password</string>
     <string name="password_wrong" translatable="true">Wrong password!</string>
@@ -25,10 +32,15 @@
     <!-- Volume UI hint -->
     <string name="volume_adjust" translatable="true">Volume adjust</string>
     <!-- Preferences -->
+    <string name="pref_category_permissions" translatable="true">Permissions</string>
+    <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
+    <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
+    <string name="pref_permission_grant_status">Permissions granting status</string>
+
+    <string name="pref_category_privileges">Privileges</string>
     <string name="pref_check_xposed">Xposed module activation status</string>
     <string name="pref_xposed_activated">Xposed module is activated! </string>
     <string name="pref_xposed_not_activated">Xposed module is not activated yet</string>
-    <string name="pref_category_permissions" translatable="true">Permissions and privileges</string>
     <string name="pref_privilege_provider" translatable="true">Privilege provider</string>
     <string name="pref_check_privilege" translatable="true">Check if privilege has been granted</string>
     <string name="pref_check_privilege_granted" translatable="true">Granted</string>

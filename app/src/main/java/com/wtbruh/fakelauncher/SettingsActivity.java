@@ -10,7 +10,14 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener, OnPreferenceClickListener {
@@ -48,15 +55,15 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
     private void initPreferences() {
         Preference pref;
         SharedPreferences defaultPref = getDefaultSharedPreferences(SettingsActivity.this);
+        // Init of clickable preferences
+        String[] clickablePrefs = getResources().getStringArray(R.array.clickable_prefs);
+        for (String key : clickablePrefs) {
+            pref = findPreference(key);
+            pref.setOnPreferenceClickListener(this);
+        }
         // Init of pref "privilege_provider"
         pref = findPreference("privilege_provider");
         pref.setSummary(defaultPref.getString("privilege_provider", "None"));
-        // Init of pref "check_privilege"
-        pref = findPreference("check_privilege");
-        pref.setOnPreferenceClickListener(this);
-        // Init of pref "check_device_admin"
-        pref = findPreference("check_device_admin");
-        pref.setOnPreferenceClickListener(this);
         // Init of pref "check_xposed"
         pref = findPreference("check_xposed");
         if (MainActivity.isXposedModuleActivated()) {
@@ -109,7 +116,24 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
                 } else {
                     pref.setSummary(R.string.pref_check_privilege_granted);
                 }
+            case "permission_grant_status":
+                UIHelper.intentStarter(SettingsActivity.this, PermissionStatus.class);
         }
         return false;
+    }
+
+    public static class PermissionStatus extends AppCompatActivity {
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            EdgeToEdge.enable(this);
+            setContentView(R.layout.activity_listview);
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            });
+        }
     }
 }

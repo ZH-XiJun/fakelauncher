@@ -2,7 +2,7 @@
 <img src="readme-assets/app-icon.png" width=128 />
 
 ## fakelauncher
-*我保证，这绝对是个老人机，不是智能机啊*
+*你自己看，这绝对是个老人机，不是智能机啊*
 
 **把你的伪老机（老人机外貌但是有智能系统）伪装成一个真正的老人机**
 
@@ -13,22 +13,11 @@
 > 
 > **如果因为这个软件导致你的手机出现问题，本人概不负责**
 
-## How to use
-
-1. 安装好之后，去Xposed里激活它
-
-2. 打开`FakeL Settings`并给予所有权限
-
-3. 随便找个按键映射软件（例如`Xposed Edge Pro`）然后绑定个按键用来启动fakelauncher。搞好之后，你就获得了一个老人机界面
-4. 如果你想退出去，在主屏幕按Dpad键：上上下下左右左右 就可以出去了
-
-## Function
+## 介绍
 
 把你的伪老机（老人机外貌但是有智能系统）伪装成一个真正的老人机
 
 启动App后，就会进入一个仿老人机的界面，其他App全都打不开，状态栏拉不下来，触屏也没用，只能按键操控，达到伪装效果
-
-如果你想退出去，在主屏幕按Dpad键：上上下下左右左右 就可以出去了
 
 所以这玩意有啥用，适用于哪些设备呢？下面我举个栗子
 
@@ -50,14 +39,34 @@
 
 可以发现，这玩意**长得像个老人机**但其实有高达安卓13的系统，还是64位系统，还支持5G（至于为什么强调64位，问就是64位SoC跑32位系统的痛）。这意味着，这玩意完全能当个正常手机用，**装游戏、抖音B站、微信QQ都没问题**
 
-基于这个牛逼的特性，有一批高中生就买这类老人机带学校里玩，啊当然也包括我。但是这玩意长得像老人机，但他UI完全就是普通手机啊，如果哪天老师看到你这玩意是个智能机那你不炸了？
+基于这个牛逼的特性，有一批高中生就买这类老人机带学校里玩，啊当然也包括我。但是这玩意长得像老人机，但他UI完全就是普通手机啊，如果哪天老师看到你这玩意是个智能机系统那你不炸了？
 
 为了解决这个Bug，`fakelauncher`就此被开发出来了
 
+## 食用方法
+
+1. 安装好之后，去Xposed里激活它（推荐用LSPosed，因为我只测试过用它）。记得重启！
+2. 打开`FakeL Settings`并给予所有权限
+3. 随便找个按键映射软件（例如`Xposed Edge Pro`）然后绑定个按键用来启动fakelauncher。搞好之后，你就获得了一个老人机界面
+4. 如果你想退出去，在主屏幕按Dpad键：上上下下左右左右 就可以出去了
+
 ## 工作原理
 
-先看看安卓原生支持的一个功能：[屏幕固定](https://support.google.com/android/answer/9455138)
+先看看安卓原生支持的一个功能：[屏幕固定](https://support.google.com/android/answer/9455138)，但是国内可能访问不了
 
 利用屏幕固定，就可以达到禁用状态栏并阻止打开其他App的功能了。在此使用了Xposed，hook了系统服务后检测到应用打开就会调用启动屏幕固定的方法，检测到应用退出后就会按照同样方法解除屏幕固定。
 
 在此特别感谢开源项目：[PinningApp](https://github.com/HChenX/PinningApp)，屏幕固定相关的代码全是抄的它的
+
+就是检测应用打开关闭这里做的可能有点欠佳，应该还有更好的解决方法
+
+## TO-DO
+
+未来可能会尝试适配Dhizuku，Shizuku等授权器，从而实现免root支持
+
+## 项目感谢
+- [Android](https://source.android.google.cn/)
+- [Xposed](https://github.com/LSPosed/LSPosed)
+- [PinningApp](https://github.com/HChenX/PinningApp)
+- [Shizuku API](https://github.com/RikkaApps/Shizuku-API)
+- [Dhizuku API](https://github.com/iamr0s/Dhizuku-API)

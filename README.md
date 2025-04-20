@@ -15,20 +15,11 @@
 > 
 > **I AM NOT RESPONSIBLE FOR ANY DAMAGE TO YOUR PHONE**
 
-## How to use
-
-1. After installed it, activate it in Xposed
-2. Open `FakeL Settings` and grant all permissions
-3. Use a key mapping app (For example, `Xposed Edge Pro`) and bind a key to launch fakelauncher. After launching it, you will be brought to a feature-phone like UI
-4. If you want to exit, go to main screen, and press DPAD keys: Up, Up, Down, Down, Left, Right, Left, Right. Program will exit after pressing these keys.
-
-## Function
+## Description
 
 Disguise your feature-phone-like smartphone (feature phone style but uses Android system) as a real feature phone.
 
-Once you open it, you will be brought to a feature phone UI and not able to open any apps. Status bar will disabled. Touchscreen operation is not allowed, only keys take effect.
-
-If you want to exit, go to main screen, and press DPAD keys: Up, Up, Down, Down, Left, Right, Left, Right. Program will exit after pressing these keys. 
+Once you open it, you will be brought to a feature phone UI and not able to open any apps. Status bar will disabled. Touchscreen operation is not allowed, only keys take effect. Thus achieving a disguise effect.
 
 So, when do you need the App? What kinds of devices are suitable for the App? I'll give an example.
 
@@ -56,10 +47,28 @@ But what if teachers notice its **UI**? It is just a common smartphone UI. So if
 
 As a result, `fakelauncher` is developed by me to solve this problem. 
 
+## How to use
+
+1. After installed it, activate it in Xposed. Requires reboot!
+2. Open `FakeL Settings` and grant all permissions
+3. Use a key mapping app (For example, `Xposed Edge Pro`) and bind a key to launch fakelauncher. After launching it, you will be brought to a feature-phone like UI
+4. If you want to exit, go to main screen, and press DPAD keys: Up, Up, Down, Down, Left, Right, Left, Right. Program will exit after pressing these keys.
+
 ## How does it work?
 
 Take a look of a function that natively supported by Android: [Screen Pinning](https://support.google.com/android/answer/9455138)
 
-That's why the App can disable status bar and prevent you from exiting itself and open any other apps.
+That's why the App can disable status bar and prevent you from exiting itself and open any other apps. Here I used Xposed to hook system service. When the app starts, xposed will call method to enable Screen Pinning. Similarly, Screen Pinning will be disabled after exiting app.
 
+Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp), a number of codes related to Screen Pinning were simply copied from it.
 
+## TO-DO
+
+App mey support other privillege providers, like Shizuku, Dhizuku, to name but a few, thus achieving rootless support
+
+## Thanks
+- [Android](https://source.android.com/)
+- [Xposed](https://github.com/LSPosed/LSPosed)
+- [PinningApp](https://github.com/HChenX/PinningApp)
+- [Shizuku API](https://github.com/RikkaApps/Shizuku-API)
+- [Dhizuku API](https://github.com/iamr0s/Dhizuku-API)

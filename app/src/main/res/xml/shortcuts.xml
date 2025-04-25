@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+  <shortcut
+      android:shortcutId="fakelauncher"
+      android:icon="@mipmap/ic_launcher"
+      android:enabled="true"
+      android:shortcutShortLabel="@string/shortcut_name"
+      android:shortcutLongLabel="@string/shortcut_name" >
+    <intent
+        android:action="android.intent.action.MAIN"
+        android:targetPackage="com.wtbruh.fakelauncher"
+        android:targetClass="com.wtbruh.fakelauncher.SplashActivity" />
+  </shortcut>
+</shortcuts>

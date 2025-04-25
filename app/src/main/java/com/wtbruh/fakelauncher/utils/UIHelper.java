@@ -42,6 +42,8 @@ public class UIHelper {
      * @param cls 要启动的Activity的class
      */
     public static void intentStarter(Activity activity, Class<?> cls) {
+        // If the activity is already on top, do not launch
+        if (ApplicationHelper.topActivity.contains(cls.getSimpleName())) return;
         Intent intent = new Intent();
         intent.setClass(activity, cls);
         activity.startActivity(intent);

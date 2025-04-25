@@ -26,9 +26,7 @@ public class MyAppCompatActivity extends AppCompatActivity {
             // 音量键拦截
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                // 如果已经在VolumeActivity里，不要重复打开
-                if (! ApplicationHelper.topActivity.contains(VolumeActivity.class.getSimpleName()))
-                    UIHelper.intentStarter(this, VolumeActivity.class);
+                UIHelper.intentStarter(this, VolumeActivity.class);
                 // 阻止系统音量面板弹出
                 return true;
         }

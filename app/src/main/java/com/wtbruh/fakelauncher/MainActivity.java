@@ -207,7 +207,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             if (isCharging) {
                 connection_view.setText(R.string.charging);
             } else {
-                connection_view.setText(R.string.notcharging);
+                connection_view.setText(R.string.not_charging);
             }
             return "";
         }
@@ -224,7 +224,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
             connection_view.setText(R.string.charging);
         } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
-            connection_view.setText(R.string.notcharging);
+            connection_view.setText(R.string.not_charging);
         }
     }
 

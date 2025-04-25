@@ -60,7 +60,7 @@
                 android:id="@+id/connection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="未在充电"
+                android:text="@string/not_charging"
                 android:textColor="@color/white"
                 android:textSize="50sp" />
 
@@ -136,7 +136,8 @@
                     android:text="@string/sim_removed"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textSize="48sp" />
+                    android:textSize="48sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/card2_provider"
@@ -145,7 +146,8 @@
                     android:text="@string/sim_removed"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textSize="48sp" />
+                    android:textSize="48sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>

@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.view.KeyEvent;
 
 public class UIHelper {
+    private static long lastTriggerTime = 0;
+    private static final long DEBOUNCE_TIME = 300;
 
     private final static String TAG = UIHelper.class.getSimpleName();
 
@@ -29,7 +31,7 @@ public class UIHelper {
                 return content + "*";
             default:
                 int num = keyCode - KeyEvent.KEYCODE_0;
-                return content + String.format("%d",num);
+                return content + num;
         }
     }
 
@@ -42,8 +44,7 @@ public class UIHelper {
      * @param cls 要启动的Activity的class
      */
     public static void intentStarter(Activity activity, Class<?> cls) {
-        // If the activity is already on top, do not launch
-        if (ApplicationHelper.topActivity.contains(cls.getSimpleName())) return;
+        if (intentStarterDebounce(cls)) return;
         Intent intent = new Intent();
         intent.setClass(activity, cls);
         activity.startActivity(intent);
@@ -63,6 +64,7 @@ public class UIHelper {
      * @param extra 额外数据内容
      */
     public static void intentStarter(Activity activity, Class<?> cls, String extraName, String extra) {
+        if (intentStarterDebounce(cls)) return;
         Intent intent = new Intent();
         intent.setClass(activity, cls);
         intent.putExtra(extraName, extra);
@@ -70,5 +72,23 @@ public class UIHelper {
         // Disable transition anim
         // 去掉过渡动画
         activity.overridePendingTransition(0, 0);
+    }
+    /**
+     * <h3>Intent Starter Debounce<br>
+     * Intent启动器 防抖机制</h3>
+     * <p>Prevent calling intentStarter too frequently<br>
+     * 防止过于频繁地调用intentStarter</p>
+     *
+     * @param cls 要启动的Activity的class
+     * @return true为调用过于频繁，false为调用频率正常
+     */
+    private static boolean intentStarterDebounce(Class<?> cls){
+        // Only trigger intent starter at regularly intervals
+        // 只在一定间隔时间内触发代码执行
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastTriggerTime <= DEBOUNCE_TIME) return true;
+        lastTriggerTime = currentTime;
+        // If the activity is already on top, do not launch
+        return ApplicationHelper.topActivity.contains(cls.getSimpleName());
     }
 }

@@ -39,6 +39,7 @@
     <string name="pref_xposed_activated">Xposed模块已激活！</string>
     <string name="pref_xposed_not_activated">Xposed模块尚未激活</string>
     <string name="pref_privilege_provider">授权器</string>
+    <string name="pref_provider_none">无授权器</string>
     <string name="pref_check_privilege">检查授权</string>
     <string name="pref_check_privilege_granted">已授权</string>
     <string name="pref_check_privilege_granted_dhizuku">已授权 - Dhizuku</string>
@@ -47,7 +48,13 @@
     <string name="pref_enable_dhizuku">使用Dhizuku</string>
     <string name="pref_check_device_admin">检查设备管理员权限</string>
 
+    <string name="pref_category_preferences">偏好</string>
+    <string name="pref_exit_fakeui_method">退出伪装界面方式</string>
+    <string name="pref_exit_dpad">在主界面按方向键</string>
+    <string name="pref_exit_dialer">在拨号盘里输暗码</string>
+    <string name="pref_exit_password">在“输入安全密码”界面自定义密码</string>
+
     <!-- Toast 消息 -->
     <string name="toast_open_settings_from_launcher">请从启动器打开设置，才能授权Dhizuku</string>
-    <string name="toast_reopen_to_refresh" translatable="true">请重新打开本页面，以刷新授权情况</string>
+    <string name="toast_reopen_to_refresh">请重新打开本页面，以刷新授权情况</string>
 </resources>

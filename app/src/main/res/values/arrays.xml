@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="xposedscope" >
+    <string-array name="xposedscope">
         <item>android</item>
         <item>com.android.systemui</item>
     </string-array>
 
     <string-array name="pref_privilege_provider">
-        <item>None</item> <!-- It's the default value -->
+        <item>None</item>
         <item>Root</item>
         <item>Shizuku</item>
+    </string-array>
+
+    <string-array name="pref_privilege_provider_string">
+        <item>@string/pref_provider_none</item>
+        <item>@string/pref_provider_root</item>
+        <item>@string/pref_provider_shizuku</item>
+    </string-array>
+
+    <string-array name="pref_exit_fakeui_method">
+        <item>dpad</item>
+        <item>dialer</item>
+        <item>passwd</item>
+    </string-array>
+
+    <string-array name="pref_exit_fakeui_method_string">
+        <item>@string/pref_exit_dpad</item>
+        <item>@string/pref_exit_dialer</item>
+        <item>@string/pref_exit_password</item>
     </string-array>
 
     <string-array name="clickable_prefs">
@@ -17,4 +35,5 @@
         <item>grant_all_permissions</item>
         <item>permission_grant_status</item>
     </string-array>
+
 </resources>

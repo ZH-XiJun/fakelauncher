@@ -23,7 +23,13 @@
             android:name=".SplashActivity"
             android:exported="true" />
         <activity
-            android:name=".SettingsEntranceActivity"
+            android:name=".VolumeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DialerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_settings_name">
@@ -35,15 +41,6 @@
             <meta-data android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity
-            android:name=".VolumeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DialerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
         <activity
             android:name=".SettingsActivity$PermissionStatus"
             android:exported="false" />
@@ -64,14 +61,16 @@
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
-        </receiver> <!-- Shizuku -->
+        </receiver>
+        <!-- Shizuku -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
             android:enabled="true"
             android:exported="true"
             android:multiprocess="false"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" /> <!-- Xposed module -->
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+        <!-- Xposed module -->
         <meta-data
             android:name="xposedmodule"
             android:value="true" />

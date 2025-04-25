@@ -40,15 +40,25 @@
     <string name="pref_xposed_activated">Xposed module is activated! </string>
     <string name="pref_xposed_not_activated">Xposed module is not activated yet</string>
     <string name="pref_privilege_provider" translatable="true">Privilege provider</string>
+    <string name="pref_provider_none" translatable="true">None</string>
+    <string name="pref_provider_root" translatable="false">Root</string>
+    <string name="pref_provider_shizuku" translatable="false">Shizuku</string>
     <string name="pref_check_privilege" translatable="true">Check if privilege has been granted</string>
     <string name="pref_check_privilege_granted" translatable="true">Granted</string>
     <string name="pref_check_privilege_granted_dhizuku" translatable="true">Granted - Dhizuku</string>
     <string name="pref_check_privilege_not_granted" translatable="true">NOT granted</string>
     <string name="pref_check_privilege_none" translatable="true">You have no privilege provider, so why do you tap me?</string>
-    <string name="pref_enable_dhizuku">Use Dhizuku</string>
+    <string name="pref_enable_dhizuku" translatable="true">Use Dhizuku</string>
     <string name="pref_check_device_admin" translatable="true">Check device admin</string>
+
+    <string name="pref_category_preferences" translatable="true">Preferences</string>
+    <string name="pref_exit_fakeui_method" translatable="true">Way to exit Fake UI</string>
+    <string name="pref_exit_dpad" translatable="true">D-pad keys in MainUI</string>
+    <string name="pref_exit_dialer" translatable="true">Dialer secret code</string>
+    <string name="pref_exit_password" translatable="true">Custom password while entering Settings in menu</string>
 
     <!-- Toast message -->
     <string name="toast_open_settings_from_launcher" translatable="true">Please open settings from launcher to grant Dhizuku.</string>
     <string name="toast_reopen_to_refresh" translatable="true">Please reopen this page to refresh grant status.</string>
+
 </resources>

@@ -10,6 +10,7 @@ appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
+preference = "1.2.0"
 
 [libraries]
 api = { module = "dev.rikka.shizuku:api", version.ref = "api" }
@@ -23,6 +24,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 provider = { module = "dev.rikka.shizuku:provider", version.ref = "api" }
 xposed-api = { module = "de.robv.android.xposed:api", version.ref = "apiVersion" }
+preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

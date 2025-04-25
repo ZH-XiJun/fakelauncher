@@ -14,7 +14,7 @@
             android:title="@string/pref_check_xposed" />
         <ListPreference
             android:defaultValue="None"
-            android:entries="@array/pref_privilege_provider"
+            android:entries="@array/pref_privilege_provider_string"
             android:entryValues="@array/pref_privilege_provider"
             android:key="privilege_provider"
             android:title="@string/pref_privilege_provider" />
@@ -29,4 +29,14 @@
             android:key="check_device_admin"
             android:title="@string/pref_check_device_admin" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_category_preferences">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pref_exit_fakeui_method_string"
+            android:entryValues="@array/pref_exit_fakeui_method"
+            android:key="pref_exit_fakeui_method"
+            android:title="@string/pref_exit_fakeui_method" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

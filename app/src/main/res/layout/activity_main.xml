@@ -25,7 +25,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="100dp" />
+                android:layout_height="75dp" />
 
             <TextView
                 android:id="@+id/time"
@@ -48,11 +48,6 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
 
         <LinearLayout
             android:id="@+id/StatusBar"
@@ -81,6 +76,78 @@
                 android:textAlignment="textEnd"
                 android:textColor="@color/white"
                 android:textSize="50sp" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/simCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/cardLogo"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/card1_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/sim_card1" />
+
+                <ImageView
+                    android:id="@+id/card2_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/sim_card2" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cardProvider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/card1_provider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sim_removed"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="48sp" />
+
+                <TextView
+                    android:id="@+id/card2_provider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sim_removed"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="48sp" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <Space

@@ -1,6 +1,7 @@
 package com.wtbruh.fakelauncher;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -9,8 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.provider.Telephony;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
@@ -49,7 +48,6 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             return insets;
         });
         init();
-        mTelHelper.getProvidersName();
     }
 
     @Override
@@ -102,6 +100,10 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         }
          */
         mTelHelper = new TelephonyHelper(this);
+        TextView card1 = findViewById(R.id.card1_provider);
+        TextView card2 = findViewById(R.id.card2_provider);
+        card1.setText(mTelHelper.getProvidersName(0));
+        card2.setText(mTelHelper.getProvidersName(1));
         // Start timer 启动计时任务
         updateInfo();
         // Register the receiver 注册接收器
@@ -285,20 +287,20 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * Set my TaskId to settings database to trigger pin mode<br>
      * 将TaskId存到Settings数据库以启用屏幕固定
      * <h5>Thanks: HChenX/PinningApp</h5>
-     * @param context 应用上下文
+     * @param activity 应用Activity对象
      * @param id 当前TaskId（-1为关闭屏幕固定）
      */
-    public static void setLockApp(Context context, int id) {
+    public static void setLockApp(Activity activity, int id) {
         // Check permission
-        if (! PrivilegeProvider.CheckPermission(context, Manifest.permission.WRITE_SECURE_SETTINGS)) {
+        if (! PrivilegeProvider.CheckPermission(activity, Manifest.permission.WRITE_SECURE_SETTINGS)) {
             try {
-                PrivilegeProvider.requestPermission(context, Manifest.permission.WRITE_SECURE_SETTINGS);
+                PrivilegeProvider.requestPermission(activity, Manifest.permission.WRITE_SECURE_SETTINGS);
             } catch (RuntimeException ex) {
                 Log.e(TAG, "Get permission WRITE_SECURE_SETTINGS failed! " + ex);
             }
         }
         try {
-            Settings.Global.putInt(context.getContentResolver(), "fakelauncher_pinmode", id);
+            Settings.Global.putInt(activity.getContentResolver(), "fakelauncher_pinmode", id);
             Log.d(TAG, "Set fakelauncher_pinmode to "+String.format("%d", id));
         } catch (SecurityException e) {
             Log.e(TAG, "No permission WRITE_SECURE_SETTINGS! "+e);

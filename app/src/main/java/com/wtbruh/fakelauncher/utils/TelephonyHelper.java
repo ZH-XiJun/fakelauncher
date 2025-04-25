@@ -28,13 +28,13 @@ public class TelephonyHelper {
         mSubscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
     }
 
-    public String getProvidersName() {
+    public String getProvidersName(int sub) {
         if (! PrivilegeProvider.CheckPermission(context,Manifest.permission.READ_PHONE_STATE)) {
             Log.d(TAG, "No permission READ_PHONE_STATE!!!");
-            return "";
+            return context.getResources().getString(R.string.sim_removed);
         }
-        SubscriptionInfo sub0 = mSubscriptionManager.getActiveSubscriptionInfoForSimSlotIndex(0);
-        if (sub0 != null) Log.d(TAG, "Card 1!");
-        return "";
+        SubscriptionInfo sub0 = mSubscriptionManager.getActiveSubscriptionInfoForSimSlotIndex(sub);
+        if (sub0 == null) return context.getResources().getString(R.string.sim_removed);
+        return String.valueOf(sub0.getDisplayName());
     }
 }

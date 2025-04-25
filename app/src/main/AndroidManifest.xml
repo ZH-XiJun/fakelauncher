@@ -20,6 +20,22 @@
         android:theme="@style/Theme.Fakelauncher"
         tools:targetApi="31">
         <activity
+            android:name=".SplashActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SettingsEntranceActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_settings_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+        <activity
             android:name=".VolumeActivity"
             android:exported="false" />
         <activity

@@ -2,10 +2,11 @@
     <!-- App -->
     <string name="app_name" translatable="false">fakelauncher</string>
     <string name="app_settings_name" translatable="true">FakeL Settings</string>
+    <string name="shortcut_name" translatable="true">Open fake UI</string>
     <string name="XposedDescription" translatable="false">通过Xposed触发屏幕固定以限制应用使其不可退出，从而达到伪装目的</string>
     <!-- Power connection -->
     <string name="charging" translatable="true">Charging</string>
-    <string name="notcharging" translatable="true">Not Charging</string>
+    <string name="not_charging" translatable="true">Unplugged</string>
     <!-- Button hint -->
     <string name="main_leftbutton" translatable="true">Menu</string>
     <string name="common_leftbutton" translatable="true">OK</string>
@@ -18,9 +19,6 @@
     <string name="menu_sms" translatable="true">SMS</string>
     <string name="menu_set" translatable="true">Settings</string>
     <!-- Main UI hint -->
-    <string name="provider_china_mobile" translatable="true">China Mobile</string>
-    <string name="provider_china_unicom" translatable="true">China Unicom</string>
-    <string name="provider_china_telecom" translatable="true">China Telecom</string>
     <string name="sim_inseted" translatable="true">Inserted</string>
     <string name="sim_removed">Removed</string>
     <!-- Password UI hint -->
@@ -52,4 +50,5 @@
 
     <!-- Toast message -->
     <string name="toast_open_settings_from_launcher" translatable="true">Please open settings from launcher to grant Dhizuku.</string>
+    <string name="toast_reopen_to_refresh" translatable="true">Please reopen this page to refresh grant status.</string>
 </resources>

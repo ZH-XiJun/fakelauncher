@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:id="@+id/Listview_Item"
+    android:paddingBottom="3dip"
+    android:paddingLeft="10dip">
+
+        <TextView
+            android:id="@+id/Item"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="123ABCabc"
+            android:textSize="24sp"></TextView>
+
+        <TextView
+            android:id="@+id/subItem"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="123ABC"
+            android:textSize="16sp"></TextView>
+</LinearLayout>

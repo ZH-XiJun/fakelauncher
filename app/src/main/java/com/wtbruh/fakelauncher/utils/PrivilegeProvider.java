@@ -1,6 +1,9 @@
 package com.wtbruh.fakelauncher.utils;
 
+import static androidx.core.app.ActivityCompat.requestPermissions;
+
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,8 +16,6 @@ import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
-
-import java.io.IOException;
 
 import rikka.shizuku.Shizuku;
 import rikka.sui.Sui;
@@ -42,6 +43,8 @@ public class PrivilegeProvider {
     public final static String CMD_SH_FULL = "/system/bin/sh";
     public final static String CMD_RISH= "rish";
 
+    public final static int PERMISSION_REQUEST_CODE = 123;
+
     /**
      * Check if permission has been granted<br>
      * 检查是否已获得权限
@@ -51,6 +54,9 @@ public class PrivilegeProvider {
      * @return true或false
      */
     public static boolean CheckPermission(Context context, String item) {
+        if (item.equals(Manifest.permission.WRITE_SETTINGS)) {
+            return Settings.System.canWrite(context);
+        }
         PackageManager pm = context.getPackageManager();
         int result = pm.checkPermission(item, context.getPackageName());
         return result == PackageManager.PERMISSION_GRANTED;
@@ -60,23 +66,27 @@ public class PrivilegeProvider {
      * Request permission<br>
      * 请求权限
      *
-     * @param context Activity的上下文数据
+     * @param activity Activity对象
      * @param item 要请求的权限
      */
-    public static void requestPermission(Context context, String item) {
+    public static void requestPermission(Activity activity, String item) {
         switch (item) {
             case Manifest.permission.WRITE_SETTINGS: // WRITE_SETTINGS 修改系统设置权限
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                    Uri.parse("package:" + context.getPackageName()));
+                    Uri.parse("package:" + activity.getPackageName()));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                activity.startActivity(intent);
+                break;
             case Manifest.permission.WRITE_SECURE_SETTINGS: // WRITE_SECURE_SETTINGS 修改系统安全设置权限
-                String[] args = {"pm", "grant", context.getPackageName(), Manifest.permission.WRITE_SECURE_SETTINGS};
+                String[] args = {"pm", "grant", activity.getPackageName(), Manifest.permission.WRITE_SECURE_SETTINGS};
                 try {
                     runCmd(args, METHOD_ROOT);
                 } catch (RuntimeException e) {
                     Log.e(TAG, "Grant WRITE_SECURE_SETTINGS permission failed: "+e);
                 }
+                break;
+            default:
+                requestPermissions(activity, new String[] {item}, PERMISSION_REQUEST_CODE);
         }
     }
 

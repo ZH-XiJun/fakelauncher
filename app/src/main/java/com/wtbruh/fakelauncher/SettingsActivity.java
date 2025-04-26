@@ -1,17 +1,10 @@
 package com.wtbruh.fakelauncher;
 
-import static android.preference.PreferenceManager.getDefaultSharedPreferences;
-
 import static com.wtbruh.fakelauncher.utils.PrivilegeProvider.PERMISSION_REQUEST_CODE;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -25,7 +18,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
-import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;

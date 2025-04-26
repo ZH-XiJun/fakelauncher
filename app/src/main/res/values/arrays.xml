@@ -18,7 +18,7 @@
     </string-array>
 
     <string-array name="pref_exit_fakeui_method">
-        <item>dpad</item>
+        <item>dpad</item> <!-- default -->
         <item>dialer</item>
         <item>passwd</item>
     </string-array>
@@ -34,6 +34,7 @@
         <item>check_device_admin</item>
         <item>grant_all_permissions</item>
         <item>permission_grant_status</item>
+        <item>exit_fakeui_config_text</item>
     </string-array>
 
 </resources>

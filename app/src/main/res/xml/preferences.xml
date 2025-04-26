@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/pref_category_permissions">
         <Preference
             android:key="grant_all_permissions"
@@ -32,11 +33,17 @@
     <PreferenceCategory android:title="@string/pref_category_preferences">
 
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="dpad"
             android:entries="@array/pref_exit_fakeui_method_string"
             android:entryValues="@array/pref_exit_fakeui_method"
-            android:key="pref_exit_fakeui_method"
+            android:key="exit_fakeui_method"
             android:title="@string/pref_exit_fakeui_method" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="exit_fakeui_config"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_exit_fakeui_config" />
     </PreferenceCategory>
 
 </PreferenceScreen>

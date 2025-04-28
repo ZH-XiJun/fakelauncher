@@ -55,6 +55,26 @@ public class UIHelper {
 
     /**
      * <h3>Intent Starter | Intent启动器</h3>
+     * <p>Simple package for starting intent, which will send intent flags<br>
+     * 启动intent的简单封装，会发送Intent标志</p>
+     *
+     * @param activity 你的Activity对象
+     * @param cls 要启动的Activity的class
+     * @param flags 要添加的标志，允许多个
+     */
+    public static void intentStarter(Activity activity, Class<?> cls, int... flags) {
+        if (intentStarterDebounce(cls)) return;
+        Intent intent = new Intent();
+        intent.setClass(activity, cls);
+        for (int flag : flags) intent.addFlags(flag);
+        activity.startActivity(intent);
+        // Disable transition anim
+        // 去掉过渡动画
+        activity.overridePendingTransition(0, 0);
+    }
+
+    /**
+     * <h3>Intent Starter | Intent启动器</h3>
      * <p>Simple package for starting intent, which will send extra message<br>
      * 启动intent的简单封装，会发送额外信息</p>
      *

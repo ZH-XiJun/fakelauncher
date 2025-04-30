@@ -70,7 +70,6 @@ public class SettingsActivity extends AppCompatActivity {
                     // If request is cancelled, the result arrays are empty.
                     if (grantResults.length > 0 &&
                             grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "perm123");
                         data = permissionGrantStatus(getPermissions());
                         adapter.notifyDataSetInvalidated();
                     }  else {

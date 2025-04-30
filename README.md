@@ -64,7 +64,9 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 
 ## TO-DO
 
-App mey support other privillege providers, like Shizuku, Dhizuku, to name but a few, thus achieving rootless support
+- Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
+
+- ~~Optimize the transmission of task id between UI part and Hook part (PinningApp uses `SettingsProvider`, as well as `adb shell settings put xxx`, UI part needs `WRITE_SECURE_SETTINGS` permission to set taskId)~~ Completed, now using `ContentProvider`, no longer need `WRITE_SECURE_SETTINGS` permission
 
 ## Thanks
 - [Android](https://source.android.com/)

@@ -56,13 +56,13 @@
 
 利用屏幕固定，就可以达到禁用状态栏并阻止打开其他App的功能了。在此使用了Xposed，hook了系统服务后检测到应用打开就会调用启动屏幕固定的方法，检测到应用退出后就会按照同样方法解除屏幕固定。
 
-在此特别感谢开源项目：[PinningApp](https://github.com/HChenX/PinningApp)，屏幕固定相关的代码全是抄的它的
-
-就是检测应用打开关闭这里做的可能有点欠佳，应该还有更好的解决方法
+在此特别感谢开源项目：[PinningApp](https://github.com/HChenX/PinningApp)，屏幕固定相关的代码基本都抄的他的
 
 ## TO-DO
 
-未来可能会尝试适配Dhizuku，Shizuku等授权器，从而实现免root支持
+- 未来可能会尝试适配Dhizuku，Shizuku等授权器，从而实现免root支持
+
+- ~~优化Ui部分发送taskId到Hook部分的代码，就是触发屏幕固定用的（PinningApp使用了`SettingsProvider`，相当于`adb shell settings put xxx`，UI部分使用需要`WRITE_SECURE_SETTINGS`权限支持，获取贼麻烦）~~ 完工，现在改用`ContentProvider`，无需授权`WRITE_SECURE_SETTINGS`权限
 
 ## 项目感谢
 - [Android](https://source.android.google.cn/)

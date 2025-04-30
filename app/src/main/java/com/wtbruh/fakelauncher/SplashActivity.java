@@ -14,12 +14,9 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UIHelper.intentStarter(
-                SplashActivity.this,
-                MainActivity.class,
-                Intent.FLAG_ACTIVITY_CLEAR_TASK,
-                Intent.FLAG_ACTIVITY_NEW_TASK
-        );
+        startActivity(new Intent()
+                .setClass(SplashActivity.this, MainActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
         finish();
     }
 }

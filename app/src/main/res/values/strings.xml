@@ -65,6 +65,7 @@
     <!-- Dialog -->
     <string name="dialog_title_exit_dpad" translatable="true">D-pad key command setup</string>
     <string name="dialog_title_exit_dialer" translatable="true">Dialer secret code setup</string>
+    <string name="dialog_title_exit_dialer_hint" translatable="true">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
     <string name="dialog_title_exit_passwd" translatable="true">Settings page password setup</string>
 
 </resources>

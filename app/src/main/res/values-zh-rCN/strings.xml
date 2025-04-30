@@ -62,5 +62,6 @@
     <!-- 弹窗 -->
     <string name="dialog_title_exit_dpad">方向键按键指令退出设置</string>
     <string name="dialog_title_exit_dialer">拨号盘退出暗码设置</string>
+    <string name="dialog_title_exit_dialer_hint">在拨号盘内输入时需要被"*#"包围：*#你设置的代码#*</string>
     <string name="dialog_title_exit_passwd">设置页退出密码设置</string>
 </resources>

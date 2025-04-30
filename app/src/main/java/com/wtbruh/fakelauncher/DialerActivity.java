@@ -1,7 +1,9 @@
 package com.wtbruh.fakelauncher;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
@@ -9,12 +11,14 @@ import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class DialerActivity extends MyAppCompatActivity {
-
+    private final static String TAG = DialerActivity.class.getSimpleName();
+    private SharedPreferences mPrefs;
     private TextView mRightButton;
     private TextView mEditText;
 
@@ -28,6 +32,7 @@ public class DialerActivity extends MyAppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(DialerActivity.this);
         getExtra();
     }
 
@@ -61,7 +66,21 @@ public class DialerActivity extends MyAppCompatActivity {
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
-            // maybe do something?
+            String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
+            String exitMethod = mPrefs.getString("exit_fakeui_method", valueArray[0]);
+            Log.d(TAG,"User set exit method: " + exitMethod);
+            if (exitMethod.equals(valueArray[1])) {
+                String secretCode = mPrefs.getString(SettingsFragment.PREF_EXIT_FAKEUI_CONFIG, "");
+                Log.d(TAG,"passwd:"+secretCode);
+                if (!secretCode.isEmpty()){
+                    if (mEditText.getText().equals("*#"+secretCode+"#*")) {
+                        Intent intent = new Intent()
+                                .setClass(DialerActivity.this, MainActivity.class)
+                                .putExtra("exit", true);
+                        startActivity(intent);
+                    }
+                }
+            }
         } else {
             return super.onKeyUp(keyCode, event);
         }

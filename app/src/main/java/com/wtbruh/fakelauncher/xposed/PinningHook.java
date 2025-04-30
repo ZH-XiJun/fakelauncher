@@ -1,15 +1,19 @@
 package com.wtbruh.fakelauncher.xposed;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Display;
 
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.wtbruh.fakelauncher.utils.HookHelper;
@@ -21,10 +25,17 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 
 public class PinningHook extends HookHelper {
+
+    public final static int LOCK_APP = 1;
+    public final static int UNLOCK_APP = 2;
+
     // public static Context CONTEXT;
     private static int mTaskId;
     private boolean mObserver = false;
     private boolean mLock = false;
+    public static Handler mHandler = new LockAppHandler();
+
+    public static Context context;
     @Override
     public void init() {
         // Observe the changes of settings "fakelauncher_pinmode" and call system methods to start/stop pin mode
@@ -220,6 +231,35 @@ public class PinningHook extends HookHelper {
         return (Application) XposedHelpers.callStaticMethod(XposedHelpers.findClass(
                         "android.app.ActivityThread", null),
                 "currentApplication");
+    }
+
+    /**
+     * Handle message to turn on/off screen pinning<br>
+     * 处理消息以开关屏幕固定
+     *
+     * @noinspection deprecation
+     * @author HChenX
+     */
+    public static class LockAppHandler extends Handler {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            Log.d("test", "666888");
+            Context context = findContext(FLAG_CURRENT_APP);
+            if (context == null) {
+                Log.d("test", "66666666688888888");
+                mHandler.sendMessageDelayed(mHandler.obtainMessage(msg.what), 500);
+                return;
+            }
+            switch (msg.what) {
+                case LOCK_APP:
+                    setLockApp(context, (int) msg.obj);
+                    break;
+                case UNLOCK_APP:
+                    setLockApp(context, -1);
+                    break;
+            }
+        }
     }
 
 }

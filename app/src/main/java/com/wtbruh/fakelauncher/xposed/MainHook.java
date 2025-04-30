@@ -43,6 +43,7 @@ public class MainHook extends LogHelper implements IXposedHookLoadPackage, IXpos
                     }
                 });
                 logI(TAG, "Hook myself if I'm activated");
+                initHook(new SelfHook(), lpparam);
         }
     }
 }

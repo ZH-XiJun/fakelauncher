@@ -23,6 +23,7 @@ import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
+import com.wtbruh.fakelauncher.xposed.PinningHook;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,6 +60,14 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         // 停止计时任务 Stop timer
         if (mTimer != null) mTimer.cancel();
         super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 检查是否需要退出
+        // Log.d(TAG, "checkexit" + getIntent().getBooleanExtra("exit", false));
+        if (getIntent().getBooleanExtra("exit", false)) exit();
     }
 
     @Override
@@ -291,6 +300,15 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @param id 当前TaskId（-1为关闭屏幕固定）
      */
     public static void setLockApp(Activity activity, int id) {
+        /*
+        if (isXposedModuleActivated()) {
+            PinningHook.mHandler.sendMessageDelayed(
+                    PinningHook.mHandler.obtainMessage(PinningHook.LOCK_APP, id),
+                    1000
+            );
+            return;
+        }
+         */
         // Check permission
         if (! PrivilegeProvider.CheckPermission(activity, Manifest.permission.WRITE_SECURE_SETTINGS)) {
             try {

@@ -1,21 +1,21 @@
 package com.wtbruh.fakelauncher.xposed;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Display;
 
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.HookHelper;
 
 import java.lang.reflect.Method;
@@ -34,8 +34,8 @@ public class PinningHook extends HookHelper {
     private boolean mObserver = false;
     private boolean mLock = false;
     public static Handler mHandler = new LockAppHandler();
+    private final static String TAG = PinningHook.class.getSimpleName();
 
-    public static Context context;
     @Override
     public void init() {
         // Observe the changes of settings "fakelauncher_pinmode" and call system methods to start/stop pin mode
@@ -51,15 +51,19 @@ public class PinningHook extends HookHelper {
                             return;
                         }
                     }
-                    // CONTEXT = context;
                     if (!mObserver) {
                         Context finalContext = context;
                         ContentObserver contentObserver = new ContentObserver(new Handler(finalContext.getMainLooper())) {
                             @Override
                             public void onChange(boolean selfChange, @Nullable Uri uri, int flags) {
-                                mLock = getLockApp(finalContext) != -1;
+                                Cursor cursor = finalContext.getContentResolver().query(uri, null, null, null, null);
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    mTaskId = cursor.getInt(0);
+                                    cursor.close();
+                                }
+                                logI(TAG, "Get task id: " + mTaskId);
+                                mLock = mTaskId != -1;
                                 if (mLock) {
-                                    mTaskId = getLockApp(finalContext);
                                     callMethod(param.thisObject, "startSystemLockTaskMode", mTaskId);
                                 } else {
                                     callMethod(param.thisObject, "stopSystemLockTaskMode");
@@ -67,7 +71,7 @@ public class PinningHook extends HookHelper {
                             }
                         };
                         context.getContentResolver().registerContentObserver(
-                            Settings.Global.getUriFor("fakelauncher_pinmode"), false, contentObserver
+                                ContentProvider.CONTENT_URI, false, contentObserver
                         );
                         mObserver = true;
                     }
@@ -241,16 +245,21 @@ public class PinningHook extends HookHelper {
      * @author HChenX
      */
     public static class LockAppHandler extends Handler {
+
+        private final static String TAG = LockAppHandler.class.getSimpleName();
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            Log.d("test", "666888");
-            Context context = findContext(FLAG_CURRENT_APP);
+            logI(TAG, "Received message! ");
+            Context context = findContext(FlAG_ONLY_ANDROID);
+            logI(TAG, "Context package name: " + context.getPackageName());
             if (context == null) {
-                Log.d("test", "66666666688888888");
+                logI(TAG, "Context is null!!!");
                 mHandler.sendMessageDelayed(mHandler.obtainMessage(msg.what), 500);
                 return;
             }
+            logI(TAG, "Message content: " + msg.what);
             switch (msg.what) {
                 case LOCK_APP:
                     setLockApp(context, (int) msg.obj);

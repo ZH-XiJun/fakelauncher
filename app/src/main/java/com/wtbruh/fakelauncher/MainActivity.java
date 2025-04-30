@@ -19,11 +19,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
-import com.wtbruh.fakelauncher.xposed.PinningHook;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -134,12 +134,9 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         // Wait for pin mode disabled, or finishAndRemoveTask() won't work
         // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
         try {
-            while (getLockApp(MainActivity.this) != -1) {
-                Thread.sleep(10);
-            }
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            Log.e(TAG, "An error was occurred while exiting app: "+e);
+            Log.e(TAG, "An error was occurred while waiting screen pinning to close: "+e);
         }
         // kill myself
         finishAndRemoveTask();
@@ -300,15 +297,12 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @param id 当前TaskId（-1为关闭屏幕固定）
      */
     public static void setLockApp(Activity activity, int id) {
-        /*
+        // 新方案，用ContentProvider存储taskId，无需操作Settings数据库
         if (isXposedModuleActivated()) {
-            PinningHook.mHandler.sendMessageDelayed(
-                    PinningHook.mHandler.obtainMessage(PinningHook.LOCK_APP, id),
-                    1000
-            );
+            Log.d(TAG, "Xposed module enabled, putting taskId into ContentProvider");
+            ContentProvider.setTaskId(activity, id);
             return;
         }
-         */
         // Check permission
         if (! PrivilegeProvider.CheckPermission(activity, Manifest.permission.WRITE_SECURE_SETTINGS)) {
             try {

@@ -11,7 +11,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class MainHook extends LogHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     public static String modulePath;
-    static String TAG = MainHook.class.getSimpleName();
+    private final static String TAG = MainHook.class.getSimpleName();
 
     public static void initHook(HookHelper hook, XC_LoadPackage.LoadPackageParam lpparam) {
         hook.runHook(lpparam);
@@ -34,16 +34,9 @@ public class MainHook extends LogHelper implements IXposedHookLoadPackage, IXpos
                 logI(TAG, "Android SystemUI hooked");
                 break;
             case "com.wtbruh.fakelauncher":
-                Class<?> clazz = XposedHelpers.findClass("com.wtbruh.fakelauncher.MainActivity", lpparam.classLoader);
-                XposedHelpers.findAndHookMethod(clazz, "isXposedModuleActivated", new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        super.beforeHookedMethod(param);
-                        param.setResult(true);
-                    }
-                });
-                logI(TAG, "Hook myself if I'm activated");
                 initHook(new SelfHook(), lpparam);
+                logI(TAG, "Hooked myself");
+                break;
         }
     }
 }

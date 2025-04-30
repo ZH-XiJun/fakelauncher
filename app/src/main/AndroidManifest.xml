@@ -62,6 +62,10 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </receiver>
+        <provider
+            android:name=".utils.ContentProvider"
+            android:authorities="com.wtbruh.fakelauncher"
+            android:exported="true" />
         <!-- Shizuku -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"

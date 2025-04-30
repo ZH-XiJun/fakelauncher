@@ -66,7 +66,9 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 
 - Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
 
-- ~~Optimize the transmission of task id between UI part and Hook part (PinningApp uses `SettingsProvider`, as well as `adb shell settings put xxx`, UI part needs `WRITE_SECURE_SETTINGS` permission to set taskId)~~ Completed, now using `ContentProvider`, no longer need `WRITE_SECURE_SETTINGS` permission
+- Add more exit method, like typing a secret code in dialer, add a avaliable password in "Please input password" page, or customize key action in replace of default, to name but a few. 
+
+- ~~Optimize the transmission of task id between UI part and Hook part (PinningApp uses `SettingsProvider`, as well as `adb shell settings put xxx`, UI part needs `WRITE_SECURE_SETTINGS` permission to set task id)~~ Completed, now using `ContentProvider`, no longer need `WRITE_SECURE_SETTINGS` permission support
 
 ## Thanks
 - [Android](https://source.android.com/)

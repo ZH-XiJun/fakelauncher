@@ -5,10 +5,7 @@ import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.preference.DialogPreference;
@@ -27,6 +24,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     private final static String TAG = SettingsFragment.class.getSimpleName();
 
     private final Activity activity;
+
+    public final static String PREF_PRIVILEGE_PROVIDER = "privilege_provider";
+    public final static String PREF_EXIT_FAKEUI_CONFIG = "exit_fakeui_config";
+    public final static String PREF_EXIT_FAKEUI_METHOD = "exit_fakeui_method";
+    public final static String PREF_CHECK_PRIVILEGE = "check_privilege";
+    public final static String PREF_CHECK_DEVICE_ADMIN = "check_device_admin";
+    public final static String PREF_ENABLE_DHIZUKU = "enable_dhizuku";
+    public final static String PREF_PERMISSION_GRANT_STATUS = "permission_grant_status";
+    public final static String PREF_CHECK_XPOSED = "check_xposed";
+    public final static String PREF_GRANT_ALL_PERMISSIONS = "grant_all_permissions";
 
     public SettingsFragment (Activity activity) {
         this.activity = activity;
@@ -62,52 +69,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         SharedPreferences defaultPref = getDefaultSharedPreferences(activity);
         // Init of clickable preferences
         String[] clickablePrefs = getResources().getStringArray(R.array.clickable_prefs);
-        String[] valueArray;
         for (String key : clickablePrefs) {
             pref = findPreference(key);
             if (pref != null) pref.setOnPreferenceClickListener(this);
         }
         // Init of pref "privilege_provider"
-        pref = findPreference("privilege_provider");
-        if (pref != null) {
-            setListPrefSummary(
-                    defaultPref.getString(pref.getKey(), "None"),
-                    pref,
-                    R.array.pref_privilege_provider,
-                    R.array.pref_privilege_provider_string
-            );
-        }
+        pref = findPreference(PREF_PRIVILEGE_PROVIDER);
+        if (pref != null) prefSetup(pref);
         // Init of pref "exit_fakeui_method"
-        pref = findPreference("exit_fakeui_method");
-        if (pref != null) {
-            setListPrefSummary(
-                    defaultPref.getString(pref.getKey(), "dpad"),
-                    pref,
-                    R.array.pref_exit_fakeui_method,
-                    R.array.pref_exit_fakeui_method_string
-            );
-        }
+        pref = findPreference(PREF_EXIT_FAKEUI_METHOD);
+        if (pref != null) prefSetup(pref);
         // Init of pref "exit_fakeui_config"
-        DialogPreference dPref = findPreference("exit_fakeui_config");
-        if (dPref != null) {
-            valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
-            if (defaultPref.getString("exit_fakeui_method", valueArray[0]).equals(valueArray[1])) {
-                dPref.setDialogTitle(R.string.dialog_title_exit_dialer);
-            } else if (defaultPref.getString("exit_fakeui_method", valueArray[0]).equals(valueArray[2])) {
-                dPref.setDialogTitle(R.string.dialog_title_exit_passwd);
-            } else if (defaultPref.getString("exit_fakeui_method", valueArray[0]).equals(valueArray[0])) {
-                dPref.setDialogTitle(R.string.dialog_title_exit_dpad);
-            }
-        }
+        pref = findPreference(PREF_EXIT_FAKEUI_CONFIG);
+        if (pref != null) prefSetup(pref);
         // Init of pref "check_xposed"
-        pref = findPreference("check_xposed");
-        if (pref != null){
-            if (MainActivity.isXposedModuleActivated()) {
-                pref.setSummary(R.string.pref_xposed_activated);
-            } else {
-                pref.setSummary(R.string.pref_xposed_not_activated);
-            }
-        }
+        pref = findPreference(PREF_CHECK_XPOSED);
+        if (pref != null) prefSetup(pref);
     }
 
     /**
@@ -127,7 +104,60 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         String[] valueArray = getResources().getStringArray(valueArrayResId);
         String[] valueToStringArray = getResources().getStringArray(valueToStringArrayResId);
         int index = Arrays.asList(valueArray).indexOf(value);
+        if (index == -1) return;
         pref.setSummary(valueToStringArray[index]);
+    }
+
+    /**
+     * Preference setup code package<br>
+     * Preference设置代码 封装
+     * @param pref Preference
+     */
+    private void prefSetup(Preference pref) {
+        SharedPreferences defaultPref = getDefaultSharedPreferences(activity);
+        String[] valueArray;
+        String value;
+        switch (pref.getKey()) {
+            case PREF_PRIVILEGE_PROVIDER:
+                setListPrefSummary(
+                        defaultPref.getString(pref.getKey(), "None"),
+                        pref,
+                        R.array.pref_privilege_provider,
+                        R.array.pref_privilege_provider_string
+                );
+                break;
+            case PREF_EXIT_FAKEUI_METHOD:
+                setListPrefSummary(
+                        defaultPref.getString(pref.getKey(), "dpad"),
+                        pref,
+                        R.array.pref_exit_fakeui_method,
+                        R.array.pref_exit_fakeui_method_string
+                );
+                break;
+            case PREF_EXIT_FAKEUI_CONFIG:
+                DialogPreference dPref = (DialogPreference) pref;
+                // DialogPreference dPref = findPreference(PREF_EXIT_FAKEUI_CONFIG);
+                valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
+                value = defaultPref.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
+                if (value.equals(valueArray[1])) {
+                    dPref.setDialogTitle(R.string.dialog_title_exit_dialer);
+                    dPref.setDialogMessage(R.string.dialog_title_exit_dialer_hint);
+                } else if (value.equals(valueArray[2])) {
+                    dPref.setDialogTitle(R.string.dialog_title_exit_passwd);
+                    dPref.setDialogMessage(null);
+                } else if (value.equals(valueArray[0])) {
+                    dPref.setDialogTitle(R.string.dialog_title_exit_dpad);
+                    dPref.setDialogMessage(null);
+                }
+                break;
+            case PREF_CHECK_XPOSED:
+                if (MainActivity.isXposedModuleActivated()) {
+                    pref.setSummary(R.string.pref_xposed_activated);
+                } else {
+                    pref.setSummary(R.string.pref_xposed_not_activated);
+                }
+                break;
+        }
     }
 
     @Override
@@ -135,41 +165,26 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         if (key == null) return;
         Log.d(TAG, "Shared preference changed! key:"+key);
         Preference pref = findPreference(key);
-        DialogPreference dPref;
         String value;
         String[] valueArray;
 
         if (pref == null) return;
         switch (key) {
-            case "privilege_provider":
-                setListPrefSummary(
-                        sharedPreferences.getString(key, "None"),
-                        pref,
-                        R.array.pref_privilege_provider,
-                        R.array.pref_privilege_provider_string
-                );
-                findPreference("check_privilege").setSummary("");
+            case PREF_PRIVILEGE_PROVIDER:
+                prefSetup(pref);
+                findPreference(PREF_CHECK_PRIVILEGE).setSummary("");
                 break;
-            case "exit_fakeui_method":
-                valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
-                value = sharedPreferences.getString(key, valueArray[0]);
-                DialogPreference exitFakeuiConfig = findPreference("exit_fakeui_config");
-                setListPrefSummary(
-                        value,
-                        pref,
-                        R.array.pref_exit_fakeui_method,
-                        R.array.pref_exit_fakeui_method_string
-                );
-                if (value.equals(valueArray[1])) {
-                    exitFakeuiConfig.setDialogTitle(R.string.dialog_title_exit_dialer);
-                } else if (value.equals(valueArray[2])) {
-                    exitFakeuiConfig.setDialogTitle(R.string.dialog_title_exit_passwd);
-                } else if (value.equals(valueArray[0])) {
-                    exitFakeuiConfig.setDialogTitle(R.string.dialog_title_exit_dpad);
-                }
+            case PREF_EXIT_FAKEUI_METHOD:
+                EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG);
+                prefSetup(pref);
+                prefSetup(exitFakeuiConfig);
+                sharedPreferences.edit()
+                        .putString(PREF_EXIT_FAKEUI_CONFIG, "")
+                        .apply();
+                exitFakeuiConfig.setText("");
                 break;
-            case "enable_dhizuku":
-                findPreference("check_device_admin").setSummary("");
+            case PREF_ENABLE_DHIZUKU:
+                findPreference(PREF_CHECK_DEVICE_ADMIN).setSummary("");
                 break;
         }
     }
@@ -181,8 +196,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         String key = pref.getKey();
         String value;
         switch (key) {
-            case "check_privilege":
-                value = defaultPref.getString("privilege_provider", "None");
+            case PREF_CHECK_PRIVILEGE:
+                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, "None");
                 if (!"None".equals(value)) {
                     if (PrivilegeProvider.checkPrivilege(value)) {
                         pref.setSummary(R.string.pref_check_privilege_granted);
@@ -193,8 +208,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                     pref.setSummary(R.string.pref_check_privilege_none);
                 }
                 break;
-            case "check_device_admin":
-                boolean dhizuku = defaultPref.getBoolean("enable_dhizuku", false);
+            case PREF_CHECK_DEVICE_ADMIN:
+                boolean dhizuku = defaultPref.getBoolean(PREF_ENABLE_DHIZUKU, false);
                 boolean checkDeviceAdmin = PrivilegeProvider.checkDeviceAdmin(dhizuku, activity);
                 if (! checkDeviceAdmin) {
                     pref.setSummary(R.string.pref_check_privilege_not_granted);
@@ -204,10 +219,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                     pref.setSummary(R.string.pref_check_privilege_granted);
                 }
                 break;
-            case "permission_grant_status":
+            case PREF_PERMISSION_GRANT_STATUS:
                 UIHelper.intentStarter(activity, SettingsActivity.PermissionStatus.class);
                 break;
-            case "grant_all_permissions":
+            case PREF_GRANT_ALL_PERMISSIONS:
                 // to-do
                 break;
         }

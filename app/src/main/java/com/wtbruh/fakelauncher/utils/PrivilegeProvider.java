@@ -77,14 +77,6 @@ public class PrivilegeProvider {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 activity.startActivity(intent);
                 break;
-            case Manifest.permission.WRITE_SECURE_SETTINGS: // WRITE_SECURE_SETTINGS 修改系统安全设置权限
-                String[] args = {"pm", "grant", activity.getPackageName(), Manifest.permission.WRITE_SECURE_SETTINGS};
-                try {
-                    runCmd(args, METHOD_ROOT);
-                } catch (RuntimeException e) {
-                    Log.e(TAG, "Grant WRITE_SECURE_SETTINGS permission failed: "+e);
-                }
-                break;
             default:
                 requestPermissions(activity, new String[] {item}, PERMISSION_REQUEST_CODE);
         }

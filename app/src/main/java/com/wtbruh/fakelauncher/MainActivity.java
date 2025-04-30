@@ -18,6 +18,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
@@ -303,19 +304,12 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             ContentProvider.setTaskId(activity, id);
             return;
         }
-        // Check permission
-        if (! PrivilegeProvider.CheckPermission(activity, Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            try {
-                PrivilegeProvider.requestPermission(activity, Manifest.permission.WRITE_SECURE_SETTINGS);
-            } catch (RuntimeException ex) {
-                Log.e(TAG, "Get permission WRITE_SECURE_SETTINGS failed! " + ex);
-            }
-        }
-        try {
-            Settings.Global.putInt(activity.getContentResolver(), "fakelauncher_pinmode", id);
-            Log.d(TAG, "Set fakelauncher_pinmode to "+String.format("%d", id));
-        } catch (SecurityException e) {
-            Log.e(TAG, "No permission WRITE_SECURE_SETTINGS! "+e);
+        // Check device admin permission
+        if (! PrivilegeProvider.checkDeviceAdmin(PreferenceManager.getDefaultSharedPreferences(activity)
+                        .getBoolean(SettingsFragment.PREF_ENABLE_DHIZUKU, false),
+                activity)
+        ) {
+            // todo - Device Admin Support
         }
     }
 
@@ -325,11 +319,6 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * <h5>Thanks: HChenX/PinningApp</h5>
      */
     public static int getLockApp(Context context) {
-        try {
-            return Settings.Global.getInt(context.getContentResolver(), "fakelauncher_pinmode");
-        } catch (Settings.SettingNotFoundException e) {
-            Log.e(TAG, "getLockApp() will return -1 because: "+ e);
-            return -1;
-        }
+        return ContentProvider.getTaskId(context);
     }
 }

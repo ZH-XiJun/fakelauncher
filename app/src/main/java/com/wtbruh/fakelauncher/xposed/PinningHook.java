@@ -136,6 +136,13 @@ public class PinningHook extends HookHelper {
                 });
     }
 
+    /**
+     * Provide screen off support for multiple devices<br>
+     * 为多种设备提供关闭屏幕支持
+     *
+     * @param param MethodHookParam
+     * @param model 设备型号（来自ro.product.model）
+     */
     private void powerSleep(XC_MethodHook.MethodHookParam param, String model) {
         // 获取参数
         long eventTime = (long) param.args[0];

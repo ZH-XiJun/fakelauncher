@@ -2,12 +2,14 @@ package com.wtbruh.fakelauncher.xposed;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.Display;
 
@@ -18,6 +20,7 @@ import androidx.annotation.Nullable;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.HookHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -28,6 +31,10 @@ public class PinningHook extends HookHelper {
 
     public final static int LOCK_APP = 1;
     public final static int UNLOCK_APP = 2;
+    // TCL T508N
+    public final static String MODEL_T508N = "T508N";
+    // coolpad Golden Century Y60 | 酷派金世纪Y60
+    public final static String MODEL_CP23NV3 = "CP23NV3";
 
     // public static Context CONTEXT;
     private static int mTaskId;
@@ -96,11 +103,11 @@ public class PinningHook extends HookHelper {
                         // 检查 mShortPressOnPowerBehavior 是否为 1
                         int behavior = XposedHelpers.getIntField(param.thisObject, "mShortPressOnPowerBehavior");
                         if (behavior != 1) {
+                            logI(TAG, "Power button behavior is not 1!");
                             return; // 如果不是 1，不干预
                         }
 
                         // 获取参数
-                        long eventTime = (long) param.args[0];
                         int count = (int) param.args[1];
                         boolean beganFromNonInteractive = (boolean) param.args[2];
 
@@ -114,107 +121,105 @@ public class PinningHook extends HookHelper {
                             boolean interactive = (displayState == Display.STATE_ON);
 
                             if (interactive && !beganFromNonInteractive) {
-                                // 获取 TopClass 和 isKeyguardShowing
-
-                                Object activityManager = XposedHelpers.getObjectField(param.thisObject, "mActivityManager");
-                                List<?> runningTasks = (List<?>) XposedHelpers.callMethod(activityManager, "getRunningTasks", 1);
-                                ActivityManager.RunningTaskInfo runningTaskInfo = (ActivityManager.RunningTaskInfo) runningTasks.get(0);
-                                String TopClass = (String) XposedHelpers.callMethod(runningTaskInfo.topActivity, "getClassName");
-                                boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(
-                                        param.thisObject, "isKeyguardShowing"
+                                // 机型判断
+                                String model = (String) callStaticMethod(
+                                        findClass("android.os.SystemProperties", null),
+                                        "get",
+                                        "ro.product.model",
+                                        "T508N"
                                 );
-
-                                // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
-                                if (TopClass.equals("com.wtbruh.fakelauncher.MainActivity") && !isKeyguardShowing) {
-                                    /*
-                                    如果直接调用方法 sleepDefaultDisplayFromPowerButton 熄屏会报错
-                                    因为我们实际上是hook到了UnisocPhoneWindowManager类
-                                    而这个方法只在PhoneWindowManager类里有
-                                    所以需要用到反射调用方法
-
-                                    XposedHelpers.callMethod(
-                                            param.thisObject,
-                                            "sleepDefaultDisplayFromPowerButton",
-                                            eventTime,
-                                            0
-                                    );
-
-                                    另一种实现：直接绕过sleepDefaultDisplayFromPowerButton，调用PowerManager熄屏
-                                    感觉这种实现应该会更适配其他机型
-                                    import android.os.PowerManager;
-
-                                    PowerManager pm = (PowerManager) currentApplication().getSystemService(Context.POWER_SERVICE);
-                                    try {
-                                        // 尝试调用 Android 7.0+ 的方法
-                                        XposedHelpers.callMethod(
-                                                pm,
-                                                "goToSleep",
-                                                eventTime,
-                                                0,
-                                                0
-                                        );
-                                    } catch (NoSuchMethodError e) {
-                                        // 回退到 Android 6.0 的方法
-                                        XposedHelpers.callMethod(
-                                                pm,
-                                                "goToSleep",
-                                                eventTime
-                                        );
-                                    }
-                                     */
-                                    Class<?> PhoneWindowManager = findClassIfExists("com.android.server.policy.PhoneWindowManager");
-                                    Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
-                                            PhoneWindowManager,
-                                            "sleepDefaultDisplayFromPowerButton",
-                                            long.class,
-                                            int.class);
-                                    sleepDefaultDisplayFromPowerButton.setAccessible(true);
-                                    try {
-                                        sleepDefaultDisplayFromPowerButton.invoke(param.thisObject,eventTime, 0);
-                                    } catch (Throwable e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    // 阻止原方法继续执行
-                                    param.setResult(null);
-                                }
+                                logI(TAG, "Detected device model: " + model);
+                                powerSleep(param, model);
                             }
                         }
                     }
                 });
+    }
 
-        /*
-        还有一种方法，hook用来获取最上层Activity信息的方法getRunningTasks，
-        如果返回结果是com.wtbruh.fakelauncher.MainActivity
-        就给他替换成com.android.launcher3.uioverrides.QuickstepLauncher
-        这样powerPress那边就认为最上层Activity是系统桌面然后执行熄屏操作
-        这种写法看着比上面省代码，但后果是整个系统都会把这两个混淆在一起（例如启动系统桌面结果启动了fakelauncher），所以注释掉了
-        import android.content.ComponentName;
+    private void powerSleep(XC_MethodHook.MethodHookParam param, String model) {
+        // 获取参数
+        long eventTime = (long) param.args[0];
 
-        findAndHookMethod("android.app.ActivityManager",
-                "getRunningTasks",
-                int.class,
-                new HookAction() {
-                    @Override
-                    protected void after(MethodHookParam param) {
-                        super.after(param);
-                        List<?> tasks = (List<?>) param.getResult();
-                        if (tasks != null && !tasks.isEmpty()) {
-                            Object taskInfo = tasks.get(0);
-                            ComponentName topActivity = (ComponentName) XposedHelpers.getObjectField(taskInfo, "topActivity");
+        switch (model) {
+            case MODEL_T508N:
+                // 获取 TopClass 和 isKeyguardShowing
+                Object activityManager = XposedHelpers.getObjectField(param.thisObject, "mActivityManager");
+                List<?> runningTasks = (List<?>) XposedHelpers.callMethod(activityManager, "getRunningTasks", 1);
+                ActivityManager.RunningTaskInfo runningTaskInfo = (ActivityManager.RunningTaskInfo) runningTasks.get(0);
+                String TopClass = (String) XposedHelpers.callMethod(runningTaskInfo.topActivity, "getClassName");
+                boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(
+                        param.thisObject, "isKeyguardShowing"
+                );
 
-                            // 如果当前 Activity 是我们的假 Launcher，替换成系统 Launcher
-                            if (topActivity != null && topActivity.getClassName().equals("com.wtbruh.fakelauncher.MainActivity")) {
-                                XposedHelpers.setObjectField(
-                                        taskInfo,
-                                        "topActivity",
-                                        new ComponentName(topActivity.getPackageName(), "com.android.launcher3.uioverrides.QuickstepLauncher")
-                                );
-                            }
-                        }
+                // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
+                if (TopClass.equals("com.wtbruh.fakelauncher.MainActivity") && !isKeyguardShowing) {
+                    Class<?> PhoneWindowManager = findClassIfExists("com.android.server.policy.PhoneWindowManager");
+                    Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
+                            PhoneWindowManager,
+                            "sleepDefaultDisplayFromPowerButton",
+                            long.class,
+                            int.class);
+                    sleepDefaultDisplayFromPowerButton.setAccessible(true);
+                    try {
+                        sleepDefaultDisplayFromPowerButton.invoke(param.thisObject,eventTime, 0);
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
                     }
-                });
-         */
+                    // 阻止原方法继续执行
+                    param.setResult(null);
+                }
+                break;
 
+            case MODEL_CP23NV3:
+                Object keyguardServiceDelegate = XposedHelpers.getObjectField(param.thisObject, "mKeyguardDelegate");
+                boolean keyguardActive = keyguardServiceDelegate != null && (boolean) callMethod(keyguardServiceDelegate, "isShowing");
+                // 反射调用isHomeActivity()和isScreensaver()
+                Class<?> PhoneWindowManager = findClassIfExists("com.android.server.policy.PhoneWindowManager");
+                Method isHomeActivity = XposedHelpers.findMethodExact(
+                        PhoneWindowManager,"isHomeActivity"
+                );
+                isHomeActivity.setAccessible(true);
+                Method isScreensaver = XposedHelpers.findMethodExact(
+                        PhoneWindowManager,"isScreensaver"
+                );
+                isScreensaver.setAccessible(true);
+                boolean IsHomeActivity;
+                boolean IsScreensaver;
+                try {
+                    IsHomeActivity = (boolean) isHomeActivity.invoke(param.thisObject);
+                    IsScreensaver = (boolean) isScreensaver.invoke(param.thisObject);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+                // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
+                if (!keyguardActive && !IsHomeActivity && !IsScreensaver) {
+                    Method getTopActivity = XposedHelpers.findMethodExact(
+                            PhoneWindowManager,"getTopActivity"
+                    );
+                    ComponentName top;
+                    try {
+                        top = (ComponentName) getTopActivity.invoke(param.thisObject);
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (top.getPackageName().equals("com.wtbruh.fakelauncher")) {
+                        Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
+                                PhoneWindowManager,
+                                "sleepDefaultDisplayFromPowerButton",
+                                long.class,
+                                int.class);
+                        sleepDefaultDisplayFromPowerButton.setAccessible(true);
+                        try {
+                            sleepDefaultDisplayFromPowerButton.invoke(param.thisObject,eventTime, 0);
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                        // 阻止原方法继续执行
+                        param.setResult(null);
+                    }
+                }
+                break;
+        }
     }
 
     public int getLockApp(Context context) {

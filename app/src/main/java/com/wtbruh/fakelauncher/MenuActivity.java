@@ -54,6 +54,7 @@ public class MenuActivity extends MyAppCompatActivity {
                 break;
             case KeyEvent.KEYCODE_MENU:
             case KeyEvent.KEYCODE_ENTER:
+            case KeyEvent.KEYCODE_DPAD_CENTER:
                 startApp(mNumber);
                 break;
         }

@@ -1,6 +1,5 @@
 package com.wtbruh.fakelauncher;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -55,14 +54,20 @@ public class PasswordActivity extends MyAppCompatActivity {
                     rightButton.setText(R.string.common_rightbutton);
                 }
             }
-        } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
+        } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
             passwordCheck(content);
         } else {
             super.onKeyUp(keyCode, event);
         }
         return true;
     }
-    void passwordCheck (String passwd) {
+
+    /**
+     * Password check | 检查输入的密码
+     *
+     * @param passwd 密码
+     */
+    private void passwordCheck (String passwd) {
         TextView error = findViewById(R.id.passwdError);
         if (passwd.equals("5418814250")) {
             error.setVisibility(View.INVISIBLE);

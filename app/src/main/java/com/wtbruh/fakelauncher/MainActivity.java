@@ -1,6 +1,5 @@
 package com.wtbruh.fakelauncher;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,15 +8,16 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.utils.ContentProvider;
@@ -99,21 +99,28 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         }
         return super.onKeyUp(keyCode, event);
     }
+
     /**
      * Init of MainActivity | MainActivity初始化
      */
     private void init() {
-        // Check Permission 检查权限
-        /*
-        if (! PrivilegeProvider.ChkPermission(MainActivity.this, 0)) {
-            PrivilegeProvider.requestPermission(MainActivity.this, 0);
-        }
-         */
         mTelHelper = new TelephonyHelper(this);
         TextView card1 = findViewById(R.id.card1_provider);
         TextView card2 = findViewById(R.id.card2_provider);
         card1.setText(mTelHelper.getProvidersName(0));
         card2.setText(mTelHelper.getProvidersName(1));
+        // 时间字体大小自适应适配
+        TextView time = findViewById(R.id.time);
+        time.post(() -> {
+            // 获取缩放后的字体大小
+            float textSize = time.getTextSize(); // 单位：px
+            time.setTextSize(textSize);
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
+            Log.d(TAG, "now text size: "+textSize);
+            time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
+            time.requestLayout();
+        });
+
         // Start timer 启动计时任务
         updateInfo();
         // Register the receiver 注册接收器

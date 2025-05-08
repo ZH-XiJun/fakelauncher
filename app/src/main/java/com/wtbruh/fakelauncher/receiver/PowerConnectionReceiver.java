@@ -1,9 +1,11 @@
-package com.wtbruh.fakelauncher;
+package com.wtbruh.fakelauncher.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+
+import com.wtbruh.fakelauncher.MainActivity;
 
 /**
  * Power connection status receiver<br>
@@ -24,8 +26,8 @@ public class PowerConnectionReceiver extends BroadcastReceiver {
         stat.getConnectionStatus(action);
     }
 
-    interface getStat {
-        public void getConnectionStatus (String str);
+    public interface getStat {
+        void getConnectionStatus(String str);
     }
 
     public void setStat (getStat str) {

@@ -30,6 +30,8 @@
     <!-- Volume UI hint -->
     <string name="volume_adjust" translatable="true">Volume adjust</string>
     <!-- Preferences -->
+    <string name="pref_tap_me" translatable="true">Tap me!</string>
+
     <string name="pref_category_permissions" translatable="true">Permissions</string>
     <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
     <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
@@ -45,11 +47,13 @@
     <string name="pref_provider_shizuku" translatable="false">Shizuku</string>
     <string name="pref_check_privilege" translatable="true">Check if privilege has been granted</string>
     <string name="pref_check_privilege_granted" translatable="true">Granted</string>
-    <string name="pref_check_privilege_granted_dhizuku" translatable="true">Granted - Dhizuku</string>
-    <string name="pref_check_privilege_not_granted" translatable="true">NOT granted</string>
+    <string name="pref_check_privilege_denied" translatable="true">Denied</string>
     <string name="pref_check_privilege_none" translatable="true">You have no privilege provider, so why do you tap me?</string>
     <string name="pref_enable_dhizuku" translatable="true">Use Dhizuku</string>
-    <string name="pref_check_device_admin" translatable="true">Check device admin</string>
+    <string name="pref_check_device_admin" translatable="true">Check device owner</string>
+    <string name="pref_check_privilege_granted_device_admin" translatable="true">Not fully granted - Device Admin</string>
+    <string name="pref_check_privilege_granted_device_owner" translatable="true">Granted - Device Owner</string>
+    <string name="pref_check_privilege_granted_dhizuku" translatable="true">Granted - Dhizuku</string>
 
     <string name="pref_category_preferences" translatable="true">Preferences</string>
     <string name="pref_exit_fakeui_method" translatable="true">Method to exit Fake UI</string>

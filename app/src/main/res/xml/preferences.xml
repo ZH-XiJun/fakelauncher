@@ -21,14 +21,16 @@
             android:title="@string/pref_privilege_provider" />
         <Preference
             android:key="check_privilege"
-            android:title="@string/pref_check_privilege" />
+            android:title="@string/pref_check_privilege"
+            app:summary="@string/pref_tap_me" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="enable_dhizuku"
             android:title="@string/pref_enable_dhizuku" />
         <Preference
             android:key="check_device_admin"
-            android:title="@string/pref_check_device_admin" />
+            android:title="@string/pref_check_device_admin"
+            app:summary="@string/pref_tap_me" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_preferences">
 

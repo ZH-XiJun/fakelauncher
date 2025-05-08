@@ -126,7 +126,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (PrivilegeProvider.CheckPermission(PermissionStatus.this, permission)) {
                     map.put("subItem", getResources().getString(R.string.pref_check_privilege_granted));
                 } else {
-                    map.put("subItem", getResources().getString(R.string.pref_check_privilege_not_granted));
+                    map.put("subItem", getResources().getString(R.string.pref_check_privilege_denied));
                 }
                 mylist.add(map);
             }

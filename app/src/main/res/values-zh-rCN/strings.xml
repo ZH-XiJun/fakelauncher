@@ -29,6 +29,8 @@
     <!-- 音量调节文字 -->
     <string name="volume_adjust">音量调节</string>
     <!-- 软件设置文字提示 -->
+    <string name="pref_tap_me">戳我！</string>
+
     <string name="pref_category_permissions">普通权限</string>
     <string name="pref_grant_all_permissions">使用授权器授权所有权限</string>
     <string name="pref_grant_all_permissions_summary">记得先选择一个授权器</string>
@@ -42,11 +44,13 @@
     <string name="pref_provider_none">无授权器</string>
     <string name="pref_check_privilege">检查授权</string>
     <string name="pref_check_privilege_granted">已授权</string>
-    <string name="pref_check_privilege_granted_dhizuku">已授权 - Dhizuku</string>
-    <string name="pref_check_privilege_not_granted">尚未授权</string>
+    <string name="pref_check_privilege_denied">尚未授权</string>
     <string name="pref_check_privilege_none">你都没授权器了，你检查你妈呢</string>
     <string name="pref_enable_dhizuku">使用Dhizuku</string>
-    <string name="pref_check_device_admin">检查设备管理员权限</string>
+    <string name="pref_check_device_admin">检查设备所有者权限</string>
+    <string name="pref_check_privilege_granted_device_admin">权限较低 - 设备管理员</string>
+    <string name="pref_check_privilege_granted_device_owner">已授权 - 设备所有者</string>
+    <string name="pref_check_privilege_granted_dhizuku">已授权 - Dhizuku</string>
 
     <string name="pref_category_preferences">偏好</string>
     <string name="pref_exit_fakeui_method">退出伪装界面方式</string>

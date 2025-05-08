@@ -66,7 +66,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
      */
     private void init() {
         Preference pref;
-        SharedPreferences defaultPref = getDefaultSharedPreferences(activity);
         // Init of clickable preferences
         String[] clickablePrefs = getResources().getStringArray(R.array.clickable_prefs);
         for (String key : clickablePrefs) {
@@ -172,7 +171,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         switch (key) {
             case PREF_PRIVILEGE_PROVIDER:
                 prefSetup(pref);
-                findPreference(PREF_CHECK_PRIVILEGE).setSummary("");
+                findPreference(PREF_CHECK_PRIVILEGE).setSummary(R.string.pref_tap_me);
                 break;
             case PREF_EXIT_FAKEUI_METHOD:
                 EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG);
@@ -184,7 +183,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 exitFakeuiConfig.setText("");
                 break;
             case PREF_ENABLE_DHIZUKU:
-                findPreference(PREF_CHECK_DEVICE_ADMIN).setSummary("");
+                findPreference(PREF_CHECK_DEVICE_ADMIN).setSummary(R.string.pref_tap_me);
                 break;
         }
     }
@@ -202,7 +201,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                     if (PrivilegeProvider.checkPrivilege(value)) {
                         pref.setSummary(R.string.pref_check_privilege_granted);
                     } else {
-                        pref.setSummary(R.string.pref_check_privilege_not_granted);
+                        pref.setSummary(R.string.pref_check_privilege_denied);
                     }
                 } else {
                     pref.setSummary(R.string.pref_check_privilege_none);
@@ -210,14 +209,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 break;
             case PREF_CHECK_DEVICE_ADMIN:
                 boolean dhizuku = defaultPref.getBoolean(PREF_ENABLE_DHIZUKU, false);
-                boolean checkDeviceAdmin = PrivilegeProvider.checkDeviceAdmin(dhizuku, activity);
-                if (! checkDeviceAdmin) {
-                    pref.setSummary(R.string.pref_check_privilege_not_granted);
-                } else if (dhizuku){
-                    pref.setSummary(R.string.pref_check_privilege_granted_dhizuku);
-                } else {
-                    pref.setSummary(R.string.pref_check_privilege_granted);
-                }
+                String checkDeviceAdmin = PrivilegeProvider.checkDeviceAdmin(dhizuku, activity);
+                pref.setSummary(checkDeviceAdmin);
                 break;
             case PREF_PERMISSION_GRANT_STATUS:
                 UIHelper.intentStarter(activity, SettingsActivity.PermissionStatus.class);

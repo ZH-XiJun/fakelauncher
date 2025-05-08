@@ -4,6 +4,8 @@ import static androidx.core.app.ActivityCompat.requestPermissions;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +18,7 @@ import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 
 import rikka.shizuku.Shizuku;
 import rikka.sui.Sui;
@@ -125,19 +128,24 @@ public class PrivilegeProvider {
                     return false;
                 }
             case "Shizuku":
+                if (Sui.init("com.wtbruh.fakelauncher")) Log.d(TAG, "Sui is available");
                 if (Shizuku.isPreV11()) {
                     // Pre-v11 is unsupported
                     return false;
                 }
-                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                    // Granted
-                    return true;
-                } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-                    // Users choose "Deny and don't ask again"
-                    return false;
-                } else {
-                    // Request the permission
-                    Shizuku.requestPermission(114514);
+                try {
+                    if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+                        // Granted
+                        return true;
+                    } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+                        // Users choose "Deny and don't ask again"
+                        return false;
+                    } else {
+                        // Request the permission
+                        Shizuku.requestPermission(114514);
+                        return false;
+                    }
+                } catch (IllegalStateException e){
                     return false;
                 }
             default:
@@ -150,13 +158,17 @@ public class PrivilegeProvider {
      * @param context 应用上下文
      * @return 是否已获得授权
      */
-    public static boolean checkDeviceAdmin(boolean type, Context context) {
+    public static String checkDeviceAdmin(boolean type, Context context) {
+        String denied = context.getResources().getString(R.string.pref_check_privilege_denied);
+        String grantDhizuku = context.getResources().getString(R.string.pref_check_privilege_granted_dhizuku);
+        String grantAdmin = context.getResources().getString(R.string.pref_check_privilege_granted_device_admin);
+        String grantOwner = context.getResources().getString(R.string.pref_check_privilege_granted_device_owner);
         if (type) {
-            if (!Dhizuku.init(context)) return false;
-            if (Dhizuku.isPermissionGranted()) return true;
+            if (!Dhizuku.init(context)) return denied;
+            if (Dhizuku.isPermissionGranted()) return grantDhizuku;
             if (MainActivity.getLockApp(context) != -1 ) {
                 Toast.makeText(context, R.string.toast_open_settings_from_launcher, Toast.LENGTH_LONG).show();
-                return false;
+                return denied;
             }
             Log.d(TAG, "Requesting dhizuku");
             Dhizuku.requestPermission(new DhizukuRequestPermissionListener() {
@@ -166,9 +178,13 @@ public class PrivilegeProvider {
             });
 
         } else {
-
+            Log.d(TAG, "Requesting DeviceOwner/DeviceAdmin");
+            DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            // ComponentName admin = new ComponentName(context, DeviceAdminReceiver.class);
+            if (dpm.isDeviceOwnerApp(context.getPackageName())) return grantOwner;
+            else if (dpm.isAdminActive(new ComponentName(context, DeviceAdminReceiver.class))) return grantAdmin;
         }
-        return false;
+        return denied;
     }
 
     /**

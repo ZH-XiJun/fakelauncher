@@ -52,12 +52,24 @@
             android:exported="false"
             android:launchMode="singleTask" />
         <receiver
-            android:name=".PowerConnectionReceiver"
+            android:name=".receiver.PowerConnectionReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.DeviceAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
         </receiver>
         <provider
             android:name=".utils.ContentProvider"

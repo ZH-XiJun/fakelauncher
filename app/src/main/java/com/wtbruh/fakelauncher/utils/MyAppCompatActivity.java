@@ -1,5 +1,8 @@
 package com.wtbruh.fakelauncher.utils;
 
+import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.view.KeyEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +13,15 @@ import com.wtbruh.fakelauncher.VolumeActivity;
  * 继承AppCompatActivity，添加自己的代码，并让其他Activity继承自己
  */
 public class MyAppCompatActivity extends AppCompatActivity {
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Lock screen orientation to portrait
+        // 锁定竖屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
 
     @Override
     protected void onPause() {

@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -20,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
+import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -72,11 +72,23 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            // Open menu UI
+            // 打开菜单界面
+            Log.d(TAG, "Pressed menu key");
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         counter(keyCode);
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             // Open menu UI
             // 打开菜单界面
+            Log.d(TAG, "Pressed menu key");
             UIHelper.intentStarter(MainActivity.this, MenuActivity.class);
 
         } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
@@ -312,9 +324,10 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             return;
         }
         // Check device admin permission
-        if (! PrivilegeProvider.checkDeviceAdmin(PreferenceManager.getDefaultSharedPreferences(activity)
-                        .getBoolean(SettingsFragment.PREF_ENABLE_DHIZUKU, false),
-                activity)
+        boolean dhizuku = PreferenceManager.getDefaultSharedPreferences(activity)
+                .getBoolean(SettingsFragment.PREF_ENABLE_DHIZUKU, false);
+        if (! PrivilegeProvider.checkDeviceAdmin(dhizuku, activity)
+                .equals(activity.getResources().getString(R.string.pref_check_privilege_denied))
         ) {
             // todo - Device Admin Support
         }

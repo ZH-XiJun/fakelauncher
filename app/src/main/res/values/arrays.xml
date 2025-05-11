@@ -34,7 +34,7 @@
         <item>check_device_admin</item>
         <item>grant_all_permissions</item>
         <item>permission_grant_status</item>
-        <item>exit_fakeui_config_text</item>
+        <item>deactivate_device_owner</item>
     </string-array>
 
 </resources>

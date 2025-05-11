@@ -1,8 +1,11 @@
 package com.wtbruh.fakelauncher;
 
+
+import static androidx.core.content.ContextCompat.getSystemService;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +37,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public final static String PREF_PERMISSION_GRANT_STATUS = "permission_grant_status";
     public final static String PREF_CHECK_XPOSED = "check_xposed";
     public final static String PREF_GRANT_ALL_PERMISSIONS = "grant_all_permissions";
+    public final static String PREF_DEACTIVATE_DEVICE_OWNER = "deactivate_device_owner";
 
     public SettingsFragment (Activity activity) {
         this.activity = activity;
@@ -83,6 +87,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         if (pref != null) prefSetup(pref);
         // Init of pref "check_xposed"
         pref = findPreference(PREF_CHECK_XPOSED);
+        if (pref != null) prefSetup(pref);
+        pref = findPreference(PREF_CHECK_DEVICE_ADMIN);
         if (pref != null) prefSetup(pref);
     }
 
@@ -156,6 +162,27 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                     pref.setSummary(R.string.pref_xposed_not_activated);
                 }
                 break;
+            case PREF_CHECK_DEVICE_ADMIN:
+                switch (PrivilegeProvider.checkDeviceAdmin(activity)) {
+                    case PrivilegeProvider.DHIZUKU:
+                        pref.setSummary(R.string.pref_activated_dhizuku);
+                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(false);
+                        break;
+                    case PrivilegeProvider.DEVICE_OWNER:
+                        pref.setSummary(R.string.pref_activated_device_owner);
+                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(true);
+                        break;
+                    case PrivilegeProvider.DEVICE_ADMIN:
+                        pref.setSummary(R.string.pref_activated_device_admin);
+                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(false);
+                        break;
+                    case PrivilegeProvider.DEACTIVATED:
+                    default:
+                        pref.setSummary(R.string.pref_deactivated);
+                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(false);
+                        break;
+                }
+                break;
         }
     }
 
@@ -164,8 +191,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         if (key == null) return;
         Log.d(TAG, "Shared preference changed! key:"+key);
         Preference pref = findPreference(key);
-        String value;
-        String[] valueArray;
 
         if (pref == null) return;
         switch (key) {
@@ -183,7 +208,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 exitFakeuiConfig.setText("");
                 break;
             case PREF_ENABLE_DHIZUKU:
-                findPreference(PREF_CHECK_DEVICE_ADMIN).setSummary(R.string.pref_tap_me);
+                prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
                 break;
         }
     }
@@ -208,16 +233,18 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 }
                 break;
             case PREF_CHECK_DEVICE_ADMIN:
-                boolean dhizuku = defaultPref.getBoolean(PREF_ENABLE_DHIZUKU, false);
-                String checkDeviceAdmin = PrivilegeProvider.checkDeviceAdmin(dhizuku, activity);
-                pref.setSummary(checkDeviceAdmin);
+                prefSetup(pref);
                 break;
             case PREF_PERMISSION_GRANT_STATUS:
                 UIHelper.intentStarter(activity, SettingsActivity.PermissionStatus.class);
                 break;
             case PREF_GRANT_ALL_PERMISSIONS:
-                // to-do
+                // todo
                 break;
+            case PREF_DEACTIVATE_DEVICE_OWNER:
+                DevicePolicyManager dpm = getSystemService(activity, DevicePolicyManager.class);
+                dpm.clearDeviceOwnerApp(activity.getPackageName());
+                prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
         }
         return false;
     }

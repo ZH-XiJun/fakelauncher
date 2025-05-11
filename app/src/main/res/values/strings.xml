@@ -51,9 +51,11 @@
     <string name="pref_check_privilege_none" translatable="true">You have no privilege provider, so why do you tap me?</string>
     <string name="pref_enable_dhizuku" translatable="true">Use Dhizuku</string>
     <string name="pref_check_device_admin" translatable="true">Check device owner</string>
-    <string name="pref_check_privilege_granted_device_admin" translatable="true">Not fully granted - Device Admin</string>
-    <string name="pref_check_privilege_granted_device_owner" translatable="true">Granted - Device Owner</string>
-    <string name="pref_check_privilege_granted_dhizuku" translatable="true">Granted - Dhizuku</string>
+    <string name="pref_activated_device_admin" translatable="true">Privilege low - Device Admin</string>
+    <string name="pref_activated_device_owner" translatable="true">Activated - Device Owner</string>
+    <string name="pref_activated_dhizuku" translatable="true">Activated - Dhizuku</string>
+    <string name="pref_deactivate_device_owner">Deactivate device owner</string>
+    <string name="pref_deactivated">Deactivated</string>
 
     <string name="pref_category_preferences" translatable="true">Preferences</string>
     <string name="pref_exit_fakeui_method" translatable="true">Method to exit Fake UI</string>

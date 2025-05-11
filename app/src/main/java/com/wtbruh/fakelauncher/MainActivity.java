@@ -1,13 +1,18 @@
 package com.wtbruh.fakelauncher;
 
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
@@ -17,8 +22,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
-import androidx.preference.PreferenceManager;
 
+import com.rosan.dhizuku.api.Dhizuku;
+import com.rosan.dhizuku.api.DhizukuUserServiceArgs;
+import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
@@ -35,8 +42,15 @@ import java.util.TimerTask;
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
     private Timer mTimer;
     private int count = 0;
+    private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
+    private DevicePolicyManager mDpm;
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
-    private TelephonyHelper mTelHelper;
+    // todo: support Dhizuku
+    /*
+    private ServiceConnection mServiceConnection;
+    private DhizukuUserServiceArgs mServiceArgs;
+    private IUserService mUserService;
+     */
     private final static String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -116,7 +130,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * Init of MainActivity | MainActivity初始化
      */
     private void init() {
-        mTelHelper = new TelephonyHelper(this);
+        TelephonyHelper mTelHelper = new TelephonyHelper(this);
         TextView card1 = findViewById(R.id.card1_provider);
         TextView card2 = findViewById(R.id.card2_provider);
         card1.setText(mTelHelper.getProvidersName(0));
@@ -133,6 +147,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             time.requestLayout();
         });
 
+        initDeviceOwner();
         // Start timer 启动计时任务
         updateInfo();
         // Register the receiver 注册接收器
@@ -141,6 +156,57 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         getBattery(false);
         // Start pin mode 启用屏幕固定
         setLockApp(MainActivity.this, getTaskId());
+    }
+
+    /**
+     * init of DeviceOwner | DeviceOwner 初始化
+     */
+    private void initDeviceOwner() {
+        ComponentName receiver = new ComponentName(this, DeviceAdminReceiver.class);
+        // Check privilege level
+        // 检查权限等级
+        mDeviceAdminType = PrivilegeProvider.checkDeviceAdmin(this);
+        switch (mDeviceAdminType) {
+            // Dhizuku已激活
+            // todo: support Dhizuku
+            /*
+            case PrivilegeProvider.DHIZUKU:
+                Dhizuku.init();
+                mServiceArgs = new DhizukuUserServiceArgs(new ComponentName(this, UserService.class));
+                mServiceConnection = new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder iBinder) {
+                        mUserService = IUserService.Stub.asInterface(iBinder);
+                        Log.d(TAG, "Successfully connected to UserService");
+                    }
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
+                        Log.d(TAG, "Disconnected from UserService");
+                    }
+                };
+                boolean isBound = Dhizuku.bindUserService(mServiceArgs, mServiceConnection);
+                if (isBound) {
+                    Dhizuku.startUserService(mServiceArgs);
+                    Log.d(TAG, "Dhizuku init completed");
+                    break;
+                }
+                Log.d(TAG, "Start UserService failed, unable to init Dhizuku");
+                break;
+                 */
+            // Device Owner已激活
+            case PrivilegeProvider.DEVICE_OWNER:
+                // 直接用自己的上下文
+                mDpm = getSystemService(DevicePolicyManager.class);
+                mDpm.setLockTaskPackages(receiver, new String[] {getPackageName()});
+
+                Log.d(TAG, "Device owner init completed");
+                break;
+            // 权限低，没法玩
+            case PrivilegeProvider.DEVICE_ADMIN:
+            case PrivilegeProvider.DEACTIVATED:
+            default:
+                Log.e(TAG, "No enough privilege to start screen pinning silently!!!");
+        }
     }
 
     /**
@@ -158,6 +224,12 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         } catch (InterruptedException e) {
             Log.e(TAG, "An error was occurred while waiting screen pinning to close: "+e);
         }
+        // todo: support Dhizuku
+        /*
+        Dhizuku.stopUserService(mServiceArgs);
+        // 断开与UserService的连接
+        Dhizuku.unbindUserService(mServiceConnection);
+         */
         // kill myself
         finishAndRemoveTask();
     }
@@ -310,33 +382,60 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     }
 
     /**
-     * Set my TaskId to settings database to trigger pin mode<br>
-     * 将TaskId存到Settings数据库以启用屏幕固定
-     * <h5>Thanks: HChenX/PinningApp</h5>
+     * Trigger screen pinning<br>
+     * 启用屏幕固定
      * @param activity 应用Activity对象
      * @param id 当前TaskId（-1为关闭屏幕固定）
      */
-    public static void setLockApp(Activity activity, int id) {
+    public void setLockApp(Activity activity, int id) {
         // 新方案，用ContentProvider存储taskId，无需操作Settings数据库
         if (isXposedModuleActivated()) {
             Log.d(TAG, "Xposed module enabled, putting taskId into ContentProvider");
             ContentProvider.setTaskId(activity, id);
             return;
         }
-        // Check device admin permission
-        boolean dhizuku = PreferenceManager.getDefaultSharedPreferences(activity)
-                .getBoolean(SettingsFragment.PREF_ENABLE_DHIZUKU, false);
-        if (! PrivilegeProvider.checkDeviceAdmin(dhizuku, activity)
-                .equals(activity.getResources().getString(R.string.pref_check_privilege_denied))
-        ) {
-            // todo - Device Admin Support
-        }
+        // todo: support Dhizuku
+        new Thread(() -> {
+            ComponentName receiver = new ComponentName(this, DeviceAdminReceiver.class);
+            /*
+            int retryCount = 0;
+            while ( mUserService == null && retryCount < 5) {
+                retryCount++;
+                Log.d(TAG, "User service doesn't start, wait 500ms, retry count: "+retryCount);
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                    Log.e(TAG, "An error occurred when waiting for UserService start: "+e);
+                    retryCount = 5;
+                }
+            }
+         */
+            // Check device admin permission
+            switch (mDeviceAdminType) {
+                case PrivilegeProvider.DHIZUKU:
+                    // todo: support Dhizuku
+                    /*
+                    try {
+                        mUserService.setLockTaskPackages(receiver, new String[] {getPackageName()});
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                     */
+                case PrivilegeProvider.DEVICE_OWNER:
+                    mDpm.setLockTaskPackages(receiver, new String[] {getPackageName()});
+                    break;
+            }
+            if (id != -1) {
+                activity.startLockTask();
+            } else {
+                activity.stopLockTask();
+            }
+        }).start();
     }
 
     /**
      * Read TaskId from settings database to confirm if pin mode is triggered<br>
      * 读取设置数据库中的TaskId以确定屏幕固定状态
-     * <h5>Thanks: HChenX/PinningApp</h5>
      */
     public static int getLockApp(Context context) {
         return ContentProvider.getTaskId(context);

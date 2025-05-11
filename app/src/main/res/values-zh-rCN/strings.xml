@@ -48,9 +48,11 @@
     <string name="pref_check_privilege_none">你都没授权器了，你检查你妈呢</string>
     <string name="pref_enable_dhizuku">使用Dhizuku</string>
     <string name="pref_check_device_admin">检查设备所有者权限</string>
-    <string name="pref_check_privilege_granted_device_admin">权限较低 - 设备管理员</string>
-    <string name="pref_check_privilege_granted_device_owner">已授权 - 设备所有者</string>
-    <string name="pref_check_privilege_granted_dhizuku">已授权 - Dhizuku</string>
+    <string name="pref_activated_device_admin">权限较低 - 设备管理员</string>
+    <string name="pref_activated_device_owner">已激活 - 设备所有者</string>
+    <string name="pref_activated_dhizuku">已激活 - Dhizuku</string>
+    <string name="pref_deactivate_device_owner">停用设备所有者</string>
+    <string name="pref_deactivated">未激活</string>
 
     <string name="pref_category_preferences">偏好</string>
     <string name="pref_exit_fakeui_method">退出伪装界面方式</string>

@@ -14,10 +14,13 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.preference.PreferenceManager;
+
 import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.SettingsFragment;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 
 import rikka.shizuku.Shizuku;
@@ -35,6 +38,11 @@ import rikka.sui.Sui;
 
 public class PrivilegeProvider {
     private final static String TAG = PrivilegeProvider.class.getSimpleName();
+    // Privilege type to int
+    public final static int DEACTIVATED = 0;
+    public final static int DHIZUKU = 1;
+    public final static int DEVICE_OWNER = 2;
+    public final static int DEVICE_ADMIN = 3;
     // Run method to int
     public final static int METHOD_NORMAL = 0;
     public final static int METHOD_ROOT = 1;
@@ -153,24 +161,22 @@ public class PrivilegeProvider {
         }
     }
     /**
-     * Check device admin 检查设备管理员权限
-     * @param type true为Dhizuku方式，False为普通Device Admin
+     * Check device owner 检查设备所有者权限
      * @param context 应用上下文
-     * @return 是否已获得授权
+     * @return 特权对应的resource id
      */
-    public static String checkDeviceAdmin(boolean type, Context context) {
-        String denied = context.getResources().getString(R.string.pref_check_privilege_denied);
-        String grantDhizuku = context.getResources().getString(R.string.pref_check_privilege_granted_dhizuku);
-        String grantAdmin = context.getResources().getString(R.string.pref_check_privilege_granted_device_admin);
-        String grantOwner = context.getResources().getString(R.string.pref_check_privilege_granted_device_owner);
-        if (type) {
-            if (!Dhizuku.init(context)) return denied;
-            if (Dhizuku.isPermissionGranted()) return grantDhizuku;
+    public static int checkDeviceAdmin(Context context) {
+        boolean dhizuku = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(SettingsFragment.PREF_ENABLE_DHIZUKU, false);
+
+        if (dhizuku) {
+            Log.d(TAG, "Requesting dhizuku");
+            if (!Dhizuku.init(context)) return DEACTIVATED;
+            if (Dhizuku.isPermissionGranted()) return DHIZUKU;
             if (MainActivity.getLockApp(context) != -1 ) {
                 Toast.makeText(context, R.string.toast_open_settings_from_launcher, Toast.LENGTH_LONG).show();
-                return denied;
+                return DEACTIVATED;
             }
-            Log.d(TAG, "Requesting dhizuku");
             Dhizuku.requestPermission(new DhizukuRequestPermissionListener() {
                 @Override
                 public void onRequestPermission(int grantResult){
@@ -180,11 +186,10 @@ public class PrivilegeProvider {
         } else {
             Log.d(TAG, "Requesting DeviceOwner/DeviceAdmin");
             DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            // ComponentName admin = new ComponentName(context, DeviceAdminReceiver.class);
-            if (dpm.isDeviceOwnerApp(context.getPackageName())) return grantOwner;
-            else if (dpm.isAdminActive(new ComponentName(context, DeviceAdminReceiver.class))) return grantAdmin;
+            if (dpm.isDeviceOwnerApp(context.getPackageName())) return DEVICE_OWNER;
+            else if (dpm.isAdminActive(new ComponentName(context, DeviceAdminReceiver.class))) return DEVICE_ADMIN;
         }
-        return denied;
+        return DEACTIVATED;
     }
 
     /**

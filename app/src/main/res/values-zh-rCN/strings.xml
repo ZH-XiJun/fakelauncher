@@ -55,6 +55,7 @@
     <string name="pref_deactivated">未激活</string>
 
     <string name="pref_category_preferences">偏好</string>
+    <string name="pref_dpad_center_open_menu">Dpad center键可以打开菜单</string>
     <string name="pref_exit_fakeui_method">退出伪装界面方式</string>
     <string name="pref_exit_fakeui_config">退出动作配置</string>
     <string name="pref_exit_dpad">在主界面按方向键</string>

@@ -38,6 +38,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public final static String PREF_CHECK_XPOSED = "check_xposed";
     public final static String PREF_GRANT_ALL_PERMISSIONS = "grant_all_permissions";
     public final static String PREF_DEACTIVATE_DEVICE_OWNER = "deactivate_device_owner";
+    public final static String PREF_DPAD_CENTER_OPEN_MENU = "dpad_center_open_menu";
 
     public SettingsFragment (Activity activity) {
         this.activity = activity;

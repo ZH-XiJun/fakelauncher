@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
+import androidx.preference.PreferenceManager;
 
 import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuUserServiceArgs;
@@ -99,7 +101,12 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         counter(keyCode);
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
+        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+                boolean pref = defaultPref.getBoolean(SettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
+                if (! pref) return super.onKeyUp(keyCode, event);
+            }
             // Open menu UI
             // 打开菜单界面
             Log.d(TAG, "Pressed menu key");

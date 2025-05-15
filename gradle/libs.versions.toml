@@ -2,6 +2,9 @@
 agp = "8.9.0"
 api = "13.1.5"
 apiVersion = "82"
+cameraCore = "1.1.0-beta01"
+cameraCamera2 = "1.1.0-beta01"
+cameraLifecycle = "1.1.0-beta01"
 dhizukuApi = "2.5.3"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -14,6 +17,12 @@ preference = "1.2.0"
 preferenceVersion = "1.2.1"
 
 [libraries]
+androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCore" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraLifecycle" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
+androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
 api = { module = "dev.rikka.shizuku:api", version.ref = "api" }
 dhizuku-api = { module = "io.github.iamr0s:Dhizuku-API", version.ref = "dhizukuApi" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

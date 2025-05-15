@@ -26,6 +26,8 @@
     <string name="password_empty">请输入密码！</string>
     <!-- 拨号盘文字提示 -->
     <string name="dialer_empty">请输入电话号码</string>
+    <!-- 相机界面文字提示 -->
+    <string name="camera_open_fail">打开相机失败！ </string>
     <!-- 音量调节文字 -->
     <string name="volume_adjust">音量调节</string>
     <!-- 软件设置文字提示 -->

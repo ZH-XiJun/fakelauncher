@@ -16,6 +16,12 @@ import com.wtbruh.fakelauncher.utils.UIHelper;
 public class MenuActivity extends MyAppCompatActivity {
     private int mNumber = 0;
 
+    public final static int CALL = 0;
+    public final static int CAMERA = 1;
+    public final static int CONTACT = 2;
+    public final static int SMS = 3;
+    public final static int SETTINGS = 4;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,44 +78,49 @@ public class MenuActivity extends MyAppCompatActivity {
         ImageView appIcon = findViewById(R.id.appIcon);
         TextView appName = findViewById(R.id.appName);
         switch (number) {
-            case 0: // Call 电话
+            case CALL: // Call 电话
                 appIcon.setImageResource(R.drawable.menu_call);
                 appName.setText(R.string.menu_call);
                 break;
-            case 1: // Camera 相机
+            case CAMERA: // Camera 相机
                 appIcon.setImageResource(R.drawable.menu_camera);
                 appName.setText(R.string.menu_camera);
                 break;
-            case 2: // Contact 联系人
+            case CONTACT: // Contact 联系人
                 appIcon.setImageResource(R.drawable.menu_contact);
                 appName.setText(R.string.menu_contact);
                 break;
-            case 3: // SMS 短信
+            case SMS: // SMS 短信
                 appIcon.setImageResource(R.drawable.menu_sms);
                 appName.setText(R.string.menu_sms);
                 break;
-            case 4: // Settings 设置
+            case SETTINGS: // Settings 设置
                 appIcon.setImageResource(R.drawable.menu_set);
                 appName.setText(R.string.menu_set);
                 break;
         }
     }
-    // Launch the corresponding activity using the var "number"
-    // 通过number启动对应的Activity
+
+    /**
+     * Launch the corresponding activity using the var "number"<br>
+     * 通过number启动对应的Activity
+     * @param number 第几个App
+     */
     private void startApp (int number) {
         Class<?> clazz = null;
         switch (number) {
-            case 0:
+            case CALL:
                 clazz = DialerActivity.class;
                 break;
             // work in progress...
-            case 1:
+            case CAMERA:
+                clazz = CameraActivity.class;
                 break;
-            case 2:
+            case CONTACT:
                 break;
-            case 3:
+            case SMS:
                 break;
-            case 4:
+            case SETTINGS:
                 clazz = PasswordActivity.class;
                 break;
         }

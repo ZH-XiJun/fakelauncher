@@ -2,8 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".utils.ApplicationHelper"
@@ -16,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Fakelauncher"
         tools:targetApi="31">
+        <activity
+            android:name=".CameraActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true" />
@@ -32,10 +41,13 @@
             android:label="@string/app_settings_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.shortcuts"
+
+            <meta-data
+                android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
         <activity
@@ -51,6 +63,7 @@
             android:name=".MainActivity"
             android:exported="false"
             android:launchMode="singleTask" />
+
         <receiver
             android:name=".receiver.PowerConnectionReceiver"
             android:exported="true">
@@ -67,23 +80,23 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
                 <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin" />
         </receiver>
+
         <provider
             android:name=".utils.ContentProvider"
             android:authorities="com.wtbruh.fakelauncher"
-            android:exported="true" />
-        <!-- Shizuku -->
+            android:exported="true" /> <!-- Shizuku -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
             android:enabled="true"
             android:exported="true"
             android:multiprocess="false"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
-        <!-- Xposed module -->
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" /> <!-- Xposed module -->
         <meta-data
             android:name="xposedmodule"
             android:value="true" />

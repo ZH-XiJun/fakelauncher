@@ -3,6 +3,13 @@ package com.wtbruh.fakelauncher.utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.KeyEvent;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
+import com.wtbruh.fakelauncher.R;
 
 public class UIHelper {
     private static long lastTriggerTime = 0;
@@ -33,6 +40,12 @@ public class UIHelper {
                 int num = keyCode - KeyEvent.KEYCODE_0;
                 return content + num;
         }
+    }
+
+    public static void fragmentStarter(Fragment fragment, FragmentManager manager, int containerResID) {
+        manager.beginTransaction()
+                .replace(containerResID, fragment)
+                .commitNow();
     }
 
     /**

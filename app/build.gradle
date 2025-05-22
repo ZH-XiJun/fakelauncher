@@ -41,6 +41,8 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.preference
     implementation libs.androidx.preference
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

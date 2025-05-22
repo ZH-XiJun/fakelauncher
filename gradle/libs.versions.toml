@@ -15,6 +15,8 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 preference = "1.2.0"
 preferenceVersion = "1.2.1"
+lifecycleLivedataKtx = "2.6.1"
+lifecycleViewmodelKtx = "2.6.1"
 
 [libraries]
 androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCore" }
@@ -36,6 +38,8 @@ provider = { module = "dev.rikka.shizuku:provider", version.ref = "api" }
 xposed-api = { module = "de.robv.android.xposed:api", version.ref = "apiVersion" }
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preferenceVersion" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

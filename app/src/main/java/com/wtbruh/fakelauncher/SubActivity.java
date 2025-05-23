@@ -39,17 +39,22 @@ public class SubActivity extends MyAppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (mCurrentFragment.onKeyDown(keyCode, event)) return true;
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            FragmentManager manager = getSupportFragmentManager();
-            mCurrentFragment = (MyFragment) manager.findFragmentById(R.id.container);
-            manager.popBackStack();
-        }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() <= 0) super.onBackPressed();
+        else {
+            getSupportFragmentManager().popBackStack();
+            mCurrentFragment = (MyFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+        }
     }
 
     public void fragmentStarter(MyFragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
+                .addToBackStack(null)
                 .commitNow();
         mCurrentFragment = fragment;
     }

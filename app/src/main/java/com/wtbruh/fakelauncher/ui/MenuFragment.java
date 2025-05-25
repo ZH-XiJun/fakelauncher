@@ -86,7 +86,7 @@ public class MenuFragment extends MyFragment {
 
     private void init() {
         switchSection(mNumber);
-        ((SubActivity) getActivity()).setActionBar(SubActivity.L_DEFAULT, SubActivity.R_DEFAULT);
+        ((SubActivity) getActivity()).setFooterBar(SubActivity.L_DEFAULT, SubActivity.R_DEFAULT);
     }
 
     /**

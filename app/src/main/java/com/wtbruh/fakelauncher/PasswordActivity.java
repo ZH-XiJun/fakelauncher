@@ -1,6 +1,8 @@
 package com.wtbruh.fakelauncher;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -10,11 +12,14 @@ import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class PasswordActivity extends MyAppCompatActivity {
+
+    public final static String TAG = PasswordActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +81,12 @@ public class PasswordActivity extends MyAppCompatActivity {
         } else if (passwd.isEmpty()) {
             error.setText(R.string.password_empty);
             error.setVisibility(View.VISIBLE);
+        } else if (UIHelper.checkExitMethod(this, 2)) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+            if (passwd.equals(pref.getString(SettingsFragment.PREF_EXIT_FAKEUI_CONFIG, ""))) {
+                Log.d(TAG,"password correct!!!");
+                UIHelper.intentStarter(PasswordActivity.this, MainActivity.class);
+            }
         } else {
             error.setText(R.string.password_wrong);
             error.setVisibility(View.VISIBLE);

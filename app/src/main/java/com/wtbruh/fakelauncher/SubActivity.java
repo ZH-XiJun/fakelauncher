@@ -2,15 +2,25 @@ package com.wtbruh.fakelauncher;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
+import com.wtbruh.fakelauncher.ui.DialerFragment;
 import com.wtbruh.fakelauncher.ui.MenuFragment;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
+
+/**
+ * <h3>SubActivity</h3>
+ * <h5>子界面Activity，管理子界面的Fragment</h5>
+ * 可用intent传入字符串数组参数，第一个为Fragment名，后面的是想给Fragment传递的参数，
+ * 具体接受哪些参数需要看对应Fragment的代码配置
+ */
 
 public class SubActivity extends MyAppCompatActivity {
 
@@ -24,46 +34,69 @@ public class SubActivity extends MyAppCompatActivity {
 
     private final static String TAG = SubActivity.class.getSimpleName();
 
-    private MyFragment mCurrentFragment;
+    private Fragment mCurrentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCurrentFragment = MenuFragment.newInstance();
         setContentView(R.layout.activity_fragment);
         if (savedInstanceState == null) {
-            fragmentStarter(mCurrentFragment);
+            init();
+            if (mCurrentFragment == null) mCurrentFragment = MenuFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, mCurrentFragment)
+                    .commitNow();
+        }
+    }
+
+    private void init() {
+        Intent intent = getIntent();
+        String[] args = intent.getStringArrayExtra("args");
+        if (args != null) {
+            if (args[0].equals(DialerFragment.class.getSimpleName())) {
+                mCurrentFragment = DialerFragment.newInstance(args);
+            }
         }
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (mCurrentFragment.onKeyDown(keyCode, event)) return true;
+        if (( (MyFragment) mCurrentFragment ).onKeyDown(keyCode, event)) return true;
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() <= 0) super.onBackPressed();
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() <= 0) super.onBackPressed();
         else {
-            getSupportFragmentManager().popBackStack();
-            mCurrentFragment = (MyFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+            fm.popBackStackImmediate();
+            mCurrentFragment = fm.findFragmentById(R.id.container);
         }
     }
 
+    /**
+     * Fragment 启动封装
+     * @param fragment Fragment对象
+     */
     public void fragmentStarter(MyFragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment)
-                .addToBackStack(null)
-                .commitNow();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
         mCurrentFragment = fragment;
     }
 
-    public void setActionBar(String... texts) {
+    /**
+     * Footer customization<br>
+     * 界面底部自定义
+     * @param texts 按键提示语
+     */
+    public void setFooterBar(String... texts) {
         TextView view;
         boolean showCenterButton = false;
         for (String text : texts) {
-            Log.d(TAG, "setActionBar: "+text);
+            Log.d(TAG, "setFooterBar: "+text);
             if (text.contains("L_")) view = findViewById(LEFT_BUTTON);
             else if (text.contains("R_")) view = findViewById(RIGHT_BUTTON);
             else if (text.contains("C_")) {

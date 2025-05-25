@@ -44,6 +44,7 @@ import java.util.TimerTask;
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
     private Timer mTimer;
     private int count = 0;
+    private boolean exitMethod;
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
     private DevicePolicyManager mDpm;
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
@@ -137,6 +138,9 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * Init of MainActivity | MainActivity初始化
      */
     private void init() {
+        Log.d(TAG, "Now start init");
+        // 检查是否使用dpad键退出app
+        exitMethod = UIHelper.checkExitMethod(this, 0);
         TelephonyHelper mTelHelper = new TelephonyHelper(this);
         TextView card1 = findViewById(R.id.card1_provider);
         TextView card2 = findViewById(R.id.card2_provider);
@@ -163,6 +167,16 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         getBattery(false);
         // Start pin mode 启用屏幕固定
         setLockApp(MainActivity.this, getTaskId());
+    }
+
+    /**
+     * 当想要退出App时，重复启动MainActivity可触发退出
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(TAG, "Repeatedly launched MainActivity, it's time to do exit");
+        exit();
     }
 
     /**
@@ -361,6 +375,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @param keycode 键值
      */
     private void counter(int keycode) {
+        if (!exitMethod) return;
         if (count < 0 || count > 7) count = 0;
         switch (keycode) {
             case KeyEvent.KEYCODE_DPAD_UP:

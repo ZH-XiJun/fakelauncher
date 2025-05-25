@@ -65,21 +65,17 @@ public class DialerActivity extends MyAppCompatActivity {
                     mEditText.setText(UIHelper.textEditor(keyCode, content));
                 }
             }
-        } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
-            String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
-            String exitMethod = mPrefs.getString("exit_fakeui_method", valueArray[0]);
-            Log.d(TAG,"User set exit method: " + exitMethod);
-            if (exitMethod.equals(valueArray[1])) {
+        } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+            if (UIHelper.checkExitMethod(this, 1)) {
+                Log.d(TAG,"User set dialer for exit method");
                 String secretCode = mPrefs.getString(SettingsFragment.PREF_EXIT_FAKEUI_CONFIG, "");
-                Log.d(TAG,"passwd:"+secretCode);
                 if (!secretCode.isEmpty()){
                     if (mEditText.getText().equals("*#"+secretCode+"#*")) {
-                        Intent intent = new Intent()
-                                .setClass(DialerActivity.this, MainActivity.class)
-                                .putExtra("exit", true);
-                        startActivity(intent);
+                        Log.d(TAG,"secret code correct!!!");
+                        UIHelper.intentStarter(DialerActivity.this, MainActivity.class);
                     }
                 }
+                Log.d(TAG,"secret code incorrect or user didn't set secret code");
             }
         } else {
             return super.onKeyUp(keyCode, event);

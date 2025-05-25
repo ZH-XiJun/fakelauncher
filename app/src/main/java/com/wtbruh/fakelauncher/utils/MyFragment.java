@@ -4,7 +4,11 @@ import android.view.KeyEvent;
 
 import androidx.fragment.app.Fragment;
 
+import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.SubActivity;
+
 public abstract class MyFragment extends Fragment {
 
     public abstract boolean onKeyDown(int keyCode, KeyEvent event);
+
 }

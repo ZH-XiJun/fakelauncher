@@ -1,13 +1,12 @@
 package com.wtbruh.fakelauncher.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.KeyEvent;
-import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.R;
 
@@ -42,10 +41,19 @@ public class UIHelper {
         }
     }
 
-    public static void fragmentStarter(Fragment fragment, FragmentManager manager, int containerResID) {
-        manager.beginTransaction()
-                .replace(containerResID, fragment)
-                .commitNow();
+    /**
+     * 检查用户当前设置的退出方式
+     *
+     * @param context 上下文
+     * @param pref SharedPreferences对象
+     * @param expected 预期的退出方式
+     * @return 如果与预期不符，返回false，否则返回true
+     */
+    public static boolean checkExitMethod(Context context, int expected) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        String[] valueArray = context.getResources().getStringArray(R.array.pref_exit_fakeui_method);
+        String exitMethod = pref.getString("exit_fakeui_method", valueArray[0]);
+        return exitMethod.equals(valueArray[expected]);
     }
 
     /**

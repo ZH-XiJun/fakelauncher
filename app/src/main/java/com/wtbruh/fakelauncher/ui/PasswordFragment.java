@@ -1,66 +1,113 @@
 package com.wtbruh.fakelauncher.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
+import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.SettingsActivity;
+import com.wtbruh.fakelauncher.SettingsFragment;
+import com.wtbruh.fakelauncher.SubActivity;
+import com.wtbruh.fakelauncher.utils.MyFragment;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PasswordFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PasswordFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class PasswordFragment extends MyFragment {
+    private final static String TAG = PasswordFragment.class.getSimpleName();
 
     public PasswordFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PasswordFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PasswordFragment newInstance(String param1, String param2) {
-        PasswordFragment fragment = new PasswordFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static PasswordFragment newInstance() {
+        return new PasswordFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_password, container, false);
+        rootView = inflater.inflate(R.layout.fragment_password, container, false);
+        return rootView;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        SubActivity activity = (SubActivity) getActivity();
+        EditText editText = rootView.findViewById(R.id.editText);
+        String content = editText.getText().toString();
+
+        if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {
+            if (content.isEmpty()) {
+                activity.setFooterBar(SubActivity.R_EDITTEXT);
+            }
+            editText.setText(UIHelper.textEditor(keyCode, content));
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // When there's no chars, right button will be used as "back" key
+            // 文本框里没有字，右键应作为返回键
+            if (content.isEmpty()) {
+                return false;
+            } else {
+                // When there are some chars, right button will be used to delete chars
+                // 如果有字，右键应该是删除键
+                editText.setText(UIHelper.textEditor(keyCode, content));
+                if (content.length() == 1) {
+                    activity.setFooterBar(SubActivity.R_DEFAULT);
+                }
+            }
+        } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+            passwordCheck(content);
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Password check | 检查输入的密码
+     *
+     * @param passwd 密码
+     */
+    private void passwordCheck(String passwd) {
+        TextView error = rootView.findViewById(R.id.passwdError);
+        if (passwd.equals("5418814250")) {
+            error.setVisibility(View.INVISIBLE);
+            UIHelper.intentStarter(getActivity(), SettingsActivity.class);
+        } else if (passwd.isEmpty()) {
+            error.setText(R.string.password_empty);
+            error.setVisibility(View.VISIBLE);
+        } else if (UIHelper.checkExitMethod(getActivity(), 2)) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            if (passwd.equals(pref.getString(SettingsFragment.PREF_EXIT_FAKEUI_CONFIG, ""))) {
+                Log.d(TAG,"password correct!!!");
+                UIHelper.intentStarter(getActivity(), MainActivity.class);
+            } else {
+                error.setText(R.string.password_wrong);
+                error.setVisibility(View.VISIBLE);
+            }
+        } else {
+            error.setText(R.string.password_wrong);
+            error.setVisibility(View.VISIBLE);
+        }
     }
 }

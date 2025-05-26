@@ -13,6 +13,7 @@
         android:id="@+id/dialer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLength="25"
         android:text="@string/dialer_empty"
         android:textColor="@color/white"
         android:textSize="80sp" />

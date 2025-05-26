@@ -11,20 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.wtbruh.fakelauncher.CameraActivity;
-import com.wtbruh.fakelauncher.DialerActivity;
-import com.wtbruh.fakelauncher.MenuActivity;
-import com.wtbruh.fakelauncher.PasswordActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.MyFragment;
-import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class MenuFragment extends MyFragment {
 
     private int mNumber = 0;
-    private View rootView;
 
     public final static int CALL = 0;
     public final static int CAMERA = 1;
@@ -128,21 +121,21 @@ public class MenuFragment extends MyFragment {
      * @param number 第几个App
      */
     private void startApp (int number) {
-        MyFragment fragment = null;
+        Fragment fragment = null;
         switch (number) {
             case CALL:
                 fragment = DialerFragment.newInstance();
                 break;
             // work in progress...
             case CAMERA:
-                // fragment = CameraFragment.newInstance();
+                fragment = CameraFragment.newInstance();
                 break;
             case CONTACT:
                 break;
             case SMS:
                 break;
             case SETTINGS:
-                // fragment = PasswordFragment.newInstance();
+                fragment = PasswordFragment.newInstance();
                 break;
         }
         if (fragment == null) {

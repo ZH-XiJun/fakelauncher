@@ -23,12 +23,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
 import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuUserServiceArgs;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
+import com.wtbruh.fakelauncher.ui.DialerFragment;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -111,25 +113,34 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             // Open menu UI
             // 打开菜单界面
             Log.d(TAG, "Pressed menu key");
-            UIHelper.intentStarter(MainActivity.this, MenuActivity.class);
+            UIHelper.intentStarter(MainActivity.this, SubActivity.class);
 
         } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
             // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
             // 模拟老人机逻辑：主界面按数字键打开拨号盘
-            String extra;
+            String key;
             switch (keyCode) {
                 case KeyEvent.KEYCODE_POUND:
-                    extra = "#";
+                    key = "#";
                     break;
                 case KeyEvent.KEYCODE_STAR:
-                    extra = "*";
+                    key = "*";
                     break;
                 default:
                     // Key 0~9 0到9键
-                    extra = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
+                    key = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
                     break;
             }
-            UIHelper.intentStarter(MainActivity.this, DialerActivity.class, "key", extra);
+            String[] extra = {DialerFragment.class.getSimpleName(), key};
+            if (! UIHelper.intentStarterDebounce(SubActivity.class)) {
+                startActivity(
+                        new Intent().setClass(MainActivity.this, SubActivity.class)
+                                .putExtra("args", extra)
+                );
+                // Disable transition anim
+                // 去掉过渡动画
+                overridePendingTransition(0, 0);
+            }
         }
         return super.onKeyUp(keyCode, event);
     }

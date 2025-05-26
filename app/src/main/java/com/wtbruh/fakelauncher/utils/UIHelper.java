@@ -45,7 +45,6 @@ public class UIHelper {
      * 检查用户当前设置的退出方式
      *
      * @param context 上下文
-     * @param pref SharedPreferences对象
      * @param expected 预期的退出方式
      * @return 如果与预期不符，返回false，否则返回true
      */
@@ -123,7 +122,7 @@ public class UIHelper {
      * @param cls 要启动的Activity的class
      * @return true为调用过于频繁，false为调用频率正常
      */
-    private static boolean intentStarterDebounce(Class<?> cls){
+    public static boolean intentStarterDebounce(Class<?> cls){
         // Only trigger intent starter at regularly intervals
         // 只在一定间隔时间内触发代码执行
         long currentTime = System.currentTimeMillis();

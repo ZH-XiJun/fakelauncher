@@ -5,9 +5,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.ui.DialerFragment;
@@ -49,7 +51,15 @@ public class SubActivity extends MyAppCompatActivity {
         }
     }
 
+    /**
+     * SubActivity 初始化
+     */
     private void init() {
+        // 设置状态栏颜色为黑色
+        getWindow().setStatusBarColor(Color.BLACK);
+        // 设置底部状态栏为默认状态
+        setFooterBar(L_DEFAULT, R_DEFAULT);
+        // 获取附加数据
         Intent intent = getIntent();
         String[] args = intent.getStringArrayExtra("args");
         if (args != null) {
@@ -65,10 +75,16 @@ public class SubActivity extends MyAppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * 处理fragment的退出，再处理activity的退出
+     */
     @Override
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
-        if (fm.getBackStackEntryCount() <= 0) super.onBackPressed();
+        if (fm.getBackStackEntryCount() <= 0) {
+            Log.d(TAG, "do back action");
+            super.onBackPressed();
+        }
         else {
             fm.popBackStackImmediate();
             mCurrentFragment = fm.findFragmentById(R.id.container);
@@ -79,7 +95,7 @@ public class SubActivity extends MyAppCompatActivity {
      * Fragment 启动封装
      * @param fragment Fragment对象
      */
-    public void fragmentStarter(MyFragment fragment) {
+    public void fragmentStarter(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, fragment);
         ft.addToBackStack(null);

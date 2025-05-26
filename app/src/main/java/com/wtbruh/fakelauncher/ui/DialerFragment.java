@@ -1,6 +1,5 @@
 package com.wtbruh.fakelauncher.ui;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -11,7 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.wtbruh.fakelauncher.DialerActivity;
+import androidx.preference.PreferenceManager;
+
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsFragment;
@@ -24,7 +24,6 @@ public class DialerFragment extends MyFragment {
     private static final String ARG_INPUT = "input";
     private SharedPreferences mPrefs;
     private TextView mEditText;
-    private View rootView;
     private SubActivity mActivity;
 
     public DialerFragment() {
@@ -107,9 +106,14 @@ public class DialerFragment extends MyFragment {
     }
 
     private void init() {
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         mEditText = rootView.findViewById(R.id.dialer);
         mActivity = (SubActivity) getActivity();
-        if (getArguments() != null) mEditText.setText(getArguments().getString(ARG_INPUT));
+        if (getArguments() != null) {
+            mEditText.setText(getArguments().getString(ARG_INPUT));
+            mActivity.setFooterBar(SubActivity.R_EDITTEXT);
+        }
+
     }
 
 

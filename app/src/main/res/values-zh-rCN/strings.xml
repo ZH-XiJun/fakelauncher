@@ -14,6 +14,7 @@
     <!-- 菜单文字 -->
     <string name="menu_call">电话</string>
     <string name="menu_camera">相机</string>
+    <string name="menu_gallery">相册</string>
     <string name="menu_contact">联系人</string>
     <string name="menu_sms">短信</string>
     <string name="menu_set">设置</string>
@@ -57,7 +58,10 @@
     <string name="pref_deactivated">未激活</string>
 
     <string name="pref_category_preferences">偏好</string>
-    <string name="pref_dpad_center_open_menu">Dpad center键可以打开菜单</string>
+    <string name="pref_dpad_center_open_menu">Dpad center键可以打开App菜单</string>
+    <string name="pref_dpad_center_open_menu_summary">Dpad center就是方向键中间那个</string>
+    <string name="pref_vibrate_on_start">打开伪装界面时振动一下</string>
+    <string name="pref_vibrate_on_start_summary">以此来提醒用户已启动伪装界面</string>
     <string name="pref_exit_fakeui_method">退出伪装界面方式</string>
     <string name="pref_exit_fakeui_config">退出动作配置</string>
     <string name="pref_exit_dpad">在主界面按方向键</string>

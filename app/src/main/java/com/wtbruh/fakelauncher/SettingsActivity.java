@@ -17,6 +17,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.wtbruh.fakelauncher.ui.SettingsFragment;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 import java.util.ArrayList;

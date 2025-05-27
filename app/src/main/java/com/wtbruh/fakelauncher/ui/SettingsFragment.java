@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher;
+package com.wtbruh.fakelauncher.ui;
 
 
 import static androidx.core.content.ContextCompat.getSystemService;
@@ -16,6 +16,9 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.wtbruh.fakelauncher.MainActivity;
+import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.SettingsActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -39,6 +42,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public final static String PREF_GRANT_ALL_PERMISSIONS = "grant_all_permissions";
     public final static String PREF_DEACTIVATE_DEVICE_OWNER = "deactivate_device_owner";
     public final static String PREF_DPAD_CENTER_OPEN_MENU = "dpad_center_open_menu";
+    public final static String VIBRATE_ON_START = "vibrate_on_start";
+
+    public final static String[] CLICKABLE_PREFS = {
+            "check_privilege",
+            "check_device_admin",
+            "grant_all_permissions",
+            "permission_grant_status",
+            "deactivate_device_owner"
+    };
 
     public SettingsFragment (Activity activity) {
         this.activity = activity;
@@ -72,8 +84,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     private void init() {
         Preference pref;
         // Init of clickable preferences
-        String[] clickablePrefs = getResources().getStringArray(R.array.clickable_prefs);
-        for (String key : clickablePrefs) {
+        for (String key : CLICKABLE_PREFS) {
             pref = findPreference(key);
             if (pref != null) pref.setOnPreferenceClickListener(this);
         }

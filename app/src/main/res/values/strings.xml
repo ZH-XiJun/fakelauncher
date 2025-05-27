@@ -15,6 +15,7 @@
     <!-- Menu items -->
     <string name="menu_call" translatable="true">Call</string>
     <string name="menu_camera" translatable="true">Camera</string>
+    <string name="menu_gallery" translatable="true">Gallery</string>
     <string name="menu_contact" translatable="true">Contacts</string>
     <string name="menu_sms" translatable="true">SMS</string>
     <string name="menu_set" translatable="true">Settings</string>
@@ -61,6 +62,9 @@
 
     <string name="pref_category_preferences" translatable="true">Preferences</string>
     <string name="pref_dpad_center_open_menu" translatable="true">Dpad center can open menu</string>
+    <string name="pref_dpad_center_open_menu_summary" translatable="true">"Dpad center" is the center of the direction keys</string>
+    <string name="pref_vibrate_on_start" translatable="true">Vibrate when opening fake UI</string>
+    <string name="pref_vibrate_on_start_summary" translatable="true">So you can aware that fake UI has been opened</string>
     <string name="pref_exit_fakeui_method" translatable="true">Method to exit Fake UI</string>
     <string name="pref_exit_fakeui_config" translatable="true">Config for triggering exit</string>
     <string name="pref_exit_dpad" translatable="true">D-pad keys in MainUI</string>
@@ -76,7 +80,5 @@
     <string name="dialog_title_exit_dialer" translatable="true">Dialer secret code setup</string>
     <string name="dialog_title_exit_dialer_hint" translatable="true">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
     <string name="dialog_title_exit_passwd" translatable="true">Settings page password setup</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

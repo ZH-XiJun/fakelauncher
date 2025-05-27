@@ -20,7 +20,7 @@ import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.SettingsFragment;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 
 import rikka.shizuku.Shizuku;

@@ -29,12 +29,4 @@
         <item>@string/pref_exit_password</item>
     </string-array>
 
-    <string-array name="clickable_prefs">
-        <item>check_privilege</item>
-        <item>check_device_admin</item>
-        <item>grant_all_permissions</item>
-        <item>permission_grant_status</item>
-        <item>deactivate_device_owner</item>
-    </string-array>
-
 </resources>

@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
-import com.wtbruh.fakelauncher.SettingsFragment;
 import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;

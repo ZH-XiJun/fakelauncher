@@ -19,11 +19,12 @@ public class MenuFragment extends MyFragment {
 
     private int mNumber = 0;
 
-    public final static int CALL = 0;
-    public final static int CAMERA = 1;
-    public final static int CONTACT = 2;
-    public final static int SMS = 3;
-    public final static int SETTINGS = 4;
+    public final static int CALL = 0; // The first app
+    public final static int CONTACT = 1;
+    public final static int SMS = 2;
+    public final static int CAMERA = 3;
+    public final static int GALLERY = 4;
+    public final static int SETTINGS = 5; // The last app
 
     public MenuFragment() {
         // Required empty public constructor
@@ -52,8 +53,8 @@ public class MenuFragment extends MyFragment {
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_LEFT:
-                if (mNumber == 0) {
-                    mNumber = 4;
+                if (mNumber == CALL) {
+                    mNumber = SETTINGS;
                 } else {
                     mNumber--;
                 }
@@ -61,8 +62,8 @@ public class MenuFragment extends MyFragment {
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (mNumber == 4) {
-                    mNumber = 0;
+                if (mNumber == SETTINGS) {
+                    mNumber = CALL;
                 } else {
                     mNumber++;
                 }
@@ -96,10 +97,6 @@ public class MenuFragment extends MyFragment {
                 appIcon.setImageResource(R.drawable.menu_call);
                 appName.setText(R.string.menu_call);
                 break;
-            case CAMERA: // Camera 相机
-                appIcon.setImageResource(R.drawable.menu_camera);
-                appName.setText(R.string.menu_camera);
-                break;
             case CONTACT: // Contact 联系人
                 appIcon.setImageResource(R.drawable.menu_contact);
                 appName.setText(R.string.menu_contact);
@@ -107,6 +104,14 @@ public class MenuFragment extends MyFragment {
             case SMS: // SMS 短信
                 appIcon.setImageResource(R.drawable.menu_sms);
                 appName.setText(R.string.menu_sms);
+                break;
+            case CAMERA: // Camera 相机
+                appIcon.setImageResource(R.drawable.menu_camera);
+                appName.setText(R.string.menu_camera);
+                break;
+            case GALLERY: // Gallery 相册
+                appIcon.setImageResource(R.drawable.menu_gallery);
+                appName.setText(R.string.menu_gallery);
                 break;
             case SETTINGS: // Settings 设置
                 appIcon.setImageResource(R.drawable.menu_set);
@@ -127,12 +132,14 @@ public class MenuFragment extends MyFragment {
                 fragment = DialerFragment.newInstance();
                 break;
             // work in progress...
-            case CAMERA:
-                fragment = CameraFragment.newInstance();
-                break;
             case CONTACT:
                 break;
             case SMS:
+                break;
+            case CAMERA:
+                fragment = CameraFragment.newInstance();
+                break;
+            case GALLERY:
                 break;
             case SETTINGS:
                 fragment = PasswordFragment.newInstance();

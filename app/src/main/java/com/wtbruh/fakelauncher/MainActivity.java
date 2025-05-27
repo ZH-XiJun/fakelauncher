@@ -6,14 +6,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
@@ -23,14 +20,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
-import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
-import com.rosan.dhizuku.api.Dhizuku;
-import com.rosan.dhizuku.api.DhizukuUserServiceArgs;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.DialerFragment;
+import com.wtbruh.fakelauncher.ui.SettingsFragment;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -46,7 +41,6 @@ import java.util.TimerTask;
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
     private Timer mTimer;
     private int count = 0;
-    private boolean exitMethod;
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
     private DevicePolicyManager mDpm;
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
@@ -150,8 +144,6 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      */
     private void init() {
         Log.d(TAG, "Now start init");
-        // 检查是否使用dpad键退出app
-        exitMethod = UIHelper.checkExitMethod(this, 0);
         TelephonyHelper mTelHelper = new TelephonyHelper(this);
         TextView card1 = findViewById(R.id.card1_provider);
         TextView card2 = findViewById(R.id.card2_provider);
@@ -386,7 +378,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @param keycode 键值
      */
     private void counter(int keycode) {
-        if (!exitMethod) return;
+        if (! UIHelper.checkExitMethod(this, 0)) return;
         if (count < 0 || count > 7) count = 0;
         switch (keycode) {
             case KeyEvent.KEYCODE_DPAD_UP:

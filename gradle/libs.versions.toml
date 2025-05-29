@@ -6,6 +6,7 @@ cameraCore = "1.1.0-beta01"
 cameraCamera2 = "1.1.0-beta01"
 cameraLifecycle = "1.1.0-beta01"
 dhizukuApi = "2.5.3"
+glide = "4.16.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
@@ -27,6 +28,7 @@ androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "
 androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
 api = { module = "dev.rikka.shizuku:api", version.ref = "api" }
 dhizuku-api = { module = "io.github.iamr0s:Dhizuku-API", version.ref = "dhizukuApi" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

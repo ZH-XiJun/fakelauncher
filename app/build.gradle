@@ -63,4 +63,6 @@ dependencies {
     implementation libs.dhizuku.api
     // Xposed API
     compileOnly libs.xposed.api
+    // Glide Engine
+    implementation libs.glide
 }

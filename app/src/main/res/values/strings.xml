@@ -29,16 +29,20 @@
     <!-- Dialer UI hint -->
     <string name="dialer_empty" translatable="true">Please input phone number</string>
     <!-- Camera UI hint -->
-    <string name="camera_open_fail" translatable="true">Camera open fail! </string>
+    <string name="camera_open_fail" translatable="true">Camera open fail</string>
+    <!-- Gallery UI hint -->
+    <string name="gallery_no_photo" translatable="true">No photo</string>
     <!-- Volume UI hint -->
     <string name="volume_adjust" translatable="true">Volume adjust</string>
     <!-- Preferences -->
     <string name="pref_tap_me" translatable="true">Tap me!</string>
 
     <string name="pref_category_permissions" translatable="true">Permissions</string>
-    <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
-    <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
-    <string name="pref_permission_grant_status">Permissions granting status</string>
+    <string name="pref_grant_all_permissions" translatable="true">Use privilege provider to grant all permissions</string>
+    <string name="pref_grant_all_permissions_summary" translatable="true">Choose a privilege provider first</string>
+    <string name="pref_permission_grant_status" translatable="true">Permissions granting status</string>
+    <string name="pref_gallery_access" translatable="true">Choose a path to access pictures for gallery</string>
+    <string name="pref_gallery_access_summary" translatable="true">Use Storage Access Framework (SAF) to grant permission</string>
 
     <string name="pref_category_privileges">Privileges</string>
     <string name="pref_check_xposed">Xposed module activation status</string>
@@ -80,5 +84,6 @@
     <string name="dialog_title_exit_dialer" translatable="true">Dialer secret code setup</string>
     <string name="dialog_title_exit_dialer_hint" translatable="true">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
     <string name="dialog_title_exit_passwd" translatable="true">Settings page password setup</string>
-
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

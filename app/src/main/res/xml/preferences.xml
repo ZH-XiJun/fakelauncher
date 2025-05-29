@@ -8,6 +8,10 @@
         <Preference
             android:key="permission_grant_status"
             android:title="@string/pref_permission_grant_status" />
+        <Preference
+            android:key="gallery_access"
+            android:title="@string/pref_gallery_access"
+            android:summary="@string/pref_gallery_access_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_privileges">
         <Preference

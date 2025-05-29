@@ -28,7 +28,9 @@
     <!-- 拨号盘文字提示 -->
     <string name="dialer_empty">请输入电话号码</string>
     <!-- 相机界面文字提示 -->
-    <string name="camera_open_fail">打开相机失败！ </string>
+    <string name="camera_open_fail">打开相机失败</string>
+    <!-- 相册界面文字提示 -->
+    <string name="gallery_no_photo">无照片</string>
     <!-- 音量调节文字 -->
     <string name="volume_adjust">音量调节</string>
     <!-- 软件设置文字提示 -->
@@ -38,6 +40,8 @@
     <string name="pref_grant_all_permissions">使用授权器授权所有权限</string>
     <string name="pref_grant_all_permissions_summary">记得先选择一个授权器</string>
     <string name="pref_permission_grant_status">权限授权状态</string>
+    <string name="pref_gallery_access">选择一个路径以提供给图库访问</string>
+    <string name="pref_gallery_access_summary">使用存储访问框架 (SAF) 授权访问权限</string>
 
     <string name="pref_category_privileges">特殊权限</string>
     <string name="pref_check_xposed">Xposed模块激活状态</string>

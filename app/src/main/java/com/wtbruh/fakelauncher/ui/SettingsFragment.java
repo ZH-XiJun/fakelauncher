@@ -6,10 +6,13 @@ import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.preference.DialogPreference;
 import androidx.preference.EditTextPreference;
@@ -42,6 +45,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public final static String PREF_GRANT_ALL_PERMISSIONS = "grant_all_permissions";
     public final static String PREF_DEACTIVATE_DEVICE_OWNER = "deactivate_device_owner";
     public final static String PREF_DPAD_CENTER_OPEN_MENU = "dpad_center_open_menu";
+    public final static String PREF_GALLERY_ACCESS = "gallery_access";
     public final static String VIBRATE_ON_START = "vibrate_on_start";
 
     public final static String[] CLICKABLE_PREFS = {
@@ -49,7 +53,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             "check_device_admin",
             "grant_all_permissions",
             "permission_grant_status",
-            "deactivate_device_owner"
+            "deactivate_device_owner",
+            "gallery_access"
     };
 
     public SettingsFragment (Activity activity) {
@@ -257,6 +262,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 DevicePolicyManager dpm = getSystemService(activity, DevicePolicyManager.class);
                 dpm.clearDeviceOwnerApp(activity.getPackageName());
                 prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
+            case PREF_GALLERY_ACCESS:
+                ActivityResultLauncher<Intent> intentActivityResultLauncher =
+                        registerForActivityResult(
+                                new ActivityResultContracts.StartActivityForResult(),
+                                result -> {
+                                    if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
+                                        //todo: storage uri
+                                    }
+                                }
+                        );
         }
         return false;
     }

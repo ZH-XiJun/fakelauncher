@@ -90,7 +90,7 @@ public class SettingsActivity extends AppCompatActivity {
             data = permissionGrantStatus(getPermissions());
             adapter = new SimpleAdapter(this,
                     data,
-                    R.layout.activity_listview_item,
+                    R.layout.listview_item,
                     new String[] {"Item", "subItem"},
                     new int[] {R.id.Item, R.id.subItem});
             listView.setAdapter(adapter);

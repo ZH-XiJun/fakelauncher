@@ -140,6 +140,7 @@ public class MenuFragment extends MyFragment {
                 fragment = CameraFragment.newInstance();
                 break;
             case GALLERY:
+                fragment = GalleryFragment.newInstance();
                 break;
             case SETTINGS:
                 fragment = PasswordFragment.newInstance();

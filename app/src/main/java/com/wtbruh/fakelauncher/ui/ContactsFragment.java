@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 
 /**
@@ -23,16 +24,7 @@ public class ContactsFragment extends MyFragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ContactsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ContactsFragment newInstance(String param1, String param2) {
+    public static ContactsFragment newInstance() {
         return new ContactsFragment();
     }
 
@@ -45,11 +37,17 @@ public class ContactsFragment extends MyFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contacts, container, false);
+        init();
         return rootView;
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return false;
+    }
+
+    private void init() {
+        // todo:Contacts
+        setFooterBar(SubActivity.L_EMPTY);
     }
 }

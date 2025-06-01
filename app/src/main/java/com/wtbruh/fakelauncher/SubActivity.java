@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Window;
+import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.ui.DialerFragment;
@@ -30,9 +30,14 @@ public class SubActivity extends MyAppCompatActivity {
     public final static int CENTER_BUTTON = R.id.centerButton;
     public final static int RIGHT_BUTTON = R.id.rightButton;
     public final static String L_DEFAULT = "L_DEFAULT";
-    public final static String L_MENU = "L_MENU";
+    public final static String L_EMPTY = "L_EMPTY";
+    public final static String L_OPTION = "L_OPTION";
     public final static String R_DEFAULT = "R_DEFAULT";
+    public final static String R_EMPTY = "R_EMPTY";
     public final static String R_EDITTEXT = "R_EDITTEXT";
+    public final static String C_PLAY = "C_PLAY";
+    public final static String C_PAUSE = "C_PAUSE";
+    public final static String C_RESUME = "C_RESUME";
 
     private final static String TAG = SubActivity.class.getSimpleName();
 
@@ -67,6 +72,14 @@ public class SubActivity extends MyAppCompatActivity {
                 mCurrentFragment = DialerFragment.newInstance(args);
             }
         }
+    }
+
+    /**
+     * No touch event | 禁用触控
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return true;
     }
 
     @Override
@@ -122,16 +135,28 @@ public class SubActivity extends MyAppCompatActivity {
             else return;
             switch (text) {
                 case L_DEFAULT:
-                    view.setText(R.string.common_leftbutton);
+                    view.setText(R.string.common_leftButton);
                     break;
-                case L_MENU:
-                    view.setText(R.string.main_leftbutton);
+                case L_OPTION:
+                    view.setText(R.string.option_leftButton);
                     break;
                 case R_DEFAULT:
-                    view.setText(R.string.common_rightbutton);
+                    view.setText(R.string.common_rightButton);
                     break;
                 case R_EDITTEXT:
-                    view.setText(R.string.edittext_rightbutton);
+                    view.setText(R.string.edittext_rightButton);
+                    break;
+                case C_PLAY:
+                    view.setText(R.string.play_centerButton);
+                    break;
+                case C_PAUSE:
+                    view.setText(R.string.pause_centerButton);
+                    break;
+                case C_RESUME:
+                    view.setText(R.string.resume_centerButton);
+                    break;
+                default:
+                    view.setText("");
             }
         }
         view = findViewById(CENTER_BUTTON);

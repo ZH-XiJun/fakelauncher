@@ -2,15 +2,19 @@
 <resources>
     <!-- App -->
     <string name="app_settings_name">FakeL 设置</string>
-    <string name="shortcut_name" translatable="true">启动伪装界面</string>
+    <string name="shortcut_name">启动伪装界面</string>
     <!-- 电源连接状态 -->
     <string name="charging">正在充电</string>
     <string name="not_charging">未在充电</string>
     <!-- 按键提示 -->
-    <string name="main_leftbutton">菜单</string>
-    <string name="common_leftbutton">确定</string>
-    <string name="common_rightbutton">返回</string>
-    <string name="edittext_rightbutton">删除</string>
+    <string name="main_leftButton">菜单</string>
+    <string name="option_leftButton">选项</string>
+    <string name="common_leftButton">确定</string>
+    <string name="common_rightButton">返回</string>
+    <string name="edittext_rightButton">删除</string>
+    <string name="play_centerButton">播放</string>
+    <string name="pause_centerButton">暂停</string>
+    <string name="resume_centerButton">继续</string>
     <!-- 菜单文字 -->
     <string name="menu_call">电话</string>
     <string name="menu_camera">相机</string>
@@ -31,6 +35,12 @@
     <string name="camera_open_fail">打开相机失败</string>
     <!-- 相册界面文字提示 -->
     <string name="gallery_no_photo">无照片</string>
+    <string name="gallery_loading">加载中</string>
+    <string name="gallery_load_failed">加载失败</string>
+    <!-- 短信界面文字提示 -->
+    <string name="message_empty">无信息</string>
+    <!-- 联系人界面文字提示 -->
+    <string name="contacts_empty">无联系人</string>
     <!-- 音量调节文字 -->
     <string name="volume_adjust">音量调节</string>
     <!-- 软件设置文字提示 -->

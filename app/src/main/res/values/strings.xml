@@ -8,10 +8,15 @@
     <string name="charging" translatable="true">Charging</string>
     <string name="not_charging" translatable="true">Unplugged</string>
     <!-- Button hint -->
-    <string name="main_leftbutton" translatable="true">Menu</string>
-    <string name="common_leftbutton" translatable="true">OK</string>
-    <string name="common_rightbutton" translatable="true">Back</string>
-    <string name="edittext_rightbutton" translatable="true">Delete</string>
+    <string name="main_leftButton" translatable="true">Menu</string>
+    <string name="option_leftButton" translatable="true">Option</string>
+    <string name="common_leftButton" translatable="true">OK</string>
+    <string name="common_rightButton" translatable="true">Back</string>
+    <string name="edittext_rightButton" translatable="true">Delete</string>
+    <string name="play_centerButton" translatable="true">Play</string>
+    <string name="pause_centerButton" translatable="true">Pause</string>
+    <string name="resume_centerButton" translatable="true">Resume</string>
+
     <!-- Menu items -->
     <string name="menu_call" translatable="true">Call</string>
     <string name="menu_camera" translatable="true">Camera</string>
@@ -32,6 +37,12 @@
     <string name="camera_open_fail" translatable="true">Camera open fail</string>
     <!-- Gallery UI hint -->
     <string name="gallery_no_photo" translatable="true">No photo</string>
+    <string name="gallery_loading" translatable="true">Loading</string>
+    <string name="gallery_load_failed" translatable="true">Load failed</string>
+    <!-- Message UI hint -->
+    <string name="message_empty" translatable="true">No message</string>
+    <!-- Contacts UI hint -->
+    <string name="contacts_empty" translatable="true">No contact</string>
     <!-- Volume UI hint -->
     <string name="volume_adjust" translatable="true">Volume adjust</string>
     <!-- Preferences -->

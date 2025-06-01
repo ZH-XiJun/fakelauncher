@@ -66,7 +66,7 @@ public class DialerFragment extends MyFragment {
 
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
             if (content.equals(getString(R.string.dialer_empty))) {
-                mActivity.setFooterBar(SubActivity.R_EDITTEXT);
+                setFooterBar(SubActivity.R_EDITTEXT);
                 mEditText.setText(UIHelper.textEditor(keyCode, ""));
             } else {
                 mEditText.setText(UIHelper.textEditor(keyCode, content));
@@ -80,7 +80,7 @@ public class DialerFragment extends MyFragment {
                 // When there are some chars, right button will be used to delete chars
                 // 如果有字，右键应该是删除键
                 if (content.length() == 1) {
-                    mActivity.setFooterBar(SubActivity.R_DEFAULT);
+                    setFooterBar(SubActivity.R_DEFAULT);
                     mEditText.setText(R.string.dialer_empty);
                 } else {
                     mEditText.setText(UIHelper.textEditor(keyCode, content));
@@ -110,7 +110,7 @@ public class DialerFragment extends MyFragment {
         mActivity = (SubActivity) getActivity();
         if (getArguments() != null) {
             mEditText.setText(getArguments().getString(ARG_INPUT));
-            mActivity.setFooterBar(SubActivity.R_EDITTEXT);
+            setFooterBar(SubActivity.R_EDITTEXT);
         }
 
     }

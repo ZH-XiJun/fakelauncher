@@ -15,4 +15,8 @@ public abstract class MyFragment extends Fragment {
     public View rootView;
     public abstract boolean onKeyDown(int keyCode, KeyEvent event);
 
+    public void setFooterBar(String... texts) {
+        ((SubActivity) getActivity()).setFooterBar(texts);
+    }
+
 }

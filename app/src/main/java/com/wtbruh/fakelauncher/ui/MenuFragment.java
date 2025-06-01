@@ -47,6 +47,11 @@ public class MenuFragment extends MyFragment {
         init();
         return rootView;
     }
+    @Override
+    public void onResume() {
+        setFooterBar(SubActivity.L_DEFAULT, SubActivity.R_DEFAULT);
+        super.onResume();
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -80,7 +85,7 @@ public class MenuFragment extends MyFragment {
 
     private void init() {
         switchSection(mNumber);
-        ((SubActivity) getActivity()).setFooterBar(SubActivity.L_DEFAULT, SubActivity.R_DEFAULT);
+        setFooterBar(SubActivity.L_DEFAULT, SubActivity.R_DEFAULT);
     }
 
     /**
@@ -131,10 +136,11 @@ public class MenuFragment extends MyFragment {
             case CALL:
                 fragment = DialerFragment.newInstance();
                 break;
-            // work in progress...
             case CONTACT:
+                fragment = ContactsFragment.newInstance();
                 break;
             case SMS:
+                fragment = MessageFragment.newInstance();
                 break;
             case CAMERA:
                 fragment = CameraFragment.newInstance();

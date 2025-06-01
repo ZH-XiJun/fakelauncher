@@ -52,13 +52,12 @@ public class PasswordFragment extends MyFragment {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        SubActivity activity = (SubActivity) getActivity();
         EditText editText = rootView.findViewById(R.id.editText);
         String content = editText.getText().toString();
 
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {
             if (content.isEmpty()) {
-                activity.setFooterBar(SubActivity.R_EDITTEXT);
+                setFooterBar(SubActivity.R_EDITTEXT);
             }
             editText.setText(UIHelper.textEditor(keyCode, content));
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -71,7 +70,7 @@ public class PasswordFragment extends MyFragment {
                 // 如果有字，右键应该是删除键
                 editText.setText(UIHelper.textEditor(keyCode, content));
                 if (content.length() == 1) {
-                    activity.setFooterBar(SubActivity.R_DEFAULT);
+                    setFooterBar(SubActivity.R_DEFAULT);
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {

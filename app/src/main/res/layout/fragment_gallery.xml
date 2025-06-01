@@ -8,28 +8,52 @@
     android:gravity="center"
     tools:context=".ui.GalleryFragment">
 
+    <SurfaceView
+        android:id="@+id/videoView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/fullscreenView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <GridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:numColumns="3"
-        tools:context=".ui.GalleryFragment" />
+        android:numColumns="2"
+        android:visibility="gone" />
 
     <TextView
-        android:id="@+id/noPhoto"
+        android:id="@+id/gallery_textHint"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
         android:maxLines="1"
-        android:text="@string/gallery_no_photo"
+        android:padding="50dp"
+        android:text="@string/gallery_loading"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

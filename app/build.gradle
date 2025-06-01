@@ -39,7 +39,6 @@ dependencies {
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-    implementation libs.preference
     implementation libs.androidx.preference
     implementation libs.androidx.lifecycle.livedata.ktx
     implementation libs.androidx.lifecycle.viewmodel.ktx
@@ -57,8 +56,8 @@ dependencies {
     implementation libs.androidx.camera.extensions
 
     // Shizuku API
-    implementation libs.api
-    implementation libs.provider
+    implementation libs.shizuku.api
+    implementation libs.shizuku.provider
     // Dhizuku API
     implementation libs.dhizuku.api
     // Xposed API

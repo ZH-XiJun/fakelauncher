@@ -1,7 +1,7 @@
 [versions]
 agp = "8.9.0"
-api = "13.1.5"
-apiVersion = "82"
+shizukuApi = "13.1.5"
+xposedApi = "82"
 cameraCore = "1.1.0-beta01"
 cameraCamera2 = "1.1.0-beta01"
 cameraLifecycle = "1.1.0-beta01"
@@ -14,7 +14,6 @@ appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
-preference = "1.2.0"
 preferenceVersion = "1.2.1"
 lifecycleLivedataKtx = "2.6.1"
 lifecycleViewmodelKtx = "2.6.1"
@@ -26,7 +25,7 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
 androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
-api = { module = "dev.rikka.shizuku:api", version.ref = "api" }
+shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizukuApi" }
 dhizuku-api = { module = "io.github.iamr0s:Dhizuku-API", version.ref = "dhizukuApi" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -36,9 +35,8 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-provider = { module = "dev.rikka.shizuku:provider", version.ref = "api" }
-xposed-api = { module = "de.robv.android.xposed:api", version.ref = "apiVersion" }
-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizukuApi" }
+xposed-api = { module = "de.robv.android.xposed:api", version.ref = "xposedApi" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preferenceVersion" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }

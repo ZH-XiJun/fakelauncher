@@ -18,7 +18,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Vibrate on launching fake ui
-        if (PreferenceManager.getDefaultSharedPreferences(SplashActivity.this).getBoolean(SettingsFragment.VIBRATE_ON_START,true)) {
+        if (PreferenceManager.getDefaultSharedPreferences(SplashActivity.this).getBoolean(SettingsFragment.PREF_VIBRATE_ON_START,true)) {
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(200);
         }

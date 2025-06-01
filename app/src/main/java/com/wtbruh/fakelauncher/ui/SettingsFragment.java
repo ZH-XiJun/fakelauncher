@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -32,7 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
     private final static String TAG = SettingsFragment.class.getSimpleName();
 
-    private final Activity activity;
+    private ActivityResultLauncher<Intent> SAFlauncher = null;
 
     public final static String PREF_PRIVILEGE_PROVIDER = "privilege_provider";
     public final static String PREF_EXIT_FAKEUI_CONFIG = "exit_fakeui_config";
@@ -46,7 +47,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public final static String PREF_DEACTIVATE_DEVICE_OWNER = "deactivate_device_owner";
     public final static String PREF_DPAD_CENTER_OPEN_MENU = "dpad_center_open_menu";
     public final static String PREF_GALLERY_ACCESS = "gallery_access";
-    public final static String VIBRATE_ON_START = "vibrate_on_start";
+    public final static String PREF_VIBRATE_ON_START = "vibrate_on_start";
+    public final static String PREF_GALLERY_ACCESS_URI = "gallery_access_uri";
 
     public final static String[] CLICKABLE_PREFS = {
             "check_privilege",
@@ -57,8 +59,43 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             "gallery_access"
     };
 
-    public SettingsFragment (Activity activity) {
-        this.activity = activity;
+    public SettingsFragment () {
+    }
+
+    /**
+     * Early init
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SAFlauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.StartActivityForResult(),
+                        result -> {
+                            if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
+                                final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                Uri uri = result.getData().getData();
+                                SharedPreferences sp = getDefaultSharedPreferences(getContext());
+                                if (uri != null) {
+                                    String oldUri = sp.getString(PREF_GALLERY_ACCESS_URI, "");
+                                    if (!oldUri.isEmpty() && !oldUri.equals(String.valueOf(uri))) {
+                                        Log.d(TAG, "User has granted another directory's access permission, revoking the old one...");
+                                        getActivity().revokeUriPermission(Uri.parse(oldUri), takeFlags);
+                                    }
+                                    // 获取权限
+                                    getActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                                    // 存入SharedPreferences
+                                    sp.edit()
+                                            .putString(PREF_GALLERY_ACCESS_URI, String.valueOf(uri))
+                                            .apply();
+                                }
+                            }
+                        }
+                );
     }
 
     @Override
@@ -136,7 +173,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
      * @param pref Preference
      */
     private void prefSetup(Preference pref) {
-        SharedPreferences defaultPref = getDefaultSharedPreferences(activity);
+        SharedPreferences defaultPref = getDefaultSharedPreferences(getContext());
         String[] valueArray;
         String value;
         switch (pref.getKey()) {
@@ -180,7 +217,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 }
                 break;
             case PREF_CHECK_DEVICE_ADMIN:
-                switch (PrivilegeProvider.checkDeviceAdmin(activity)) {
+                switch (PrivilegeProvider.checkDeviceAdmin(getContext())) {
                     case PrivilegeProvider.DHIZUKU:
                         pref.setSummary(R.string.pref_activated_dhizuku);
                         findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(false);
@@ -253,25 +290,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 prefSetup(pref);
                 break;
             case PREF_PERMISSION_GRANT_STATUS:
-                UIHelper.intentStarter(activity, SettingsActivity.PermissionStatus.class);
+                UIHelper.intentStarter(getActivity(), SettingsActivity.PermissionStatus.class);
                 break;
             case PREF_GRANT_ALL_PERMISSIONS:
                 // todo
                 break;
             case PREF_DEACTIVATE_DEVICE_OWNER:
-                DevicePolicyManager dpm = getSystemService(activity, DevicePolicyManager.class);
-                dpm.clearDeviceOwnerApp(activity.getPackageName());
+                DevicePolicyManager dpm = getSystemService(getActivity(), DevicePolicyManager.class);
+                dpm.clearDeviceOwnerApp(getActivity().getPackageName());
                 prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
             case PREF_GALLERY_ACCESS:
-                ActivityResultLauncher<Intent> intentActivityResultLauncher =
-                        registerForActivityResult(
-                                new ActivityResultContracts.StartActivityForResult(),
-                                result -> {
-                                    if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-                                        //todo: storage uri
-                                    }
-                                }
-                        );
+                SAFlauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
         }
         return false;
     }

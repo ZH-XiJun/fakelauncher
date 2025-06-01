@@ -39,7 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.settings_container, new SettingsFragment(SettingsActivity.this))
+                .replace(R.id.settings_container, new SettingsFragment())
                 .commit();
     }
 

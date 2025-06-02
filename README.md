@@ -51,7 +51,7 @@ As a result, `fakelauncher` is developed by me to solve this problem.
 
 1. After installed it, activate it in Xposed. Requires reboot!
 2. Open `FakeL Settings` and grant all permissions
-3. Use a key mapping app (For example, `Xposed Edge Pro`) and bind a key to launch fakelauncher. After launching it, you will be brought to a feature-phone like UI
+3. Use a key mapping app (For example, `Xposed Edge Pro`) and bind a key to launch fakelauncher (com.wtbruh.fakelauncher.SplashActivity). After launching it, you will be brought to a feature-phone like UI
 4. If you want to exit, go to main screen, and press DPAD keys: Up, Up, Down, Down, Left, Right, Left, Right. Program will exit after pressing these keys.
 
 ## How does it work?

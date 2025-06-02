@@ -336,6 +336,7 @@ public class GalleryFragment extends MyFragment {
                 Glide.with(context)
                         .load(uri)
                         .frame(0)
+                        .priority(Priority.LOW)
                         .into(new CustomTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {

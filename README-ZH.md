@@ -47,7 +47,7 @@
 
 1. 安装好之后，去Xposed里激活它（推荐用LSPosed，因为我只测试过用它）。记得重启！
 2. 打开`FakeL Settings`并给予所有权限
-3. 随便找个按键映射软件（例如`Xposed Edge Pro`）然后绑定个按键用来启动fakelauncher。搞好之后，你就获得了一个老人机界面
+3. 随便找个按键映射软件（例如`Xposed Edge Pro`）然后绑定个按键用来启动fakelauncher (com.wtbruh.fakelauncher.SplashActivity)。搞好之后，你就获得了一个老人机界面
 4. 如果你想退出去，在主屏幕按Dpad键：上上下下左右左右 就可以出去了
 
 ## 工作原理

@@ -60,11 +60,13 @@
 
 ## TO-DO
 
-- 未来可能会尝试适配Dhizuku，Shizuku等授权器，从而实现免root支持
-
-- 增加更多退出应用的方式，例如拨号盘能输暗码退出，设置页安全密码可以设退出密码，上上下下左右左右可以自定义等等
-
-- ~~优化Ui部分发送taskId到Hook部分的代码，就是触发屏幕固定用的（PinningApp使用了`SettingsProvider`，相当于`adb shell settings put xxx`，UI部分使用需要`WRITE_SECURE_SETTINGS`权限支持，获取贼麻烦）~~ 完工，现在改用`ContentProvider`，无需授权`WRITE_SECURE_SETTINGS`权限
+- [ ] 尝试适配Dhizuku，Shizuku等授权器，从而实现免root支持
+- [ ] 加入联系人页面
+- [ ] 加入短信页面
+- [ ] 拨号盘可以打电话（但是自定义打电话的界面可能做不到）
+- [x] (大部分完成) 增加相册页面
+- [x] (大部分完成) 增加更多退出应用的方式，例如拨号盘能输暗码退出，设置页安全密码可以设退出密码，上上下下左右左右可以自定义等等
+- [x] 优化Ui部分发送taskId到Hook部分的代码，就是触发屏幕固定用的（PinningApp使用了`SettingsProvider`，相当于`adb shell settings put xxx`，UI部分使用需要`WRITE_SECURE_SETTINGS`权限支持，获取贼麻烦）
 
 ## 项目感谢
 - [Android](https://source.android.google.cn/)

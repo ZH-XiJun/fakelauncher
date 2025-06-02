@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
@@ -30,6 +31,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.utils.MyFragment;
@@ -238,7 +241,7 @@ public class GalleryFragment extends MyFragment {
                     String fileName = file.getName();
                     String mimeType = file.getType();
 
-                    Log.d(TAG, "Found media file! Name:" + fileName + ", Type: " + mimeType);
+                    Log.d(TAG, "Found file! Name:" + fileName + ", Type: " + mimeType);
                     // 判断是否为视频或图片，都不是就赋值key为null
                     String key = mimeType.startsWith(MIME_IMAGE)?
                             MIME_IMAGE : (mimeType.startsWith(MIME_VIDEO)?
@@ -277,22 +280,41 @@ public class GalleryFragment extends MyFragment {
      * Adapter for Gallery view<br>
      * 为相册界面自定义的适配器
      */
-    static class ImageAdapter extends ArrayAdapter {
+    static class ImageAdapter extends ArrayAdapter<HashMap<String, Uri>> {
         private final Context context;
+        private final Drawable overlay;
         private final List<HashMap<String, Uri>> uris;
         public ImageAdapter(@NonNull Context context, List<HashMap<String, Uri>> uris) {
             super(context, R.layout.gridview_item, uris);
             this.context = context;
             this.uris = uris;
+            this.overlay = ContextCompat.getDrawable(context, R.drawable.vector_gridview_video);
         }
         // AI说这样能提高运行效率
         private static class ViewHolder {
             ImageView imageView;
         }
 
+        private void addVideoIcon(ImageView imageView) {
+            if (overlay != null) {
+                imageView.post(() -> {
+                    // 图标放到右下角
+                    int badgeSize = imageView.getWidth() / 6;
+                    int margin = badgeSize / 4;
+                    overlay.setBounds(
+                            imageView.getWidth() - badgeSize - margin,
+                            imageView.getHeight() - badgeSize - margin,
+                            imageView.getWidth() - margin,
+                            imageView.getHeight() - margin
+                    );
+                    imageView.getOverlay().add(overlay);
+                });
+            } else Log.e(TAG, "Overlay is null!!!");
+        }
+
         @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             ViewHolder holder;
 
             if (convertView == null) {
@@ -314,23 +336,20 @@ public class GalleryFragment extends MyFragment {
                 Glide.with(context)
                         .load(uri)
                         .frame(0)
-                        .priority(Priority.LOW)
-                        .into(holder.imageView);
-            }
-            if (isVideo){
-                Drawable overlay = ContextCompat.getDrawable(context, R.drawable.vector_gridview_video);
-                // 图标放到右下角
-                int badgeSize = holder.imageView.getWidth() / 6;
-                int margin = badgeSize / 4;
-                if (overlay != null) {
-                    holder.imageView.getOverlay().add(overlay);
-                    overlay.setBounds(
-                            holder.imageView.getWidth() - badgeSize - margin,
-                            holder.imageView.getHeight() - badgeSize - margin,
-                            holder.imageView.getWidth() - margin,
-                            holder.imageView.getHeight() - margin
-                    );
-                }
+                        .into(new CustomTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                holder.imageView.setImageDrawable(resource);
+                                if (isVideo){
+                                    addVideoIcon(holder.imageView);
+                                }
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                                holder.imageView.setImageDrawable(placeholder);
+                            }
+                        });
             }
             return convertView;
         }

@@ -1,5 +1,7 @@
 package com.wtbruh.fakelauncher.ui;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -19,6 +21,15 @@ import com.wtbruh.fakelauncher.utils.MyFragment;
  * create an instance of this fragment.
  */
 public class MessageFragment extends MyFragment {
+
+    public static final String URI_HEADER = "content://sms/";
+    public static final String PATH_INBOX = "inbox";
+    public static final String PATH_SEND = "sent";
+    public static final String PATH_DRAFT = "draft";
+    public static final String PATH_OUTBOX = "outbox";
+    public static final String PATH_FAILED = "failed";
+    public static final String PATH_QUEUED = "queued";
+
     public MessageFragment() {
         // Required empty public constructor
     }
@@ -49,5 +60,9 @@ public class MessageFragment extends MyFragment {
     private void init() {
         // todo:Message
         setFooterBar(SubActivity.L_EMPTY);
+        readSMS();
+    }
+
+    private void readSMS() {
     }
 }

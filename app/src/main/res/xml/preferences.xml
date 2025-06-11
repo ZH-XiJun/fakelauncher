@@ -41,7 +41,12 @@
             app:isPreferenceVisible="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_preferences">
-
+        <ListPreference
+            android:defaultValue="phone"
+            android:entries="@array/pref_style_string"
+            android:entryValues="@array/pref_style"
+            android:key="style"
+            android:title="@string/pref_style" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="dpad_center_open_menu"

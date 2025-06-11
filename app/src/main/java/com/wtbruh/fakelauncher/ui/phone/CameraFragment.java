@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui;
+package com.wtbruh.fakelauncher.ui.phone;
 
 import android.Manifest;
 import android.os.Bundle;

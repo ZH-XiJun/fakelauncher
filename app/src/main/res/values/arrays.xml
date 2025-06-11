@@ -17,6 +17,16 @@
         <item>@string/pref_provider_shizuku</item>
     </string-array>
 
+    <string-array name="pref_style">
+        <item>phone</item>
+        <item>player</item>
+    </string-array>
+
+    <string-array name="pref_style_string">
+        <item>@string/pref_style_phone</item>
+        <item>@string/pref_style_player</item>
+    </string-array>
+
     <string-array name="pref_exit_fakeui_method">
         <item>dpad</item> <!-- default -->
         <item>dialer</item>

@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui;
+package com.wtbruh.fakelauncher.ui.phone;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -35,6 +35,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
+import com.wtbruh.fakelauncher.ui.SettingsFragment;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 
 import java.io.IOException;

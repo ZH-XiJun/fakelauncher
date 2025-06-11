@@ -1,7 +1,5 @@
-package com.wtbruh.fakelauncher.ui;
+package com.wtbruh.fakelauncher.ui.phone;
 
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

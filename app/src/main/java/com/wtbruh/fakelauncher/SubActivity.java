@@ -12,8 +12,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
-import com.wtbruh.fakelauncher.ui.DialerFragment;
-import com.wtbruh.fakelauncher.ui.MenuFragment;
+import com.wtbruh.fakelauncher.ui.phone.DialerFragment;
+import com.wtbruh.fakelauncher.ui.phone.MenuFragment;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 

@@ -72,6 +72,9 @@
     <string name="pref_deactivated">未激活</string>
 
     <string name="pref_category_preferences">偏好</string>
+    <string name="pref_style">UI样式</string>
+    <string name="pref_style_phone">老人机</string>
+    <string name="pref_style_player">音乐播放器（MP3）</string>
     <string name="pref_dpad_center_open_menu">Dpad center键可以打开App菜单</string>
     <string name="pref_dpad_center_open_menu_summary">Dpad center就是方向键中间那个</string>
     <string name="pref_vibrate_on_start">打开伪装界面时振动一下</string>

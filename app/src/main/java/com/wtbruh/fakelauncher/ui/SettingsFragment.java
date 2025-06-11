@@ -49,6 +49,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public final static String PREF_GALLERY_ACCESS = "gallery_access";
     public final static String PREF_VIBRATE_ON_START = "vibrate_on_start";
     public final static String PREF_GALLERY_ACCESS_URI = "gallery_access_uri";
+    public final static String PREF_STYLE = "style";
 
     public final static String[] CLICKABLE_PREFS = {
             "check_privilege",
@@ -144,6 +145,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         if (pref != null) prefSetup(pref);
         pref = findPreference(PREF_CHECK_DEVICE_ADMIN);
         if (pref != null) prefSetup(pref);
+        pref = findPreference(PREF_STYLE);
+        if (pref != null) prefSetup(pref);
     }
 
     /**
@@ -183,6 +186,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                         pref,
                         R.array.pref_privilege_provider,
                         R.array.pref_privilege_provider_string
+                );
+                break;
+            case PREF_STYLE:
+                setListPrefSummary(
+                        defaultPref.getString(pref.getKey(), "phone"),
+                        pref,
+                        R.array.pref_style,
+                        R.array.pref_style_string
                 );
                 break;
             case PREF_EXIT_FAKEUI_METHOD:
@@ -263,6 +274,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 break;
             case PREF_ENABLE_DHIZUKU:
                 prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
+                break;
+            case PREF_STYLE:
+                prefSetup(pref);
                 break;
         }
     }

@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui;
+package com.wtbruh.fakelauncher.ui.phone;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
+import com.wtbruh.fakelauncher.ui.SettingsFragment;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 

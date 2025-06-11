@@ -76,6 +76,9 @@
     <string name="pref_deactivated">Deactivated</string>
 
     <string name="pref_category_preferences" translatable="true">Preferences</string>
+    <string name="pref_style" translatable="true">UI style</string>
+    <string name="pref_style_phone" translatable="true">Feature phone</string>
+    <string name="pref_style_player" translatable="true">Media player</string>
     <string name="pref_dpad_center_open_menu" translatable="true">Dpad center can open menu</string>
     <string name="pref_dpad_center_open_menu_summary" translatable="true">"Dpad center" is the center of the direction keys</string>
     <string name="pref_vibrate_on_start" translatable="true">Vibrate when opening fake UI</string>

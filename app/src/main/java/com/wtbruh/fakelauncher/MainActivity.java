@@ -24,7 +24,7 @@ import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
-import com.wtbruh.fakelauncher.ui.DialerFragment;
+import com.wtbruh.fakelauncher.ui.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.SettingsFragment;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
@@ -42,6 +42,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     private Timer mTimer;
     private int count = 0;
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
+    private boolean mReceiverRegistered = false;
     private DevicePolicyManager mDpm;
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
     // todo: support Dhizuku
@@ -56,13 +57,23 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+
+        // Switch UI style
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String[] UIStyles = getResources().getStringArray(R.array.pref_style);
+        String UIStyle = pref.getString(SettingsFragment.PREF_STYLE, UIStyles[0]);
+        if (UIStyle.equals(UIStyles[1])) {
+            setContentView(R.layout.activity_main_player);
+        } else {
+            setContentView(R.layout.activity_main_phone);
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        init();
+        init(UIStyle, UIStyles);
     }
 
     @Override
@@ -142,34 +153,38 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     /**
      * Init of MainActivity | MainActivity初始化
      */
-    private void init() {
-        Log.d(TAG, "Now start init");
-        TelephonyHelper mTelHelper = new TelephonyHelper(this);
-        TextView card1 = findViewById(R.id.card1_provider);
-        TextView card2 = findViewById(R.id.card2_provider);
-        card1.setText(mTelHelper.getProvidersName(0));
-        card2.setText(mTelHelper.getProvidersName(1));
-        // 时间字体大小自适应适配
-        TextView time = findViewById(R.id.time);
-        time.post(() -> {
-            // 获取缩放后的字体大小
-            float textSize = time.getTextSize(); // 单位：px
-            time.setTextSize(textSize);
-            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
-            Log.d(TAG, "now text size: "+textSize);
-            time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
-            time.requestLayout();
-        });
+    private void init(String UIStyle, String[] UIStyles) {
+        Log.d(TAG, "Now start init, UI style: " + UIStyle);
+        if (UIStyle.equals(UIStyles[1])) {
+            // todo: mp3 ui init
+        } else { // Default/Fallback: feature phone UI
+            TelephonyHelper mTelHelper = new TelephonyHelper(this);
+            TextView card1 = findViewById(R.id.card1_provider);
+            TextView card2 = findViewById(R.id.card2_provider);
+            card1.setText(mTelHelper.getProvidersName(0));
+            card2.setText(mTelHelper.getProvidersName(1));
+            // 时间字体大小自适应适配
+            TextView time = findViewById(R.id.time);
+            time.post(() -> {
+                // 获取缩放后的字体大小
+                float textSize = time.getTextSize(); // 单位：px
+                time.setTextSize(textSize);
+                TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
+                Log.d(TAG, "now text size: " + textSize);
+                time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
+                time.requestLayout();
+            });
 
-        initDeviceOwner();
-        // Start timer 启动计时任务
-        updateInfo();
-        // Register the receiver 注册接收器
-        receiverRegister(true);
-        // Manually flash connection status at first 先手动刷新下充电状态
-        getBattery(false);
-        // Start pin mode 启用屏幕固定
-        setLockApp(MainActivity.this, getTaskId());
+            initDeviceOwner();
+            // Start timer 启动计时任务
+            updateInfo();
+            // Register the receiver 注册接收器
+            receiverRegister(true);
+            // Manually flash connection status at first 先手动刷新下充电状态
+            getBattery(false);
+            // Start pin mode 启用屏幕固定
+            setLockApp(MainActivity.this, getTaskId());
+        }
     }
 
     /**
@@ -361,12 +376,18 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         ifilter.addAction(Intent.ACTION_POWER_CONNECTED);
         ifilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         if (operation) {
-            registerReceiver(mReceiver, ifilter);
-            mReceiver.setStat(this);
-            Log.d(TAG, "Receiver registered!");
+            if (! mReceiverRegistered) {
+                registerReceiver(mReceiver, ifilter);
+                mReceiver.setStat(this);
+                mReceiverRegistered = true;
+                Log.d(TAG, "Receiver registered!");
+            } else Log.w(TAG, "Receiver already registered!");
         } else {
-            unregisterReceiver(mReceiver);
-            Log.d(TAG, "Receiver unregistered!");
+            if (mReceiverRegistered) {
+                unregisterReceiver(mReceiver);
+                mReceiverRegistered = false;
+                Log.d(TAG, "Receiver unregistered!");
+            } else Log.w(TAG, "Receiver not registered!");
         }
     }
 

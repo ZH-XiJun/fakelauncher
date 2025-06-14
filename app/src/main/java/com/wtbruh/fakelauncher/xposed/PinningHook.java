@@ -1,5 +1,6 @@
 package com.wtbruh.fakelauncher.xposed;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentName;
@@ -11,7 +12,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.telecom.TelecomManager;
 import android.view.Display;
+import android.view.KeyEvent;
 
 
 import androidx.annotation.NonNull;
@@ -22,6 +25,7 @@ import com.wtbruh.fakelauncher.utils.HookHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.Key;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -35,6 +39,8 @@ public class PinningHook extends HookHelper {
     public final static String MODEL_T508N = "T508N";
     // coolpad Golden Century Y60 | 酷派金世纪Y60
     public final static String MODEL_CP23NV3 = "CP23NV3";
+    // BIHEE A89 | 百合A89
+    public final static String MODEL_BIHEE_A89 = "BIHEE A89";
 
     // public static Context CONTEXT;
     private static int mTaskId;
@@ -129,11 +135,33 @@ public class PinningHook extends HookHelper {
                                         "T508N"
                                 );
                                 logI(TAG, "Detected device model: " + model);
-                                powerSleep(param, model);
+                                if (! model.equals(MODEL_BIHEE_A89)) {
+                                    logI(TAG, "Device seems not BIHEE A89, don't do hook in powerPress");
+                                    powerSleep(param, model);
+                                }
                             }
                         }
                     }
                 });
+
+        // BIHEE A89 Power key hook
+        findAndHookMethod("com.android.server.policy.PhoneWindowManager", "interceptKeyBeforeQueueing", KeyEvent.class, int.class, new HookAction() {
+            @Override
+            protected void before(MethodHookParam param) {
+                super.before(param);
+                // 机型判断
+                String model = (String) callStaticMethod(
+                        findClass("android.os.SystemProperties", null),
+                        "get",
+                        "ro.product.model",
+                        "T508N"
+                );
+                logI(TAG, "Detected device model: " + model);
+                if (model.equals(MODEL_BIHEE_A89)) {
+                    powerSleep(param, model);
+                }
+            }
+        });
     }
 
     /**
@@ -143,24 +171,76 @@ public class PinningHook extends HookHelper {
      * @param param MethodHookParam
      * @param model 设备型号（来自ro.product.model）
      */
+    @SuppressLint("MissingPermission")
     private void powerSleep(XC_MethodHook.MethodHookParam param, String model) {
         // 获取参数
-        long eventTime = (long) param.args[0];
+        long eventTime = 0;
+        if (! model.equals(MODEL_BIHEE_A89) ) {
+            eventTime = (long) param.args[0];
+        }
 
-        switch (model) {
-            case MODEL_T508N:
-                // 获取 TopClass 和 isKeyguardShowing
-                Object activityManager = XposedHelpers.getObjectField(param.thisObject, "mActivityManager");
-                List<?> runningTasks = (List<?>) XposedHelpers.callMethod(activityManager, "getRunningTasks", 1);
-                ActivityManager.RunningTaskInfo runningTaskInfo = (ActivityManager.RunningTaskInfo) runningTasks.get(0);
-                String TopClass = (String) XposedHelpers.callMethod(runningTaskInfo.topActivity, "getClassName");
-                boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(
-                        param.thisObject, "isKeyguardShowing"
+        // 获取真实class
+        Class<?> PhoneWindowManager = findClassIfExists("com.android.server.policy.PhoneWindowManager");;
+
+        if (model.equals(MODEL_T508N)) {// 获取 TopClass 和 isKeyguardShowing
+            Object activityManager = XposedHelpers.getObjectField(param.thisObject, "mActivityManager");
+            List<?> runningTasks = (List<?>) XposedHelpers.callMethod(activityManager, "getRunningTasks", 1);
+            ActivityManager.RunningTaskInfo runningTaskInfo = (ActivityManager.RunningTaskInfo) runningTasks.get(0);
+            String TopClass = (String) XposedHelpers.callMethod(runningTaskInfo.topActivity, "getClassName");
+            boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(
+                    param.thisObject, "isKeyguardShowing"
+            );
+
+            // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
+            if (TopClass.equals("com.wtbruh.fakelauncher.MainActivity") && !isKeyguardShowing) {
+                Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
+                        PhoneWindowManager,
+                        "sleepDefaultDisplayFromPowerButton",
+                        long.class,
+                        int.class);
+                sleepDefaultDisplayFromPowerButton.setAccessible(true);
+                try {
+                    sleepDefaultDisplayFromPowerButton.invoke(param.thisObject, eventTime, 0);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+                // 阻止原方法继续执行
+                param.setResult(null);
+            }
+        } else if (model.equals(MODEL_CP23NV3)) {
+            Object keyguardServiceDelegate = XposedHelpers.getObjectField(param.thisObject, "mKeyguardDelegate");
+            boolean keyguardActive = keyguardServiceDelegate != null && (boolean) callMethod(keyguardServiceDelegate, "isShowing");
+            // 反射调用isHomeActivity()和isScreensaver()
+            Method isHomeActivity = XposedHelpers.findMethodExact(
+                    PhoneWindowManager, "isHomeActivity"
+            );
+            isHomeActivity.setAccessible(true);
+            Method isScreensaver = XposedHelpers.findMethodExact(
+                    PhoneWindowManager, "isScreensaver"
+            );
+            isScreensaver.setAccessible(true);
+            boolean IsHomeActivity;
+            boolean IsScreensaver;
+            try {
+                IsHomeActivity = (boolean) isHomeActivity.invoke(param.thisObject);
+                IsScreensaver = (boolean) isScreensaver.invoke(param.thisObject);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
+            if (!keyguardActive && !IsHomeActivity && !IsScreensaver) {
+                Method getTopActivity = XposedHelpers.findMethodExact(
+                        PhoneWindowManager, "getTopActivity"
                 );
-
-                // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
-                if (TopClass.equals("com.wtbruh.fakelauncher.MainActivity") && !isKeyguardShowing) {
-                    Class<?> PhoneWindowManager = findClassIfExists("com.android.server.policy.PhoneWindowManager");
+                ComponentName top;
+                try {
+                    top = (ComponentName) getTopActivity.invoke(param.thisObject);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+                if (top.equals(
+                        new ComponentName("com.wtbruh.fakelauncher", "com.wtbruh.fakelauncher.MainActivity")
+                )) {
                     Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
                             PhoneWindowManager,
                             "sleepDefaultDisplayFromPowerButton",
@@ -168,64 +248,121 @@ public class PinningHook extends HookHelper {
                             int.class);
                     sleepDefaultDisplayFromPowerButton.setAccessible(true);
                     try {
-                        sleepDefaultDisplayFromPowerButton.invoke(param.thisObject,eventTime, 0);
+                        sleepDefaultDisplayFromPowerButton.invoke(param.thisObject, eventTime, 0);
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
                     // 阻止原方法继续执行
                     param.setResult(null);
                 }
-                break;
+            }
+        } else if (model.equals(MODEL_BIHEE_A89)) {
+            // Args
+            KeyEvent event = (KeyEvent) param.args[0];
+            int i = (int) param.args[1];
+            int keyCode = event.getKeyCode();
+            logI(TAG, "test1");
+            if (keyCode == KeyEvent.KEYCODE_POWER) {
+                logI(TAG, "test2");
+                boolean mSystemBooted = XposedHelpers.getBooleanField(param.thisObject, "mSystemBooted");
+                if (mSystemBooted) {
+                    // Decompiled code from JadX
+                    int mPendingWakeKey = -1;
+                    int displayId = (int) XposedHelpers.callMethod(event, "getDisplayId");
 
-            case MODEL_CP23NV3:
-                Object keyguardServiceDelegate = XposedHelpers.getObjectField(param.thisObject, "mKeyguardDelegate");
-                boolean keyguardActive = keyguardServiceDelegate != null && (boolean) callMethod(keyguardServiceDelegate, "isShowing");
-                // 反射调用isHomeActivity()和isScreensaver()
-                Class<?> PhoneWindowManager = findClassIfExists("com.android.server.policy.PhoneWindowManager");
-                Method isHomeActivity = XposedHelpers.findMethodExact(
-                        PhoneWindowManager,"isHomeActivity"
-                );
-                isHomeActivity.setAccessible(true);
-                Method isScreensaver = XposedHelpers.findMethodExact(
-                        PhoneWindowManager,"isScreensaver"
-                );
-                isScreensaver.setAccessible(true);
-                boolean IsHomeActivity;
-                boolean IsScreensaver;
-                try {
-                    IsHomeActivity = (boolean) isHomeActivity.invoke(param.thisObject);
-                    IsScreensaver = (boolean) isScreensaver.invoke(param.thisObject);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-                // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
-                if (!keyguardActive && !IsHomeActivity && !IsScreensaver) {
-                    Method getTopActivity = XposedHelpers.findMethodExact(
-                            PhoneWindowManager,"getTopActivity"
+                    int i2;
+                    boolean z;
+                    boolean z5 = event.getAction() == 0;
+                    boolean z6 = (i & 1) != 0 || (boolean) XposedHelpers.callMethod(event, "isWakeKey");
+                    boolean z8 = (536870912 & i) != 0;
+                    boolean z9 = (16777216 & i) != 0;
+
+                    Method shouldDispatchInputWhenNonInteractive = XposedHelpers.findMethodExact(
+                            PhoneWindowManager,
+                            "shouldDispatchInputWhenNonInteractive",
+                            int.class,
+                            int.class
                     );
-                    ComponentName top;
+                    shouldDispatchInputWhenNonInteractive.setAccessible(true);
+
+                    Method isWakeKeyWhenScreenOff = XposedHelpers.findMethodExact(
+                            PhoneWindowManager,
+                            "isWakeKeyWhenScreenOff",
+                            int.class
+                    );
+                    isWakeKeyWhenScreenOff.setAccessible(true);
+
+                    boolean shouldDispatchInputWhenNonInteractive1;
+                    boolean isWakeKeyWhenScreenOff1;
                     try {
-                        top = (ComponentName) getTopActivity.invoke(param.thisObject);
-                    } catch (Throwable e) {
+                        shouldDispatchInputWhenNonInteractive1 = (boolean) shouldDispatchInputWhenNonInteractive.invoke(param.thisObject, displayId, keyCode);
+                        isWakeKeyWhenScreenOff1 = (boolean) isWakeKeyWhenScreenOff.invoke(param.thisObject, keyCode);
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    if (top.getPackageName().equals("com.wtbruh.fakelauncher")) {
-                        Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
-                                PhoneWindowManager,
-                                "sleepDefaultDisplayFromPowerButton",
-                                long.class,
-                                int.class);
-                        sleepDefaultDisplayFromPowerButton.setAccessible(true);
-                        try {
-                            sleepDefaultDisplayFromPowerButton.invoke(param.thisObject,eventTime, 0);
-                        } catch (Throwable e) {
-                            throw new RuntimeException(e);
+
+                    if (z8 || (z9 && !z6)) {
+                        int i3 = 1;
+                        if (z8) {
+                            if (keyCode == mPendingWakeKey && !z5) {
+                                i3 = 0;
+                            }
+                            mPendingWakeKey = -1;
+                            i2 = i3;
+                        } else {
+                            i2 = 1;
                         }
-                        // 阻止原方法继续执行
-                        param.setResult(null);
+                    } else if (shouldDispatchInputWhenNonInteractive1) {
+                        mPendingWakeKey = -1;
+                        i2 = 1;
+                    } else {
+                        if (z6 && (!z5 || !isWakeKeyWhenScreenOff1)) {
+                            z6 = false;
+                        }
+                        if (z6 && z5) {
+                            mPendingWakeKey = keyCode;
+                        }
+                        i2 = 0;
                     }
+
+                    // 替代 Display.isOnState 的判断
+                    Object mDefaultDisplay = XposedHelpers.getObjectField(param.thisObject, "mDefaultDisplay");
+                    int displayState = (int) XposedHelpers.callMethod(mDefaultDisplay, "getState");
+
+                    // 直接判断 state 是否为 STATE_ON
+                    boolean isOnState = (displayState == Display.STATE_ON);
+                    boolean z11 = z8 && isOnState;
+
+                    Method getRunningActivityName = XposedHelpers.findMethodExact(
+                            PhoneWindowManager,
+                            "getRunningActivityName"
+                    );
+                    getRunningActivityName.setAccessible(true);
+
+                    // Typo in "Telecomm" must be the manufacture's fault
+                    Method getTelecommService = XposedHelpers.findMethodExact(
+                            PhoneWindowManager,
+                            "getTelecommService"
+                    );
+                    getTelecommService.setAccessible(true);
+
+                    String runningActivityName;
+                    TelecomManager telecommService4;
+
+                    try {
+                        runningActivityName = (String) getRunningActivityName.invoke(param.thisObject);
+                        telecommService4 = (TelecomManager) getTelecommService.invoke(param.thisObject);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    Object mDefaultDisplayPolicy = XposedHelpers.getObjectField(param.thisObject, "mDefaultDisplayPolicy");
+                    boolean isScreenOnFully = (boolean) XposedHelpers.callMethod(mDefaultDisplayPolicy, "isScreenOnFully");
+                    boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(param.thisObject, "isKeyguardShowing");
+                    if (! isScreenOnFully || ! isKeyguardShowing || telecommService4 == null || telecommService4.isInCall() ) {}
+                    logI(TAG, "BIHEE A89 test finish");
+
                 }
-                break;
+            }
         }
     }
 

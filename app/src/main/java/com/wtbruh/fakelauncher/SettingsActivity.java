@@ -16,8 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.wtbruh.fakelauncher.ui.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.settings.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 import java.util.ArrayList;
@@ -41,6 +44,13 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings_container, new SettingsFragment())
                 .commit();
+    }
+
+    public void openSubSettings(String page) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.settings_container, SubSettingsFragment.newInstance(page));
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     public static class PermissionStatus extends AppCompatActivity {

@@ -25,7 +25,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.phone.DialerFragment;
-import com.wtbruh.fakelauncher.ui.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -61,7 +61,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         // Switch UI style
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String[] UIStyles = getResources().getStringArray(R.array.pref_style);
-        String UIStyle = pref.getString(SettingsFragment.PREF_STYLE, UIStyles[0]);
+        String UIStyle = pref.getString(SubSettingsFragment.PREF_STYLE, UIStyles[0]);
         if (UIStyle.equals(UIStyles[1])) {
             setContentView(R.layout.activity_main_player);
         } else {
@@ -112,7 +112,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
                 SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean pref = defaultPref.getBoolean(SettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
+                boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
                 if (! pref) return super.onKeyUp(keyCode, event);
             }
             // Open menu UI

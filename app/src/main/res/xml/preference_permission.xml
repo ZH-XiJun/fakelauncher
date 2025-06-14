@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/pref_category_permissions">
         <Preference
             android:key="grant_all_permissions"
@@ -26,7 +26,7 @@
         <Preference
             android:key="check_privilege"
             android:title="@string/pref_check_privilege"
-            app:summary="@string/pref_tap_me" />
+            android:summary="@string/pref_tap_me" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="enable_dhizuku"
@@ -34,41 +34,10 @@
         <Preference
             android:key="check_device_admin"
             android:title="@string/pref_check_device_admin"
-            app:summary="@string/pref_tap_me" />
+            android:summary="@string/pref_tap_me" />
         <Preference
             android:key="deactivate_device_owner"
             android:title="@string/pref_deactivate_device_owner"
             app:isPreferenceVisible="false" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_category_preferences">
-        <ListPreference
-            android:defaultValue="phone"
-            android:entries="@array/pref_style_string"
-            android:entryValues="@array/pref_style"
-            android:key="style"
-            android:title="@string/pref_style" />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="dpad_center_open_menu"
-            android:title="@string/pref_dpad_center_open_menu"
-            app:summary="@string/pref_dpad_center_open_menu_summary" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="vibrate_on_start"
-            android:title="@string/pref_vibrate_on_start"
-            app:summary="@string/pref_vibrate_on_start_summary" />
-        <ListPreference
-            android:defaultValue="dpad"
-            android:entries="@array/pref_exit_fakeui_method_string"
-            android:entryValues="@array/pref_exit_fakeui_method"
-            android:key="exit_fakeui_method"
-            android:title="@string/pref_exit_fakeui_method" />
-        <EditTextPreference
-            android:defaultValue=""
-            android:key="exit_fakeui_config"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/pref_exit_fakeui_config" />
-    </PreferenceCategory>
-
 </PreferenceScreen>

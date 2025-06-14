@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="dpad_center_open_menu"
+        android:title="@string/pref_dpad_center_open_menu"
+        android:summary="@string/pref_dpad_center_open_menu_summary" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="vibrate_on_start"
+        android:title="@string/pref_vibrate_on_start"
+        android:summary="@string/pref_vibrate_on_start_summary" />
+    <ListPreference
+        android:defaultValue="dpad"
+        android:entries="@array/pref_exit_fakeui_method_string"
+        android:entryValues="@array/pref_exit_fakeui_method"
+        android:key="exit_fakeui_method"
+        android:title="@string/pref_exit_fakeui_method" />
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="exit_fakeui_config"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_exit_fakeui_config" />
+</PreferenceScreen>

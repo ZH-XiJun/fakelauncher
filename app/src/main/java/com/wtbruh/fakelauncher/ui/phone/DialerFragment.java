@@ -15,7 +15,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.ui.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -90,7 +90,7 @@ public class DialerFragment extends MyFragment {
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
             if (UIHelper.checkExitMethod(getActivity(), 1)) {
                 Log.d(TAG,"User set dialer for exit method");
-                String secretCode = mPrefs.getString(SettingsFragment.PREF_EXIT_FAKEUI_CONFIG, "");
+                String secretCode = mPrefs.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG, "");
                 if (!secretCode.isEmpty()){
                     if (mEditText.getText().equals("*#"+secretCode+"#*")) {
                         Log.d(TAG,"secret code correct!!!");

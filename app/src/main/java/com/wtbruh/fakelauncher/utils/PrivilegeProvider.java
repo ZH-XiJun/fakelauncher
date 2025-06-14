@@ -20,7 +20,7 @@ import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.ui.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 
 import rikka.shizuku.Shizuku;
@@ -167,7 +167,7 @@ public class PrivilegeProvider {
      */
     public static int checkDeviceAdmin(Context context) {
         boolean dhizuku = PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(SettingsFragment.PREF_ENABLE_DHIZUKU, false);
+                .getBoolean(SubSettingsFragment.PREF_ENABLE_DHIZUKU, false);
 
         if (dhizuku) {
             Log.d(TAG, "Requesting dhizuku");

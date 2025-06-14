@@ -18,7 +18,7 @@ import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.ui.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.MyFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -97,7 +97,7 @@ public class PasswordFragment extends MyFragment {
             error.setVisibility(View.VISIBLE);
         } else if (UIHelper.checkExitMethod(getActivity(), 2)) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            if (passwd.equals(pref.getString(SettingsFragment.PREF_EXIT_FAKEUI_CONFIG, ""))) {
+            if (passwd.equals(pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG, ""))) {
                 Log.d(TAG,"password correct!!!");
                 UIHelper.intentStarter(getActivity(), MainActivity.class);
             } else {

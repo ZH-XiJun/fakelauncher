@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- pref_privilege_provider -->
+    <string-array name="pref_privilege_provider">
+        <item>None</item>
+        <item>Root</item>
+        <item>Shizuku</item>
+    </string-array>
+
+    <string-array name="pref_privilege_provider_string">
+        <item>@string/pref_provider_none</item>
+        <item>@string/pref_provider_root</item>
+        <item>@string/pref_provider_shizuku</item>
+    </string-array>
+
+    <string name="pref_privilege_provider_default" translatable="false">None</string>
+
+    <!-- pref_style -->
+    <string-array name="pref_style">
+        <item>phone</item>
+        <item>player</item>
+    </string-array>
+
+    <string-array name="pref_style_string">
+        <item>@string/pref_style_phone</item>
+        <item>@string/pref_style_player</item>
+    </string-array>
+
+    <string name="pref_style_default" translatable="false">phone</string>
+
+    <!-- pref_exit_fakeui_method -->
+    <string-array name="pref_exit_fakeui_method">
+        <item>dpad</item>
+        <item>dialer</item>
+        <item>passwd</item>
+    </string-array>
+
+    <string-array name="pref_exit_fakeui_method_string">
+        <item>@string/pref_exit_dpad</item>
+        <item>@string/pref_exit_dialer</item>
+        <item>@string/pref_exit_password</item>
+    </string-array>
+
+    <string name="pref_exit_fakeui_method_default" translatable="false">dpad</string>
+
+</resources>

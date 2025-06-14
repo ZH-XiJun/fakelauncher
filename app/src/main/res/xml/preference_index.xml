@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="permission"
+        android:title="@string/pref_page_permissions"
+        android:summary="@string/pref_page_permissions_summary"/>
+    <Preference
+        android:key="view"
+        android:title="@string/pref_page_view"
+        android:summary="@string/pref_page_view_summary"/>
+    <Preference
+        android:key="behaviour"
+        android:title="@string/pref_page_behaviour"
+        android:summary="@string/pref_page_behaviour_summary"/>
+</PreferenceScreen>

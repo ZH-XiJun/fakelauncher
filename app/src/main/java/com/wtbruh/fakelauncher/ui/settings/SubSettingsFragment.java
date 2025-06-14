@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui;
+package com.wtbruh.fakelauncher.ui.settings;
 
 
 import static androidx.core.content.ContextCompat.getSystemService;
@@ -27,11 +27,13 @@ import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Objects;
 
-public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
+public class SubSettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
-    private final static String TAG = SettingsFragment.class.getSimpleName();
+    private final static String TAG = SubSettingsFragment.class.getSimpleName();
+    private final static String ARG_PAGE = "page";
 
     private ActivityResultLauncher<Intent> SAFlauncher = null;
 
@@ -51,16 +53,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public final static String PREF_GALLERY_ACCESS_URI = "gallery_access_uri";
     public final static String PREF_STYLE = "style";
 
-    public final static String[] CLICKABLE_PREFS = {
-            "check_privilege",
-            "check_device_admin",
-            "grant_all_permissions",
-            "permission_grant_status",
-            "deactivate_device_owner",
-            "gallery_access"
-    };
+    public SubSettingsFragment() {
+    }
 
-    public SettingsFragment () {
+    public static SubSettingsFragment newInstance(String page) {
+        SubSettingsFragment fragment = new SubSettingsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PAGE, page);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     /**
@@ -101,8 +102,31 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.preferences, rootKey);
-        init();
+        // If getArguments() is null, fallback to permission page
+        // 尝试调用getArguments()获取将要打开的设置子页面，如果getArguments()为null就默认打开权限界面
+        int xml = R.xml.preference_permission;
+        String page = SettingsFragment.PAGE_PERMISSION;
+
+        Bundle args = getArguments();
+        if (args != null) {
+            page = args.getString(ARG_PAGE, SettingsFragment.PAGE_PERMISSION);
+            switch (page) {
+                case SettingsFragment.PAGE_BEHAVIOUR:
+                    xml = R.xml.preference_behaviour;
+                    break;
+                case SettingsFragment.PAGE_VIEW:
+                    xml = R.xml.preference_view;
+                    break;
+                case SettingsFragment.PAGE_PERMISSION:
+                // If argument invalid, fallback to permission page
+                // 如果乱传参数，默认也是打开权限页面
+                default:
+                    xml = R.xml.preference_permission;
+                    break;
+            }
+        }
+        setPreferencesFromResource(xml, rootKey);
+        init(page);
     }
 
     @Override
@@ -124,30 +148,50 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     /**
      * Initialize 初始化
      */
-    private void init() {
+    private void init(String page) {
         Preference pref;
-        // Init of clickable preferences
-        for (String key : CLICKABLE_PREFS) {
-            pref = findPreference(key);
-            if (pref != null) pref.setOnPreferenceClickListener(this);
+        // List for preferences need OnPreferenceClickListener
+        String[] clickablePrefs = new String[0];
+        // List for preferences need call prefSetup()
+        String[] setupPrefs = new String[0];
+
+        switch (page) {
+            case SettingsFragment.PAGE_PERMISSION:
+                clickablePrefs = new String[]{
+                        PREF_CHECK_PRIVILEGE,
+                        PREF_CHECK_DEVICE_ADMIN,
+                        PREF_GRANT_ALL_PERMISSIONS,
+                        PREF_PERMISSION_GRANT_STATUS,
+                        PREF_DEACTIVATE_DEVICE_OWNER,
+                        PREF_GALLERY_ACCESS
+                };
+                setupPrefs = new String[]{
+                        PREF_PRIVILEGE_PROVIDER,
+                        PREF_CHECK_XPOSED,
+                        PREF_CHECK_DEVICE_ADMIN
+                };
+                break;
+            case SettingsFragment.PAGE_VIEW:
+                setupPrefs = new String[]{
+                        PREF_STYLE
+                };
+                break;
+            case SettingsFragment.PAGE_BEHAVIOUR:
+                setupPrefs = new String[]{
+                        PREF_EXIT_FAKEUI_METHOD
+                };
+                break;
         }
-        // Init of pref "privilege_provider"
-        pref = findPreference(PREF_PRIVILEGE_PROVIDER);
-        if (pref != null) prefSetup(pref);
-        // Init of pref "exit_fakeui_method"
-        pref = findPreference(PREF_EXIT_FAKEUI_METHOD);
-        if (pref != null) prefSetup(pref);
-        // Init of pref "exit_fakeui_config"
-        pref = findPreference(PREF_EXIT_FAKEUI_CONFIG);
-        if (pref != null) prefSetup(pref);
-        // Init of pref "check_xposed"
-        pref = findPreference(PREF_CHECK_XPOSED);
-        if (pref != null) prefSetup(pref);
-        pref = findPreference(PREF_CHECK_DEVICE_ADMIN);
-        if (pref != null) prefSetup(pref);
-        pref = findPreference(PREF_STYLE);
-        if (pref != null) prefSetup(pref);
+        // Init of clickable preferences
+        for (String key : clickablePrefs) {
+            if ((pref = findPreference(key)) != null) pref.setOnPreferenceClickListener(this);
+        }
+        // Init of preferences need call prefSetup()
+        for (String key : setupPrefs) {
+            if ((pref = findPreference(key)) != null) prefSetup(pref);
+        }
     }
+
 
     /**
      * Convert value of ListPreference to text description<br>
@@ -261,19 +305,21 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         switch (key) {
             case PREF_PRIVILEGE_PROVIDER:
                 prefSetup(pref);
-                findPreference(PREF_CHECK_PRIVILEGE).setSummary(R.string.pref_tap_me);
+                if ((pref = findPreference(PREF_CHECK_PRIVILEGE)) != null) pref.setSummary(R.string.pref_tap_me);
                 break;
             case PREF_EXIT_FAKEUI_METHOD:
                 EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG);
                 prefSetup(pref);
-                prefSetup(exitFakeuiConfig);
-                sharedPreferences.edit()
-                        .putString(PREF_EXIT_FAKEUI_CONFIG, "")
-                        .apply();
-                exitFakeuiConfig.setText("");
+                if (exitFakeuiConfig != null) {
+                    prefSetup(exitFakeuiConfig);
+                    sharedPreferences.edit()
+                            .putString(PREF_EXIT_FAKEUI_CONFIG, "")
+                            .apply();
+                    exitFakeuiConfig.setText("");
+                }
                 break;
             case PREF_ENABLE_DHIZUKU:
-                prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
+                if ((pref = findPreference(PREF_CHECK_DEVICE_ADMIN)) != null) prefSetup(pref);
                 break;
             case PREF_STYLE:
                 prefSetup(pref);
@@ -313,8 +359,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 DevicePolicyManager dpm = getSystemService(getActivity(), DevicePolicyManager.class);
                 dpm.clearDeviceOwnerApp(getActivity().getPackageName());
                 prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
+                break;
             case PREF_GALLERY_ACCESS:
                 SAFlauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+                break;
         }
         return false;
     }

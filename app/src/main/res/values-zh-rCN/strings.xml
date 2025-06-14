@@ -46,6 +46,8 @@
     <!-- 软件设置文字提示 -->
     <string name="pref_tap_me">戳我！</string>
 
+    <string name="pref_page_permissions">权限与特权</string>
+    <string name="pref_page_permissions_summary">程序正常运行需要用户提供权限</string>
     <string name="pref_category_permissions">普通权限</string>
     <string name="pref_grant_all_permissions">使用授权器授权所有权限</string>
     <string name="pref_grant_all_permissions_summary">记得先选择一个授权器</string>
@@ -71,10 +73,14 @@
     <string name="pref_deactivate_device_owner">停用设备所有者</string>
     <string name="pref_deactivated">未激活</string>
 
-    <string name="pref_category_preferences">偏好</string>
+    <string name="pref_page_view">界面</string>
+    <string name="pref_page_view_summary">UI相关的配置</string>
     <string name="pref_style">UI样式</string>
     <string name="pref_style_phone">老人机</string>
     <string name="pref_style_player">音乐播放器（MP3）</string>
+
+    <string name="pref_page_behaviour">行为</string>
+    <string name="pref_page_behaviour_summary">控制程序的一些行为</string>
     <string name="pref_dpad_center_open_menu">Dpad center键可以打开App菜单</string>
     <string name="pref_dpad_center_open_menu_summary">Dpad center就是方向键中间那个</string>
     <string name="pref_vibrate_on_start">打开伪装界面时振动一下</string>

@@ -9,7 +9,7 @@ import android.os.Vibrator;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import com.wtbruh.fakelauncher.ui.SettingsFragment;
+import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
@@ -18,7 +18,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Vibrate on launching fake ui
-        if (PreferenceManager.getDefaultSharedPreferences(SplashActivity.this).getBoolean(SettingsFragment.PREF_VIBRATE_ON_START,true)) {
+        if (PreferenceManager.getDefaultSharedPreferences(SplashActivity.this).getBoolean(SubSettingsFragment.PREF_VIBRATE_ON_START,true)) {
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(200);
         }

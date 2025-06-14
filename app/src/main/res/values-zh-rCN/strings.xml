@@ -25,6 +25,7 @@
     <!-- 主界面文字 -->
     <string name="sim_inseted">已插入</string>
     <string name="sim_removed">未插入</string>
+    <string name="date_format" translatable="true">yyyy年mm月dd日</string>
     <!-- 密码界面文字提示 -->
     <string name="enter_password">请输入安全密码</string>
     <string name="password_wrong">密码错误！</string>
@@ -78,6 +79,8 @@
     <string name="pref_style">UI样式</string>
     <string name="pref_style_phone">老人机</string>
     <string name="pref_style_player">音乐播放器（MP3）</string>
+    <string name="pref_time_show_seconds">时钟显秒</string>
+    <string name="pref_time_show_seconds_summary">慎用，该功能在真老人机中并不常见</string>
 
     <string name="pref_page_behaviour">行为</string>
     <string name="pref_page_behaviour_summary">控制程序的一些行为</string>

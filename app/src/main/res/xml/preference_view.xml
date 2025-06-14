@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
-        android:defaultValue="phone"
+        android:defaultValue="@string/pref_style_default"
         android:entries="@array/pref_style_string"
         android:entryValues="@array/pref_style"
         android:key="style"
         android:title="@string/pref_style" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="time_show_second"
+        android:title="@string/pref_time_show_seconds"
+        android:summary="@string/pref_time_show_seconds_summary" />
 </PreferenceScreen>

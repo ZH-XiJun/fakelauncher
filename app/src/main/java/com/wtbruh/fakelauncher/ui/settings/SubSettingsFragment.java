@@ -52,6 +52,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_VIBRATE_ON_START = "vibrate_on_start";
     public final static String PREF_GALLERY_ACCESS_URI = "gallery_access_uri";
     public final static String PREF_STYLE = "style";
+    public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
 
     public SubSettingsFragment() {
     }

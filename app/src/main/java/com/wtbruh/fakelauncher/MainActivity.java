@@ -1,5 +1,6 @@
 package com.wtbruh.fakelauncher;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -40,6 +41,11 @@ import java.util.TimerTask;
 
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
     private Timer mTimer;
+    // Regularly refresh data
+    private String previousDate;
+    private String previousTime;
+    private String previousBattery;
+
     private int count = 0;
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
     private boolean mReceiverRegistered = false;
@@ -91,7 +97,6 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     public void onResume() {
         super.onResume();
         // 检查是否需要退出
-        // Log.d(TAG, "checkexit" + getIntent().getBooleanExtra("exit", false));
         if (getIntent().getBooleanExtra("exit", false)) exit();
     }
 
@@ -290,10 +295,15 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         long rawTime = System.currentTimeMillis();
         Date d = new Date(rawTime);
         if (target) {
-            SimpleDateFormat time_format = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+            // Check if showing seconds
+            SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
+            String pattern = pref? "HH:mm:ss" : "HH:mm" ;
+
+            SimpleDateFormat time_format = new SimpleDateFormat(pattern, Locale.getDefault());
             return time_format.format(d);
         } else {
-            SimpleDateFormat date_format = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
+            SimpleDateFormat date_format = new SimpleDateFormat(getResources().getString(R.string.date_format), Locale.getDefault());
             return date_format.format(d);
         }
     }
@@ -304,6 +314,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     private void updateInfo() {
         mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void run() {
                 new Handler(Looper.getMainLooper()).post(() -> {
@@ -313,9 +324,18 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
                     String time = getTime(true);
                     String date = getTime(false);
                     String battery = getBattery(true);
-                    time_view.setText(time);
-                    date_view.setText(date);
-                    battery_view.setText(battery+"%");
+                    if (!time.equals(previousTime)) {
+                        time_view.setText(time);
+                        previousTime = time;
+                    }
+                    if (!date.equals(previousDate)) {
+                        date_view.setText(date);
+                        previousDate = date;
+                    }
+                    if (!battery.equals(previousBattery)) {
+                        battery_view.setText(battery+"%");
+                        previousBattery = battery;
+                    }
                 });
             }
         }, 0, 1000);
@@ -327,18 +347,27 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @return 返回电量百分比，如获取充电状态则为空字符串
      */
     private String getBattery(boolean target) {
+        int defaultValue = -1;
+
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
         if (target) {
-            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            int level = defaultValue;
+            int scale = defaultValue;
+            if (batteryStatus != null) {
+                level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, defaultValue);
+                scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, defaultValue);
+            }
 
             float batteryPct = level * 100 / (float) scale;
             return String.valueOf((int) batteryPct);
         } else {
             // 另外加了个获取充电状态的，只会在刚打开时有用
             TextView connection_view = findViewById(R.id.connection);
-            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            int status = defaultValue;
+            if (batteryStatus != null) {
+                status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, defaultValue);
+            }
             boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                     status == BatteryManager.BATTERY_STATUS_FULL;
             if (isCharging) {

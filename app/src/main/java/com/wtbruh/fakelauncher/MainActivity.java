@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -41,6 +42,11 @@ import java.util.TimerTask;
 
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
     private Timer mTimer;
+
+    // UI style
+    private String mStyle;
+    private String[] mStyles;
+    private String mDefaultStyle;
     // Regularly refresh data
     private String previousDate;
     private String previousTime;
@@ -66,9 +72,10 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
 
         // Switch UI style
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        String[] UIStyles = getResources().getStringArray(R.array.pref_style);
-        String UIStyle = pref.getString(SubSettingsFragment.PREF_STYLE, UIStyles[0]);
-        if (UIStyle.equals(UIStyles[1])) {
+        mStyles = getResources().getStringArray(R.array.pref_style);
+        mDefaultStyle = getResources().getString(R.string.pref_style_default);
+        mStyle = pref.getString(SubSettingsFragment.PREF_STYLE, mDefaultStyle);
+        if (mStyle.equals(mStyles[1])) {
             setContentView(R.layout.activity_main_player);
         } else {
             setContentView(R.layout.activity_main_phone);
@@ -79,7 +86,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        init(UIStyle, UIStyles);
+        init();
     }
 
     @Override
@@ -158,9 +165,27 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     /**
      * Init of MainActivity | MainActivity初始化
      */
-    private void init(String UIStyle, String[] UIStyles) {
-        Log.d(TAG, "Now start init, UI style: " + UIStyle);
-        if (UIStyle.equals(UIStyles[1])) {
+    private void init() {
+        Log.d(TAG, "Now start init, UI style: " + mStyle);
+        // Common init 通用初始化代码
+        // 时间字体大小自适应适配
+        TextView time = findViewById(R.id.time);
+        time.post(() -> {
+            // 获取缩放后的字体大小
+            float textSize = time.getTextSize(); // 单位：px
+            time.setTextSize(textSize);
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
+            Log.d(TAG, "now text size: " + textSize);
+            time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
+            time.requestLayout();
+        });
+        // Start timer 启动计时任务
+        updateInfo();
+        // Register the receiver 注册接收器
+        receiverRegister(true);
+        // Manually get connection status 手动获取连接状态
+        getConnectionStatus();
+        if (mStyle.equals(mStyles[1])) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
             TelephonyHelper mTelHelper = new TelephonyHelper(this);
@@ -168,25 +193,8 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             TextView card2 = findViewById(R.id.card2_provider);
             card1.setText(mTelHelper.getProvidersName(0));
             card2.setText(mTelHelper.getProvidersName(1));
-            // 时间字体大小自适应适配
-            TextView time = findViewById(R.id.time);
-            time.post(() -> {
-                // 获取缩放后的字体大小
-                float textSize = time.getTextSize(); // 单位：px
-                time.setTextSize(textSize);
-                TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
-                Log.d(TAG, "now text size: " + textSize);
-                time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
-                time.requestLayout();
-            });
 
             initDeviceOwner();
-            // Start timer 启动计时任务
-            updateInfo();
-            // Register the receiver 注册接收器
-            receiverRegister(true);
-            // Manually flash connection status at first 先手动刷新下充电状态
-            getBattery(false);
             // Start pin mode 启用屏幕固定
             setLockApp(MainActivity.this, getTaskId());
         }
@@ -379,6 +387,35 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         }
     }
 
+    private void getConnectionStatus() {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = registerReceiver(null, ifilter);
+        int defaultValue = -1;
+        int status = defaultValue;
+        if (batteryStatus != null) {
+            status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, defaultValue);
+        }
+        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL;
+
+        if (mStyle.equals(mStyles[1])) {
+            View connection_view = findViewById(R.id.connection);
+            if (isCharging) {
+                connection_view.setVisibility(View.VISIBLE);
+            } else {
+                connection_view.setVisibility(View.GONE);
+            }
+
+        } else {
+            TextView connection_view = findViewById(R.id.connection);
+            if (isCharging) {
+                connection_view.setText(R.string.charging);
+            } else {
+                connection_view.setText(R.string.not_charging);
+            }
+        }
+    }
+
     /**
      * Get data from PowerConnectionReceiver<br>
      * 从PowerConnectionReceiver里获取连接状态
@@ -386,11 +423,20 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      */
     @Override
     public void getConnectionStatus(String status) {
-        TextView connection_view = findViewById(R.id.connection);
-        if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
-            connection_view.setText(R.string.charging);
-        } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
-            connection_view.setText(R.string.not_charging);
+        if (mStyle.equals(mStyles[1])) {
+            View connection_view = findViewById(R.id.connection);
+            if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
+                connection_view.setVisibility(View.VISIBLE);
+            } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+                connection_view.setVisibility(View.GONE);
+            }
+        } else {
+            TextView connection_view = findViewById(R.id.connection);
+            if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
+                connection_view.setText(R.string.charging);
+            } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+                connection_view.setText(R.string.not_charging);
+            }
         }
     }
 

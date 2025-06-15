@@ -25,7 +25,7 @@
     <!-- 主界面文字 -->
     <string name="sim_inseted">已插入</string>
     <string name="sim_removed">未插入</string>
-    <string name="date_format" translatable="true">yyyy年mm月dd日</string>
+    <string name="date_format" translatable="true">yyyy年MM月dd日</string>
     <!-- 密码界面文字提示 -->
     <string name="enter_password">请输入安全密码</string>
     <string name="password_wrong">密码错误！</string>

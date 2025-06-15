@@ -28,7 +28,7 @@
     <string name="sim_inseted" translatable="true">Inserted</string>
     <string name="sim_removed" translatable="true">Removed</string>
     <!-- todo: English date format-->
-    <string name="date_format" translatable="true">yyyy-mm-dd</string>
+    <string name="date_format" translatable="true">yyyy-MM-dd</string>
     <!-- Password UI hint -->
     <string name="enter_password" translatable="true">Please enter password</string>
     <string name="password_wrong" translatable="true">Wrong password!</string>

@@ -26,12 +26,10 @@ import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private final static String TAG = SettingsActivity.class.getSimpleName();
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        toolbar = findViewById(R.id.settings_toolbar);
+        Toolbar toolbar = findViewById(R.id.settings_toolbar);
         setSupportActionBar(toolbar);
         getSupportFragmentManager()
                 .beginTransaction()
@@ -64,7 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
         else Log.e(TAG, "Set title failed, got null ActionBar!!!");
     }
 
-    public class PermissionStatus extends AppCompatActivity {
+    public static class PermissionStatus extends AppCompatActivity {
 
         ListView listView;
         SimpleAdapter adapter;
@@ -116,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
                     new int[] {R.id.Item, R.id.subItem});
             listView.setAdapter(adapter);
             itemClick(listView);
-            setToolbarTitle(R.string.pref_permission_grant_status);
+
         }
         private String[] getPermissions() {
             try {

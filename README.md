@@ -65,6 +65,8 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 ## TO-DO
 
 - [ ] Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
+- [ ] Add "Star key unlock" feature
+- [ ] Add Media Player (MP3) UI style
 - [ ] Add Contacts page
 - [ ] Add Message page
 - [ ] Dialer can make a phone call (Custom calling UI may not impossible)

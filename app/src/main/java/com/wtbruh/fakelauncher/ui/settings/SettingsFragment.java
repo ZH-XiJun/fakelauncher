@@ -38,4 +38,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         return false;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SettingsActivity activity = (SettingsActivity)getActivity();
+        if (activity != null) activity.setToolbarTitle(R.string.app_settings_name);
+    }
 }

@@ -151,10 +151,12 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
      */
     private void init(String page) {
         Preference pref;
-        // List for preferences need OnPreferenceClickListener
+        // List of preferences need OnPreferenceClickListener
         String[] clickablePrefs = new String[0];
-        // List for preferences need call prefSetup()
+        // List of preferences need call prefSetup()
         String[] setupPrefs = new String[0];
+        // Resource ID of title
+        int titleResId = R.string.pref_page_permissions;
 
         switch (page) {
             case SettingsFragment.PAGE_PERMISSION:
@@ -171,16 +173,19 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         PREF_CHECK_XPOSED,
                         PREF_CHECK_DEVICE_ADMIN
                 };
+                // titleResId = R.string.pref_page_permissions;
                 break;
             case SettingsFragment.PAGE_VIEW:
                 setupPrefs = new String[]{
                         PREF_STYLE
                 };
+                titleResId = R.string.pref_page_view;
                 break;
             case SettingsFragment.PAGE_BEHAVIOUR:
                 setupPrefs = new String[]{
                         PREF_EXIT_FAKEUI_METHOD
                 };
+                titleResId = R.string.pref_page_behaviour;
                 break;
         }
         // Init of clickable preferences
@@ -191,6 +196,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         for (String key : setupPrefs) {
             if ((pref = findPreference(key)) != null) prefSetup(pref);
         }
+        // Init of title
+        SettingsActivity activity = (SettingsActivity)getActivity();
+        if (activity != null) activity.setToolbarTitle(titleResId);
     }
 
 

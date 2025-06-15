@@ -26,7 +26,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Fakelauncher"
+        android:theme="@style/Theme.FakeLauncher"
         tools:targetApi="31" >
         <activity
             android:name=".SplashActivity"
@@ -40,7 +40,7 @@
             android:name=".SettingsActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_settings_name" >
+            android:label="@string/app_settings_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -87,14 +87,18 @@
         <provider
             android:name=".utils.ContentProvider"
             android:authorities="com.wtbruh.fakelauncher"
-            android:exported="true" /> <!-- Shizuku -->
+            android:exported="true" />
+
+        <!-- Shizuku -->
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
             android:enabled="true"
             android:exported="true"
             android:multiprocess="false"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" /> <!-- Xposed module -->
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+        <!-- Xposed module -->
         <meta-data
             android:name="xposedmodule"
             android:value="true" />

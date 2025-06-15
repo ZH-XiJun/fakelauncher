@@ -12,11 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.wtbruh.fakelauncher.ui.settings.SettingsFragment;
@@ -25,10 +26,12 @@ import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private final static String TAG = SettingsActivity.class.getSimpleName();
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        toolbar = findViewById(R.id.settings_toolbar);
+        setSupportActionBar(toolbar);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings_container, new SettingsFragment())
@@ -53,7 +58,13 @@ public class SettingsActivity extends AppCompatActivity {
         ft.commit();
     }
 
-    public static class PermissionStatus extends AppCompatActivity {
+    public void setToolbarTitle(int resId) {
+        ActionBar bar = getSupportActionBar();
+        if (bar != null) bar.setTitle(resId);
+        else Log.e(TAG, "Set title failed, got null ActionBar!!!");
+    }
+
+    public class PermissionStatus extends AppCompatActivity {
 
         ListView listView;
         SimpleAdapter adapter;
@@ -105,6 +116,7 @@ public class SettingsActivity extends AppCompatActivity {
                     new int[] {R.id.Item, R.id.subItem});
             listView.setAdapter(adapter);
             itemClick(listView);
+            setToolbarTitle(R.string.pref_permission_grant_status);
         }
         private String[] getPermissions() {
             try {

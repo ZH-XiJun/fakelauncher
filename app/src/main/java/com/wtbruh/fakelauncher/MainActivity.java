@@ -41,6 +41,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
+    private final static int TIME = 0;
+    private final static int DATE = 1;
+    private final static int WEEK = 2;
+
     private Timer mTimer;
 
     // UI style
@@ -120,43 +124,45 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        counter(keyCode);
-        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-                SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
-                if (! pref) return super.onKeyUp(keyCode, event);
-            }
-            // Open menu UI
-            // 打开菜单界面
-            Log.d(TAG, "Pressed menu key");
-            UIHelper.intentStarter(MainActivity.this, SubActivity.class);
+        if (mStyle.equals(mStyles[0])) {
+            counter(keyCode);
+            if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                    SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+                    boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
+                    if (!pref) return super.onKeyUp(keyCode, event);
+                }
+                // Open menu UI
+                // 打开菜单界面
+                Log.d(TAG, "Pressed menu key");
+                UIHelper.intentStarter(MainActivity.this, SubActivity.class);
 
-        } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
-            // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
-            // 模拟老人机逻辑：主界面按数字键打开拨号盘
-            String key;
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_POUND:
-                    key = "#";
-                    break;
-                case KeyEvent.KEYCODE_STAR:
-                    key = "*";
-                    break;
-                default:
-                    // Key 0~9 0到9键
-                    key = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
-                    break;
-            }
-            String[] extra = {DialerFragment.class.getSimpleName(), key};
-            if (! UIHelper.intentStarterDebounce(SubActivity.class)) {
-                startActivity(
-                        new Intent().setClass(MainActivity.this, SubActivity.class)
-                                .putExtra("args", extra)
-                );
-                // Disable transition anim
-                // 去掉过渡动画
-                overridePendingTransition(0, 0);
+            } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
+                // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
+                // 模拟老人机逻辑：主界面按数字键打开拨号盘
+                String key;
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_POUND:
+                        key = "#";
+                        break;
+                    case KeyEvent.KEYCODE_STAR:
+                        key = "*";
+                        break;
+                    default:
+                        // Key 0~9 0到9键
+                        key = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
+                        break;
+                }
+                String[] extra = {DialerFragment.class.getSimpleName(), key};
+                if (!UIHelper.intentStarterDebounce(SubActivity.class)) {
+                    startActivity(
+                            new Intent().setClass(MainActivity.this, SubActivity.class)
+                                    .putExtra("args", extra)
+                    );
+                    // Disable transition anim
+                    // 去掉过渡动画
+                    overridePendingTransition(0, 0);
+                }
             }
         }
         return super.onKeyUp(keyCode, event);
@@ -171,10 +177,9 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         // 时间字体大小自适应适配
         TextView time = findViewById(R.id.time);
         time.post(() -> {
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
             // 获取缩放后的字体大小
             float textSize = time.getTextSize(); // 单位：px
-            time.setTextSize(textSize);
-            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
             Log.d(TAG, "now text size: " + textSize);
             time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
             time.requestLayout();
@@ -299,21 +304,30 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @param target true为获取时间，false为获取日期
      * @return 返回时间/日期信息
      */
-    private String getTime(boolean target){
+    private String getTime(int target){
         long rawTime = System.currentTimeMillis();
         Date d = new Date(rawTime);
-        if (target) {
-            // Check if showing seconds
-            SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-            boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
-            String pattern = pref? "HH:mm:ss" : "HH:mm" ;
-
-            SimpleDateFormat time_format = new SimpleDateFormat(pattern, Locale.getDefault());
-            return time_format.format(d);
-        } else {
-            SimpleDateFormat date_format = new SimpleDateFormat(getResources().getString(R.string.date_format), Locale.getDefault());
-            return date_format.format(d);
+        SimpleDateFormat format = null;
+        SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+        switch (target) {
+            case TIME: {
+                // Check if showing seconds
+                boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
+                String pattern = pref ? "HH:mm:ss" : "HH:mm";
+                format = new SimpleDateFormat(pattern, Locale.getDefault());
+                break;
+            }
+            case DATE: {
+                String pattern = mStyles[1].equals(mStyle) ? "yyyy-MM-dd" : getResources().getString(R.string.date_format);
+                format = new SimpleDateFormat(pattern, Locale.getDefault());
+                break;
+            }
+            case WEEK: {
+                format = new SimpleDateFormat("E", Locale.getDefault());
+                break;
+            }
         }
+        return format == null ? "" : format.format(d) ;
     }
 
     /**
@@ -328,15 +342,17 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
                 new Handler(Looper.getMainLooper()).post(() -> {
                     TextView time_view = findViewById(R.id.time);
                     TextView date_view = findViewById(R.id.date);
+                    TextView week_view = mStyles[1].equals(mStyle) ? findViewById(R.id.week) : null;
                     TextView battery_view = findViewById(R.id.battery);
-                    String time = getTime(true);
-                    String date = getTime(false);
+                    String time = getTime(TIME);
+                    String date = getTime(DATE);
                     String battery = getBattery(true);
                     if (!time.equals(previousTime)) {
                         time_view.setText(time);
                         previousTime = time;
                     }
                     if (!date.equals(previousDate)) {
+                        if (week_view != null) week_view.setText(getTime(WEEK));
                         date_view.setText(date);
                         previousDate = date;
                     }

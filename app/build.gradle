@@ -3,6 +3,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('D:\\Android Studio\\keystores\\mykeystore.jks')
+            storePassword 'NP2017!apk'
+            keyAlias 'whathebruh'
+            keyPassword 'NP2019.dmg'
+        }
+    }
     namespace 'com.wtbruh.fakelauncher'
     compileSdk 35
 

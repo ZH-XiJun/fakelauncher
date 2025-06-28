@@ -46,6 +46,7 @@
     <string name="volume_adjust">音量调节</string>
     <!-- 软件设置文字提示 -->
     <string name="pref_tap_me">戳我！</string>
+    <string name="pref_caution">慎用，该功能在真老人机中并不常见</string>
 
     <string name="pref_page_permissions">权限与特权</string>
     <string name="pref_page_permissions_summary">程序正常运行需要用户提供权限</string>
@@ -80,7 +81,9 @@
     <string name="pref_style_phone">老人机</string>
     <string name="pref_style_player">音乐播放器（MP3）</string>
     <string name="pref_time_show_seconds">时钟显秒</string>
-    <string name="pref_time_show_seconds_summary">慎用，该功能在真老人机中并不常见</string>
+    <string name="pref_time_show_seconds_summary">时间显示准确到秒</string>
+    <string name="pref_show_accurate_battery">显示精确电量百分比</string>
+    <string name="pref_show_accurate_battery_summary">同时右上角的电池图标也会被隐藏</string>
 
     <string name="pref_page_behaviour">行为</string>
     <string name="pref_page_behaviour_summary">控制程序的一些行为</string>

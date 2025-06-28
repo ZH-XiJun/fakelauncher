@@ -49,6 +49,7 @@
     <string name="volume_adjust" translatable="true">Volume adjust</string>
     <!-- Preferences -->
     <string name="pref_tap_me" translatable="true">Tap me!</string>
+    <string name="pref_caution" translatable="true">Be careful as the feature you\'ve enabled is not common in real feature phones</string>
 
     <string name="pref_page_permissions" translatable="true">Permissions and privileges</string>
     <string name="pref_page_permissions_summary" translatable="true">Program needs them to run normally</string>
@@ -85,7 +86,9 @@
     <string name="pref_style_phone" translatable="true">Feature phone</string>
     <string name="pref_style_player" translatable="true">Media player</string>
     <string name="pref_time_show_seconds" translatable="true">Show seconds in the clock</string>
-    <string name="pref_time_show_seconds_summary" translatable="true">Be careful because this feature is not common in real feature phones.</string>
+    <string name="pref_time_show_seconds_summary" translatable="true">Time display will be accurate to seconds</string>
+    <string name="pref_show_accurate_battery" translatable="true">Show accurate battery percent</string>
+    <string name="pref_show_accurate_battery_summary" translatable="true">Battery icon will be hidden at the same time</string>
 
     <string name="pref_page_behaviour" translatable="true">Behaviour</string>
     <string name="pref_page_behaviour_summary" translatable="true">Control some behaviours of the program</string>

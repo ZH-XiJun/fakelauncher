@@ -53,6 +53,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_GALLERY_ACCESS_URI = "gallery_access_uri";
     public final static String PREF_STYLE = "style";
     public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
+    public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
 
     public SubSettingsFragment() {
     }
@@ -224,6 +225,17 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     }
 
     /**
+     * Replace the summary of the switch preference in need with warning message<br>
+     * 将某些开关设置（SwitchPreference）的简介设置为警告（该设置为启用状态）
+     * @param pref 该设置的Preference对象
+     * @param defaultSummary 默认的简介
+     */
+    private void addWarningToSummary(Preference pref, int defaultSummary) {
+        boolean prefValue = pref.getSharedPreferences().getBoolean(pref.getKey(), false);
+        pref.setSummary(prefValue? R.string.pref_caution : defaultSummary);
+    }
+
+    /**
      * Preference setup code package<br>
      * Preference设置代码 封装
      * @param pref Preference
@@ -307,10 +319,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
         if (key == null) return;
+
         Log.d(TAG, "Shared preference changed! key:"+key);
         Preference pref = findPreference(key);
 
         if (pref == null) return;
+
+        int defaultSummary = 0;
         switch (key) {
             case PREF_PRIVILEGE_PROVIDER:
                 prefSetup(pref);
@@ -333,7 +348,14 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case PREF_STYLE:
                 prefSetup(pref);
                 break;
+            case PREF_TIME_SHOW_SECOND:
+                defaultSummary = R.string.pref_time_show_seconds_summary;
+                break;
+            case PREF_SHOW_ACCURATE_BATTERY:
+                defaultSummary = R.string.pref_show_accurate_battery_summary;
+                break;
         }
+        if (defaultSummary != 0) addWarningToSummary(pref, defaultSummary);
     }
 
     @Override

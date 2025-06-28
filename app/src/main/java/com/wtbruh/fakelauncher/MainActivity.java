@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,9 +16,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewOverlay;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -29,8 +32,10 @@ import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
+import com.wtbruh.fakelauncher.utils.LunarCalender;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
+import com.wtbruh.fakelauncher.utils.StatusNavigationUtils;
 import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -41,16 +46,29 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
+    private final static int TIME = 0;
+    private final static int DATE = 1;
+    private final static int WEEK = 2;
+
     private Timer mTimer;
+    // battery
+    private int batteryLevel;
+    private final static int[] batteryIcons = {
+            R.drawable.ic_battery_1,
+            R.drawable.ic_battery_2,
+            R.drawable.ic_battery_3,
+            R.drawable.ic_battery_4
+    };
+    private boolean mCharging = false;
+    private boolean mAccurateBattery = false;
 
     // UI style
     private String mStyle;
     private String[] mStyles;
-    private String mDefaultStyle;
     // Regularly refresh data
     private String previousDate;
     private String previousTime;
-    private String previousBattery;
+    private int previousBattery;
 
     private int count = 0;
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
@@ -73,7 +91,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         // Switch UI style
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         mStyles = getResources().getStringArray(R.array.pref_style);
-        mDefaultStyle = getResources().getString(R.string.pref_style_default);
+        String mDefaultStyle = getResources().getString(R.string.pref_style_default);
         mStyle = pref.getString(SubSettingsFragment.PREF_STYLE, mDefaultStyle);
         if (mStyle.equals(mStyles[1])) {
             setContentView(R.layout.activity_main_player);
@@ -103,8 +121,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     @Override
     public void onResume() {
         super.onResume();
-        // 检查是否需要退出
-        if (getIntent().getBooleanExtra("exit", false)) exit();
+        batteryAccurate();
     }
 
     @Override
@@ -120,43 +137,45 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        counter(keyCode);
-        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-                SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
-                if (! pref) return super.onKeyUp(keyCode, event);
-            }
-            // Open menu UI
-            // 打开菜单界面
-            Log.d(TAG, "Pressed menu key");
-            UIHelper.intentStarter(MainActivity.this, SubActivity.class);
+        if (mStyle.equals(mStyles[0])) {
+            counter(keyCode);
+            if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                    SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+                    boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
+                    if (!pref) return super.onKeyUp(keyCode, event);
+                }
+                // Open menu UI
+                // 打开菜单界面
+                Log.d(TAG, "Pressed menu key");
+                UIHelper.intentStarter(MainActivity.this, SubActivity.class);
 
-        } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
-            // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
-            // 模拟老人机逻辑：主界面按数字键打开拨号盘
-            String key;
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_POUND:
-                    key = "#";
-                    break;
-                case KeyEvent.KEYCODE_STAR:
-                    key = "*";
-                    break;
-                default:
-                    // Key 0~9 0到9键
-                    key = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
-                    break;
-            }
-            String[] extra = {DialerFragment.class.getSimpleName(), key};
-            if (! UIHelper.intentStarterDebounce(SubActivity.class)) {
-                startActivity(
-                        new Intent().setClass(MainActivity.this, SubActivity.class)
-                                .putExtra("args", extra)
-                );
-                // Disable transition anim
-                // 去掉过渡动画
-                overridePendingTransition(0, 0);
+            } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
+                // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
+                // 模拟老人机逻辑：主界面按数字键打开拨号盘
+                String key;
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_POUND:
+                        key = "#";
+                        break;
+                    case KeyEvent.KEYCODE_STAR:
+                        key = "*";
+                        break;
+                    default:
+                        // Key 0~9 0到9键
+                        key = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
+                        break;
+                }
+                String[] extra = {DialerFragment.class.getSimpleName(), key};
+                if (!UIHelper.intentStarterDebounce(SubActivity.class)) {
+                    startActivity(
+                            new Intent().setClass(MainActivity.this, SubActivity.class)
+                                    .putExtra("args", extra)
+                    );
+                    // Disable transition anim
+                    // 去掉过渡动画
+                    overridePendingTransition(0, 0);
+                }
             }
         }
         return super.onKeyUp(keyCode, event);
@@ -168,17 +187,18 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     private void init() {
         Log.d(TAG, "Now start init, UI style: " + mStyle);
         // Common init 通用初始化代码
+        setStatusBarNoFillAndTransParent();
         // 时间字体大小自适应适配
         TextView time = findViewById(R.id.time);
         time.post(() -> {
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
             // 获取缩放后的字体大小
             float textSize = time.getTextSize(); // 单位：px
-            time.setTextSize(textSize);
-            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
             Log.d(TAG, "now text size: " + textSize);
             time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
             time.requestLayout();
         });
+        batteryAccurate();
         // Start timer 启动计时任务
         updateInfo();
         // Register the receiver 注册接收器
@@ -197,6 +217,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
             setLockApp(MainActivity.this, getTaskId());
+
         }
     }
 
@@ -299,21 +320,30 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
      * @param target true为获取时间，false为获取日期
      * @return 返回时间/日期信息
      */
-    private String getTime(boolean target){
+    private String getTime(int target){
         long rawTime = System.currentTimeMillis();
         Date d = new Date(rawTime);
-        if (target) {
-            // Check if showing seconds
-            SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-            boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
-            String pattern = pref? "HH:mm:ss" : "HH:mm" ;
-
-            SimpleDateFormat time_format = new SimpleDateFormat(pattern, Locale.getDefault());
-            return time_format.format(d);
-        } else {
-            SimpleDateFormat date_format = new SimpleDateFormat(getResources().getString(R.string.date_format), Locale.getDefault());
-            return date_format.format(d);
+        SimpleDateFormat format = null;
+        SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+        switch (target) {
+            case TIME: {
+                // Check if showing seconds
+                boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
+                String pattern = pref ? "HH:mm:ss" : "HH:mm";
+                format = new SimpleDateFormat(pattern, Locale.getDefault());
+                break;
+            }
+            case DATE: {
+                String pattern = mStyles[1].equals(mStyle) ? "yyyy-MM-dd" : getResources().getString(R.string.date_format);
+                format = new SimpleDateFormat(pattern, Locale.getDefault());
+                break;
+            }
+            case WEEK: {
+                format = new SimpleDateFormat("E", Locale.getDefault());
+                break;
+            }
         }
+        return format == null ? "" : format.format(d) ;
     }
 
     /**
@@ -326,118 +356,166 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             @Override
             public void run() {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    TextView time_view = findViewById(R.id.time);
-                    TextView date_view = findViewById(R.id.date);
-                    TextView battery_view = findViewById(R.id.battery);
-                    String time = getTime(true);
-                    String date = getTime(false);
-                    String battery = getBattery(true);
+                    TextView timeView = findViewById(R.id.time);
+                    TextView dateView = findViewById(R.id.date);
+                    TextView lunarView = findViewById(R.id.lunarDate);
+                    TextView weekView = mStyles[1].equals(mStyle) ? findViewById(R.id.week) : null;
+                    String time = getTime(TIME);
+                    String date = getTime(DATE);
+                    int battery = getBattery();
                     if (!time.equals(previousTime)) {
-                        time_view.setText(time);
+                        timeView.setText(time);
                         previousTime = time;
                     }
                     if (!date.equals(previousDate)) {
-                        date_view.setText(date);
+                        if (weekView != null) weekView.setText(getTime(WEEK));
+                        if (lunarView != null) lunarView.setText(LunarCalender.getLunarString(LunarCalender.getDateArray()));
+                        dateView.setText(date);
                         previousDate = date;
                     }
-                    if (!battery.equals(previousBattery)) {
-                        battery_view.setText(battery+"%");
-                        previousBattery = battery;
+                    if (battery != previousBattery) {
+                        setBattery(battery);
                     }
                 });
             }
         }, 0, 1000);
     }
+    @SuppressLint("SetTextI18n")
+    private void setBattery(int battery) {
+        if (mStyle.equals(mStyles[1])) {
+            TextView battery_view = findViewById(R.id.battery);
+            battery_view.setText(battery+"%");
+        }
+        else if (mStyle.equals(mStyles[0])) {
+            if (mAccurateBattery) {
+                TextView battery_view = findViewById(R.id.battery);
+                battery_view.setText(battery+"%");
+            } else {
+                if (battery >= 75) batteryLevel = 3;
+                else if (battery >= 50) batteryLevel = 2;
+                else if (battery >= 25) batteryLevel = 1;
+                else batteryLevel = 0;
+
+                setBatteryIcons(batteryLevel);
+            }
+        }
+        previousBattery = battery;
+    }
 
     /**
      * Get battery percent 获取电量百分比
-     * @param target 操作类型，true为获取电量百分比，false为获取充电状态
-     * @return 返回电量百分比，如获取充电状态则为空字符串
+     * @return 返回电量百分比
      */
-    private String getBattery(boolean target) {
+    private int getBattery() {
         int defaultValue = -1;
 
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
-        if (target) {
-            int level = defaultValue;
-            int scale = defaultValue;
-            if (batteryStatus != null) {
-                level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, defaultValue);
-                scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, defaultValue);
-            }
-
-            float batteryPct = level * 100 / (float) scale;
-            return String.valueOf((int) batteryPct);
-        } else {
-            // 另外加了个获取充电状态的，只会在刚打开时有用
-            TextView connection_view = findViewById(R.id.connection);
-            int status = defaultValue;
-            if (batteryStatus != null) {
-                status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, defaultValue);
-            }
-            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                    status == BatteryManager.BATTERY_STATUS_FULL;
-            if (isCharging) {
-                connection_view.setText(R.string.charging);
-            } else {
-                connection_view.setText(R.string.not_charging);
-            }
-            return "";
+        int level = defaultValue;
+        int scale = defaultValue;
+        if (batteryStatus != null) {
+            level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, defaultValue);
+            scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, defaultValue);
         }
+
+        float batteryPct = level * 100 / (float) scale;
+        return (int) batteryPct;
     }
 
+    /**
+     * Get connection status manually<br>
+     * 手动获取连接状态
+     */
     private void getConnectionStatus() {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
         int defaultValue = -1;
         int status = defaultValue;
+
         if (batteryStatus != null) {
             status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, defaultValue);
         }
-        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+        mCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                 status == BatteryManager.BATTERY_STATUS_FULL;
-
-        if (mStyle.equals(mStyles[1])) {
-            View connection_view = findViewById(R.id.connection);
-            if (isCharging) {
-                connection_view.setVisibility(View.VISIBLE);
-            } else {
-                connection_view.setVisibility(View.GONE);
-            }
-
-        } else {
-            TextView connection_view = findViewById(R.id.connection);
-            if (isCharging) {
-                connection_view.setText(R.string.charging);
-            } else {
-                connection_view.setText(R.string.not_charging);
-            }
-        }
+        setConnectionStatus();
     }
 
     /**
-     * Get data from PowerConnectionReceiver<br>
+     * Get connection status from PowerConnectionReceiver<br>
      * 从PowerConnectionReceiver里获取连接状态
      * @param status PowerConnectionReceiver返回的充电状态
      */
     @Override
     public void getConnectionStatus(String status) {
+        if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
+            mCharging = true;
+        } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+            mCharging = false;
+        }
+        setConnectionStatus();
+    }
+
+    private void setConnectionStatus() {
+
         if (mStyle.equals(mStyles[1])) {
             View connection_view = findViewById(R.id.connection);
-            if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
+            if (mCharging) {
                 connection_view.setVisibility(View.VISIBLE);
-            } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+            } else {
                 connection_view.setVisibility(View.GONE);
             }
+
         } else {
             TextView connection_view = findViewById(R.id.connection);
-            if (status.equals(Intent.ACTION_POWER_CONNECTED)) {
-                connection_view.setText(R.string.charging);
-            } else if (status.equals(Intent.ACTION_POWER_DISCONNECTED)) {
-                connection_view.setText(R.string.not_charging);
+            if (mCharging) {
+                if (mAccurateBattery) connection_view.setText(R.string.charging);
+                else {
+                    Log.d(TAG, "called");
+                    new Thread(() -> {
+                        while (mCharging) {
+                            int z = batteryLevel;
+                            while (z <= batteryIcons.length - 1) {
+                                setBatteryIcons(z);
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                z += 1;
+                            }
+                        }
+                    }).start();
+                }
+
+            } else {
+                if (mAccurateBattery) connection_view.setText(R.string.not_charging);
+                else setBatteryIcons(batteryLevel);
             }
         }
+    }
+
+    private void setBatteryIcons(int level) {
+        View main = findViewById(R.id.Main);
+        main.post( () -> {
+            Drawable overlay = ContextCompat.getDrawable(this, batteryIcons[level]);
+            if (overlay != null) {
+                int screenWidth = main.getWidth();
+                int margin = 10;
+                int scale = 4;
+                overlay.setBounds(screenWidth - margin - overlay.getIntrinsicWidth() / scale, margin, screenWidth - margin, margin + overlay.getIntrinsicHeight() / scale );
+                main.getOverlay().clear();
+                main.getOverlay().add(overlay);
+            }
+        });
+    }
+
+    private void batteryAccurate() {
+        View statusBarView = findViewById(R.id.StatusBar);
+        View lunarView = findViewById(R.id.lunarDate);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mAccurateBattery = sharedPrefs.getBoolean(SubSettingsFragment.PREF_SHOW_ACCURATE_BATTERY, false);
+        statusBarView.setVisibility(mAccurateBattery? View.VISIBLE : View.INVISIBLE);
+        lunarView.setVisibility(mAccurateBattery? View.INVISIBLE : View.VISIBLE);
     }
 
     /**

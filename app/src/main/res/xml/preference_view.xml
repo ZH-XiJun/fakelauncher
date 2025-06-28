@@ -11,4 +11,9 @@
         android:key="time_show_second"
         android:title="@string/pref_time_show_seconds"
         android:summary="@string/pref_time_show_seconds_summary" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="show_accurate_battery"
+        android:title="@string/pref_show_accurate_battery"
+        android:summary="@string/pref_show_accurate_battery_summary" />
 </PreferenceScreen>

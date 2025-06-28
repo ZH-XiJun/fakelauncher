@@ -70,7 +70,9 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 - [ ] Add Contacts page
 - [ ] Add Message page
 - [ ] Dialer can make a phone call (Custom calling UI may not impossible)
-- [ ] Show battery by icons instead of accurate numbers
+- [x] Lunar calender support
+- [x] Show battery percent through icons instead of accurate numbers
+- [x] Deprecate the default font of Android, use a bitmap font instead
 - [x] (Partly completed) Add Gallery page
 - [x] (Partly completed) Add more exit method, like typing a secret code in dialer, add a avaliable password in "Please input password" page, or customize key action in replace of default, to name but a few.
 - [x] Optimize the transmission of task id between UI part and Hook part (PinningApp uses `SettingsProvider`, as well as `adb shell settings put xxx`, UI part needs `WRITE_SECURE_SETTINGS` permission to set task id)

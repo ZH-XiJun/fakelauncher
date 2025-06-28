@@ -5,11 +5,16 @@
     </style>
 
     <style name="Theme.FakeLauncher" parent="Base.Theme.FakeLauncher">
+        <item name="fontFamily">sans-serif</item>
         <!--
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:fitsSystemWindows">false</item>
         <item name="statusBarBackground">@android:color/transparent</item>
         -->
+    </style>
+
+    <style name="Theme.FakeLauncher.BitmapFont" parent="Theme.FakeLauncher">
+        <item name="fontFamily">@font/wenquanyi_bitmap</item>
     </style>
 </resources>

@@ -82,6 +82,7 @@ public class GalleryFragment extends MyFragment {
 
     private void init(){
         // 加载图片的时候左边的按键提示先别显示出来
+        // Do not show left button hint when loading
         setFooterBar(SubActivity.L_EMPTY);
         // 绑定控件 View binding
         gridView = rootView.findViewById(R.id.gridView);
@@ -110,15 +111,18 @@ public class GalleryFragment extends MyFragment {
         String uriStr = sp.getString(SubSettingsFragment.PREF_GALLERY_ACCESS_URI, "");
         if (! uriStr.isEmpty()) {
             // 有东西，那就尝试读下照片
+            // If URI is not empty, try to load the photos
             readAllPhotos(Uri.parse(uriStr));
         } else {
             // 如果拿到个空的，说明用户根本没授权啊，要么就是用户趁我不注意偷偷改了SharedPreference
+            // If URI is empty, show "no photo" text.
             noPhoto();
         }
     }
 
     private void noPhoto() {
         // 显示“无照片”对应的TextView，其它的都隐藏
+        // Hide all view instead of "No photo"
         gridView.setVisibility(GONE);
         textHint.setVisibility(VISIBLE);
         textHint.setText(R.string.gallery_no_photo);
@@ -155,7 +159,7 @@ public class GalleryFragment extends MyFragment {
             HashMap<String, Uri> map = mPhotoUriList.get(position);
             Uri uri;
             if ((uri = map.get(MIME_IMAGE)) != null) {
-                // 图片处理
+                // 图片处理 Photo processing
                 Glide.with(getContext())
                         .load(uri)
                         .priority(Priority.LOW)
@@ -163,7 +167,7 @@ public class GalleryFragment extends MyFragment {
                 fullscreenView.setVisibility(VISIBLE);
             } else if ((uri = map.get(MIME_VIDEO)) != null) {
                 mediaPlayer = new MediaPlayer();
-                // 视频处理
+                // 视频处理 Video processing
                 try {
                     mediaPlayer.setDataSource(getContext(), uri);
                     mediaPlayer.prepare();

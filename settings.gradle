@@ -18,8 +18,8 @@ dependencyResolutionManagement {
         mavenCentral()
         // Xposed API
         maven { url 'https://api.xposed.info/' }
+        maven { url 'https://www.jitpack.io' }
     }
 }
-
 rootProject.name = "fakelauncher"
 include ':app'

@@ -13,11 +13,10 @@
         android:id="@+id/time"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_marginStart="10dp"
-        android:fontFamily="@font/ds_digital"
+        android:fontFamily="@font/digiface"
         android:gravity="center"
         android:maxLines="1"
-        android:text="11:45:14"
+        android:text="00:00:00"
         android:textColor="@color/white"
         android:textStyle="bold"
         app:autoSizeMaxTextSize="96sp"
@@ -33,7 +32,8 @@
         android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1234年56月78日"
+        android:fontFamily="@font/digiface"
+        android:text="yyyy-MM-dd"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="40sp"
@@ -58,8 +58,20 @@
         android:textAlignment="textEnd"
         android:textColor="@color/white"
         android:textSize="50sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/connection"
+        app:layout_constraintTop_toBottomOf="@+id/guideline" />
+
+    <TextView
+        android:id="@+id/week"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="周一"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
     <ImageView
@@ -67,7 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/charging"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="@+id/battery"
         app:layout_constraintEnd_toStartOf="@+id/battery"

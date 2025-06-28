@@ -1,6 +1,7 @@
 [versions]
 agp = "8.9.0"
 shizukuApi = "13.1.5"
+statusnavigationtransparent = "V1.3.1"
 xposedApi = "82"
 cameraCore = "1.1.0-beta01"
 cameraCamera2 = "1.1.0-beta01"
@@ -17,6 +18,8 @@ constraintlayout = "2.1.4"
 preferenceVersion = "1.2.1"
 lifecycleLivedataKtx = "2.6.1"
 lifecycleViewmodelKtx = "2.6.1"
+navigationFragment = "2.6.0"
+navigationUi = "2.6.0"
 
 [libraries]
 androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCore" }
@@ -36,10 +39,13 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizukuApi" }
+statusnavigationtransparent = { module = "com.github.AnJiaoDe:StatusNavigationTransparent", version.ref = "statusnavigationtransparent" }
 xposed-api = { module = "de.robv.android.xposed:api", version.ref = "xposedApi" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preferenceVersion" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

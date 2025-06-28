@@ -3,6 +3,23 @@ plugins {
 }
 
 android {
+    Properties properties = new Properties()
+    InputStream inputStream = project.rootProject.file('keystore.properties').newDataInputStream()
+    properties.load(inputStream)
+
+    def keyKeyStoreFile = file(properties.getProperty('keyStoreFile'))
+    def keyKeyStorePassword = properties.getProperty('keyStorePassword')
+    def keyKeyAlias = properties.getProperty('keyAlias')
+    def keyKeyAliasPassword = properties.getProperty('keyAliasPassword')
+
+    signingConfigs {
+        debug {
+            storeFile keyKeyStoreFile
+            storePassword keyKeyStorePassword
+            keyAlias keyKeyAlias
+            keyPassword keyKeyAliasPassword
+        }
+    }
     namespace 'com.wtbruh.fakelauncher'
     compileSdk 35
 
@@ -25,6 +42,7 @@ android {
 
     buildFeatures {
         aidl true
+        viewBinding true
     }
 
     compileOptions {
@@ -42,6 +60,8 @@ dependencies {
     implementation libs.androidx.preference
     implementation libs.androidx.lifecycle.livedata.ktx
     implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -64,4 +84,6 @@ dependencies {
     compileOnly libs.xposed.api
     // Glide Engine
     implementation libs.glide
+
+    implementation libs.statusnavigationtransparent
 }

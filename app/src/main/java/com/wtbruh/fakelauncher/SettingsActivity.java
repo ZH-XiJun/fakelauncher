@@ -90,7 +90,7 @@ public class SettingsActivity extends AppCompatActivity {
                     // If request is cancelled, the result arrays are empty.
                     if (grantResults.length > 0 &&
                             grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        data = permissionGrantStatus(getPermissions());
+                        data = permissionGrantStatus(PrivilegeProvider.getAllPermissions(this));
                         adapter.notifyDataSetInvalidated();
                     }  else {
                         // Explain to the user that the feature is unavailable because
@@ -106,7 +106,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
         private void init() {
             listView = findViewById(R.id.permissions_list);
-            data = permissionGrantStatus(getPermissions());
+            data = permissionGrantStatus(PrivilegeProvider.getAllPermissions(this));
             adapter = new SimpleAdapter(this,
                     data,
                     R.layout.listview_item,
@@ -116,26 +116,6 @@ public class SettingsActivity extends AppCompatActivity {
             itemClick(listView);
 
         }
-        private String[] getPermissions() {
-            try {
-                PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_PERMISSIONS);
-                String[] raw = packageInfo.requestedPermissions;
-
-                if (raw == null) return new String[]{};
-
-                ArrayList<String> arrayList = new ArrayList<>();
-                for (String permission: raw) {
-                    if (permission.contains("android.permission.")) {
-                        arrayList.add(permission);
-                    }
-                }
-
-                return arrayList.toArray(new String[0]);
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e(TAG, "Error on getting permissions: "+e);
-                return new String[]{};
-            }
-        }
 
         private ArrayList<HashMap<String, String>> permissionGrantStatus(String[] permissions) {
             ArrayList<HashMap<String, String>> mylist = new ArrayList<>();
@@ -144,7 +124,7 @@ public class SettingsActivity extends AppCompatActivity {
             {
                 HashMap<String, String> map = new HashMap<>();
                 map.put("Item", permission);
-                if (PrivilegeProvider.CheckPermission(PermissionStatus.this, permission)) {
+                if (PrivilegeProvider.checkPermission(PermissionStatus.this, permission)) {
                     map.put("subItem", getResources().getString(R.string.pref_check_privilege_granted));
                 } else {
                     map.put("subItem", getResources().getString(R.string.pref_check_privilege_denied));
@@ -159,7 +139,7 @@ public class SettingsActivity extends AppCompatActivity {
                 TextView textView = view.findViewById(R.id.Item);
                 String permission = textView.getText().toString();
                 Log.d(TAG, "Clicked: "+permission);
-                if (! PrivilegeProvider.CheckPermission(PermissionStatus.this, permission)) {
+                if (! PrivilegeProvider.checkPermission(PermissionStatus.this, permission)) {
                     PrivilegeProvider.requestPermission(PermissionStatus.this, permission);
                     Toast.makeText(PermissionStatus.this, R.string.toast_reopen_to_refresh, Toast.LENGTH_LONG).show();
                 }

@@ -65,7 +65,7 @@ public class CameraFragment extends MyFragment {
     }
 
     private void init(){
-        if (PrivilegeProvider.CheckPermission(getContext(), Manifest.permission.CAMERA)) startCamera();
+        if (PrivilegeProvider.checkPermission(getContext(), Manifest.permission.CAMERA)) startCamera();
         else unableToStartCamera();
     }
 

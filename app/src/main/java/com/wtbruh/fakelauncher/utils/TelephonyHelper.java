@@ -2,13 +2,10 @@ package com.wtbruh.fakelauncher.utils;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
 
 import com.wtbruh.fakelauncher.R;
 
@@ -29,7 +26,7 @@ public class TelephonyHelper {
     }
 
     public String getProvidersName(int sub) {
-        if (! PrivilegeProvider.CheckPermission(context,Manifest.permission.READ_PHONE_STATE)) {
+        if (! PrivilegeProvider.checkPermission(context,Manifest.permission.READ_PHONE_STATE)) {
             Log.d(TAG, "No permission READ_PHONE_STATE!!!");
             return context.getResources().getString(R.string.sim_removed);
         }

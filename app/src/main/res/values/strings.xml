@@ -50,6 +50,7 @@
     <!-- Preferences -->
     <string name="pref_tap_me" translatable="true">Tap me!</string>
     <string name="pref_caution" translatable="true">Be careful as the feature you\'ve enabled is not common in real feature phones</string>
+    <string name="pref_operation_completed" translatable="true">Operation completed</string>
 
     <string name="pref_page_permissions" translatable="true">Permissions and privileges</string>
     <string name="pref_page_permissions_summary" translatable="true">Program needs them to run normally</string>

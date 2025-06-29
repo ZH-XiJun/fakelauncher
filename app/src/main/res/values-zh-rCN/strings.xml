@@ -47,6 +47,7 @@
     <!-- 软件设置文字提示 -->
     <string name="pref_tap_me">戳我！</string>
     <string name="pref_caution">慎用，该功能在真老人机中并不常见</string>
+    <string name="pref_operation_completed">操作已完成</string>
 
     <string name="pref_page_permissions">权限与特权</string>
     <string name="pref_page_permissions_summary">程序正常运行需要用户提供权限</string>

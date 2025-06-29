@@ -365,35 +365,48 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         String key = pref.getKey();
         String value;
         switch (key) {
-            case PREF_CHECK_PRIVILEGE:
+            case PREF_CHECK_PRIVILEGE -> {
                 value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, "None");
-                if (!"None".equals(value)) {
-                    if (PrivilegeProvider.checkPrivilege(value)) {
-                        pref.setSummary(R.string.pref_check_privilege_granted);
+                new Thread(() -> {
+                    if (!"None".equals(value)) {
+                        boolean isGranted = PrivilegeProvider.checkPrivilege(PrivilegeProvider.privilegeToInt(value));
+                        requireActivity().runOnUiThread(() -> {
+                            if (isGranted) {
+                                pref.setSummary(R.string.pref_check_privilege_granted);
+                            } else {
+                                pref.setSummary(R.string.pref_check_privilege_denied);
+                            }
+                        });
+
                     } else {
-                        pref.setSummary(R.string.pref_check_privilege_denied);
+                        requireActivity().runOnUiThread(() -> pref.setSummary(R.string.pref_check_privilege_none));
                     }
-                } else {
-                    pref.setSummary(R.string.pref_check_privilege_none);
-                }
-                break;
-            case PREF_CHECK_DEVICE_ADMIN:
-                prefSetup(pref);
-                break;
-            case PREF_PERMISSION_GRANT_STATUS:
-                UIHelper.intentStarter(getActivity(), SettingsActivity.PermissionStatus.class);
-                break;
-            case PREF_GRANT_ALL_PERMISSIONS:
-                // todo
-                break;
-            case PREF_DEACTIVATE_DEVICE_OWNER:
+                }).start();
+            }
+            case PREF_CHECK_DEVICE_ADMIN -> prefSetup(pref);
+            case PREF_PERMISSION_GRANT_STATUS ->
+                    UIHelper.intentStarter(getActivity(), SettingsActivity.PermissionStatus.class);
+            case PREF_GRANT_ALL_PERMISSIONS -> {
+                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, "None");
+                new Thread(() -> {
+                    PrivilegeProvider.requestAllPermissions(getActivity(), PrivilegeProvider.privilegeToInt(value));
+                    requireActivity().runOnUiThread(() -> pref.setSummary(R.string.pref_operation_completed));
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    requireActivity().runOnUiThread(() -> pref.setSummary(""));
+                }).start();
+
+            }
+            case PREF_DEACTIVATE_DEVICE_OWNER -> {
                 DevicePolicyManager dpm = getSystemService(getActivity(), DevicePolicyManager.class);
                 dpm.clearDeviceOwnerApp(getActivity().getPackageName());
                 prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
-                break;
-            case PREF_GALLERY_ACCESS:
-                SAFlauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
-                break;
+            }
+            case PREF_GALLERY_ACCESS ->
+                    SAFlauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
         }
         return false;
     }

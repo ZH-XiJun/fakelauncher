@@ -8,6 +8,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
@@ -22,6 +23,10 @@ import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import rikka.shizuku.Shizuku;
 import rikka.sui.Sui;
@@ -64,7 +69,7 @@ public class PrivilegeProvider {
      * @param item 要请求的权限
      * @return true或false
      */
-    public static boolean CheckPermission(Context context, String item) {
+    public static boolean checkPermission(Context context, String item) {
         if (item.equals(Manifest.permission.WRITE_SETTINGS)) {
             return Settings.System.canWrite(context);
         }
@@ -78,20 +83,61 @@ public class PrivilegeProvider {
      * 请求权限
      *
      * @param activity Activity对象
-     * @param item 要请求的权限
+     * @param item 要请求的权限，可以多个
      */
-    public static void requestPermission(Activity activity, String item) {
-        switch (item) {
-            case Manifest.permission.WRITE_SETTINGS: // WRITE_SETTINGS 修改系统设置权限
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+    public static void requestPermission(Activity activity, String... item) {
+        /*
+        if (item.equals(Manifest.permission.WRITE_SETTINGS)) { // WRITE_SETTINGS 修改系统设置权限
+            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
                     Uri.parse("package:" + activity.getPackageName()));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                activity.startActivity(intent);
-                break;
-            default:
-                requestPermissions(activity, new String[] {item}, PERMISSION_REQUEST_CODE);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+        } else {
+            requestPermissions(activity, new String[]{item}, PERMISSION_REQUEST_CODE);
+        } */
+        requestPermissions(activity, item, PERMISSION_REQUEST_CODE);
+    }
+
+    /**
+     * 获取App在 AndroidManifest.xml 内声明的所有权限<br>
+     * Get all permissions declared by program in AndroidManifest.xml
+     * @param context 上下文
+     * @return 所有权限组成的字符串数组
+     */
+    public static String[] getAllPermissions(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+            String[] raw = packageInfo.requestedPermissions;
+
+            if (raw == null) return new String[]{};
+
+            ArrayList<String> arrayList = new ArrayList<>();
+            for (String permission: raw) {
+                if (permission.contains("android.permission.")) {
+                    arrayList.add(permission);
+                }
+            }
+
+            return arrayList.toArray(new String[0]);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Error on getting permissions: "+e);
+            return new String[]{};
         }
     }
+
+    public static void requestAllPermissions(Activity activity, int method) {
+        if (method == METHOD_NORMAL) {
+            requestPermissions(activity, getAllPermissions(activity), PERMISSION_REQUEST_CODE);
+            return;
+        }
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (String permission: getAllPermissions(activity)) {
+            arrayList.add("pm grant com.wtbruh.fakelauncher " + permission);
+        }
+
+        runMultiCmd(method, arrayList.toArray(new String[0]));
+    }
+
 
     /**
      * Add prefix for command<br>
@@ -123,19 +169,19 @@ public class PrivilegeProvider {
     /**
      * Check privilege 检查特殊权限
      *
-     * @param str 权限名
+     * @param method 特殊权限类型
      * @return 是否已获得授权
      */
-    public static boolean checkPrivilege(String str) {
-        switch (str) {
-            case "Root":
+    public static boolean checkPrivilege(int method) {
+        switch (method) {
+            case METHOD_ROOT:
                 try {
                     Log.d(TAG, "Checking root permission");
                     return runCmd(new String[]{"id"}, METHOD_ROOT) == 0;
                 } catch (RuntimeException e) {
                     return false;
                 }
-            case "Shizuku":
+            case METHOD_SHIZUKU:
                 if (Sui.init("com.wtbruh.fakelauncher")) Log.d(TAG, "Sui is available");
                 if (Shizuku.isPreV11()) {
                     // Pre-v11 is unsupported
@@ -160,6 +206,14 @@ public class PrivilegeProvider {
                 return false;
         }
     }
+    public static int privilegeToInt(String str) {
+        return switch (str) {
+            case "Root" -> METHOD_ROOT;
+            case "Shizuku" -> METHOD_SHIZUKU;
+            default -> METHOD_NORMAL;
+        };
+    }
+
     /**
      * Check device owner 检查设备所有者权限
      * @param context 应用上下文
@@ -208,6 +262,29 @@ public class PrivilegeProvider {
             Process ps = psb.start();
             return ps.waitFor();
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static int runMultiCmd(int method, String... cmds) {
+        String s;
+        switch (method) {
+            case METHOD_ROOT -> s = "su";
+            case METHOD_SHIZUKU -> s = "rish";
+            default -> s = "sh";
+
+        }
+        try {
+            Process ps = Runtime.getRuntime().exec(s);
+            DataOutputStream output = new DataOutputStream(ps.getOutputStream());
+            for (String cmd : cmds) {
+                output.writeBytes(cmd + "\n");
+            }
+            output.writeBytes("exit\n");
+            output.flush();
+            output.close();
+            return ps.waitFor();
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

@@ -474,7 +474,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
                     new Thread(() -> {
                         while (mCharging) {
                             int z = batteryLevel;
-                            while (z <= batteryIcons.length - 1) {
+                            while (mCharging && z <= batteryIcons.length - 1) {
                                 setBatteryIcons(z);
                                 try {
                                     Thread.sleep(1000);

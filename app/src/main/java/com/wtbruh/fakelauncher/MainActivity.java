@@ -208,6 +208,11 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         if (mStyle.equals(mStyles[1])) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
+            View cardLogo = findViewById(R.id.cardLogo);
+            cardLogo.post(() -> {
+                cardLogo.getLayoutParams().width = cardLogo.getHeight() * 11/28;
+                cardLogo.requestLayout();
+            });
             TelephonyHelper mTelHelper = new TelephonyHelper(this);
             TextView card1 = findViewById(R.id.card1_provider);
             TextView card2 = findViewById(R.id.card2_provider);

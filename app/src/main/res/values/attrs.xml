@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 文本描边颜色 -->
+    <attr name="strokeTextColor" format="reference|color" />
+    <!-- 文本描边粗细 -->
+    <attr name="strokeTextWidth" format="reference|integer" />
+</resources>

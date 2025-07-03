@@ -1,7 +1,6 @@
 [versions]
 agp = "8.9.0"
 shizukuApi = "13.1.5"
-statusnavigationtransparent = "V1.3.1"
 xposedApi = "82"
 cameraCore = "1.1.0-beta01"
 cameraCamera2 = "1.1.0-beta01"
@@ -39,7 +38,6 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizukuApi" }
-statusnavigationtransparent = { module = "com.github.AnJiaoDe:StatusNavigationTransparent", version.ref = "statusnavigationtransparent" }
 xposed-api = { module = "de.robv.android.xposed:api", version.ref = "xposedApi" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preferenceVersion" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }

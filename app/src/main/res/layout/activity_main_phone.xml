@@ -10,8 +10,10 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
+    <com.wtbruh.fakelauncher.utils.StrokeTextView
         android:id="@+id/time"
+        app:strokeTextColor="@color/black"
+        app:strokeTextWidth="5"
         android:layout_width="match_parent"
         android:layout_height="144dp"
         android:layout_margin="5dp"
@@ -32,8 +34,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <TextView
+    <com.wtbruh.fakelauncher.utils.StrokeTextView
         android:id="@+id/date"
+        app:strokeTextColor="@color/black"
+        app:strokeTextWidth="5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="1234年56月78日"
@@ -47,8 +51,10 @@
         app:layout_constraintTop_toBottomOf="@+id/time" />
 
 
-    <TextView
+    <com.wtbruh.fakelauncher.utils.StrokeTextView
         android:id="@+id/lunarDate"
+        app:strokeTextColor="@color/black"
+        app:strokeTextWidth="5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="六月廿七"
@@ -69,8 +75,10 @@
         android:visibility="invisible"
         app:layout_constraintTop_toTopOf="@+id/lunarDate">
 
-        <TextView
+        <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/connection"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/not_charging"
@@ -81,8 +89,10 @@
             android:layout_width="20dp"
             android:layout_height="wrap_content" />
 
-        <TextView
+        <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/battery"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="100%"
@@ -138,8 +148,10 @@
         app:layout_constraintStart_toEndOf="@id/cardLogo"
         app:layout_constraintTop_toBottomOf="@id/statusBar_simCard">
 
-        <TextView
+        <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/card1_provider"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sim_removed"
@@ -148,8 +160,10 @@
             android:textSize="48sp"
             android:textStyle="bold" />
 
-        <TextView
+        <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/card2_provider"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sim_removed"
@@ -169,8 +183,10 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
+        <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/menu"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

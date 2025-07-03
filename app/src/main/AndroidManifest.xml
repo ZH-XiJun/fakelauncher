@@ -57,12 +57,10 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.FakeLauncher.BitmapFont"
             android:exported="false"
             android:launchMode="singleTask" />
         <activity
             android:name=".SubActivity"
-            android:theme="@style/Theme.FakeLauncher.BitmapFont"
             android:exported="false" />
 
         <receiver

@@ -84,6 +84,4 @@ dependencies {
     compileOnly libs.xposed.api
     // Glide Engine
     implementation libs.glide
-
-    implementation libs.statusnavigationtransparent
 }

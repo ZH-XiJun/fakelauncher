@@ -55,7 +55,6 @@ public class GalleryFragment extends MyFragment {
     private ImageView fullscreenView;
     private TextView textHint;
     private SurfaceView videoView;
-    private SurfaceHolder surfaceHolder;
     private MediaPlayer mediaPlayer = null;
     private int mNowSelectedViewPosition = 0;
     private List<HashMap<String, Uri>> mPhotoUriList;
@@ -89,7 +88,7 @@ public class GalleryFragment extends MyFragment {
         fullscreenView = rootView.findViewById(R.id.fullscreenView);
         textHint = rootView.findViewById(R.id.gallery_textHint);
         videoView = rootView.findViewById(R.id.videoView);
-        surfaceHolder = videoView.getHolder();
+        SurfaceHolder surfaceHolder = videoView.getHolder();
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {

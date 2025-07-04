@@ -16,7 +16,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewOverlay;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -35,7 +34,6 @@ import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.LunarCalender;
 import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
-import com.wtbruh.fakelauncher.utils.StatusNavigationUtils;
 import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -153,19 +151,13 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
             } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
                 // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
                 // 模拟老人机逻辑：主界面按数字键打开拨号盘
-                String key;
-                switch (keyCode) {
-                    case KeyEvent.KEYCODE_POUND:
-                        key = "#";
-                        break;
-                    case KeyEvent.KEYCODE_STAR:
-                        key = "*";
-                        break;
-                    default:
+                String key = switch (keyCode) {
+                    case KeyEvent.KEYCODE_POUND -> "#";
+                    case KeyEvent.KEYCODE_STAR -> "*";
+                    default ->
                         // Key 0~9 0到9键
-                        key = String.valueOf(keyCode - KeyEvent.KEYCODE_0);
-                        break;
-                }
+                            String.valueOf(keyCode - KeyEvent.KEYCODE_0);
+                };
                 String[] extra = {DialerFragment.class.getSimpleName(), key};
                 if (!UIHelper.intentStarterDebounce(SubActivity.class)) {
                     startActivity(
@@ -187,7 +179,6 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
     private void init() {
         Log.d(TAG, "Now start init, UI style: " + mStyle);
         // Common init 通用初始化代码
-        setStatusBarNoFillAndTransParent();
         // 时间字体大小自适应适配
         TextView time = findViewById(R.id.time);
         time.post(() -> {

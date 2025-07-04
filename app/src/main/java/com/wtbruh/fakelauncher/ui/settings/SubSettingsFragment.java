@@ -54,6 +54,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_STYLE = "style";
     public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
     public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
+    // todo: public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
 
     public SubSettingsFragment() {
     }

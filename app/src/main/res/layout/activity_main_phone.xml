@@ -8,12 +8,13 @@
     android:layout_height="match_parent"
     android:background="@drawable/wallpaper_1"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="HardcodedText" >
 
     <com.wtbruh.fakelauncher.utils.StrokeTextView
         android:id="@+id/time"
         app:strokeTextColor="@color/black"
-        app:strokeTextWidth="5"
+        app:strokeTextWidth="3"
         android:layout_width="match_parent"
         android:layout_height="144dp"
         android:layout_margin="5dp"
@@ -37,7 +38,7 @@
     <com.wtbruh.fakelauncher.utils.StrokeTextView
         android:id="@+id/date"
         app:strokeTextColor="@color/black"
-        app:strokeTextWidth="5"
+        app:strokeTextWidth="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="1234年56月78日"
@@ -54,7 +55,7 @@
     <com.wtbruh.fakelauncher.utils.StrokeTextView
         android:id="@+id/lunarDate"
         app:strokeTextColor="@color/black"
-        app:strokeTextWidth="5"
+        app:strokeTextWidth="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="六月廿七"
@@ -78,7 +79,7 @@
         <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/connection"
             app:strokeTextColor="@color/black"
-            app:strokeTextWidth="5"
+            app:strokeTextWidth="3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/not_charging"
@@ -92,7 +93,7 @@
         <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/battery"
             app:strokeTextColor="@color/black"
-            app:strokeTextWidth="5"
+            app:strokeTextWidth="3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="100%"
@@ -151,7 +152,7 @@
         <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/card1_provider"
             app:strokeTextColor="@color/black"
-            app:strokeTextWidth="5"
+            app:strokeTextWidth="3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sim_removed"
@@ -163,7 +164,7 @@
         <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/card2_provider"
             app:strokeTextColor="@color/black"
-            app:strokeTextWidth="5"
+            app:strokeTextWidth="3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sim_removed"
@@ -186,7 +187,7 @@
         <com.wtbruh.fakelauncher.utils.StrokeTextView
             android:id="@+id/menu"
             app:strokeTextColor="@color/black"
-            app:strokeTextWidth="5"
+            app:strokeTextWidth="3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

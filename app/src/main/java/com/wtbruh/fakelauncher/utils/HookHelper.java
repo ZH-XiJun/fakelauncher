@@ -500,14 +500,14 @@ public abstract class HookHelper extends LogHelper {
         Context context = null;
         try {
             switch (flag) {
-                case 0:
+                case FLAG_ALL:
                     if ((context = currentApplication()) == null)
                         context = getSystemContext();
                     break;
-                case 1:
+                case FLAG_CURRENT_APP:
                     context = currentApplication();
                     break;
-                case 2:
+                case FlAG_ONLY_ANDROID:
                     context = getSystemContext();
                     break;
                 default:

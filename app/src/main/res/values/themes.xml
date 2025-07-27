@@ -13,8 +13,4 @@
         <item name="statusBarBackground">@android:color/transparent</item>
         -->
     </style>
-
-    <style name="Theme.FakeLauncher.BitmapFont" parent="Theme.FakeLauncher">
-        <item name="fontFamily">@font/wenquanyi_bitmap</item>
-    </style>
 </resources>

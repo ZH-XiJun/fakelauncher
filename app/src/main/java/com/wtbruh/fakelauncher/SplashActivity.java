@@ -15,8 +15,8 @@ import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 public class SplashActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
         // Vibrate on launching fake ui
         if (PreferenceManager.getDefaultSharedPreferences(SplashActivity.this).getBoolean(SubSettingsFragment.PREF_VIBRATE_ON_START,true)) {
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);

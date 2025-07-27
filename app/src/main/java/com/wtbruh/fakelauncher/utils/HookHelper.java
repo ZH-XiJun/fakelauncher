@@ -24,13 +24,10 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
- *
- * Package of Xposed Hook
- * <p>
+ * Package of Xposed Hook<br>
  * Xposed Hook封装
  *
  * @author HChenX
- *
  */
 
 public abstract class HookHelper extends LogHelper {

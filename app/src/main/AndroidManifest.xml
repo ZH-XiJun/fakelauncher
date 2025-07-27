@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
 
     <application
         android:name=".utils.ApplicationHelper"
@@ -34,6 +35,16 @@
             android:launchMode="singleTask"
             android:noHistory="true" />
         <activity
+            android:name=".ActivityShortcut"
+            android:exported="true"
+            android:label="@string/shortcut_name"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.VolumeActivity"
             android:exported="false" />
         <activity
@@ -43,7 +54,6 @@
             android:label="@string/app_settings_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

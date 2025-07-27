@@ -9,7 +9,7 @@ import android.os.Vibrator;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {

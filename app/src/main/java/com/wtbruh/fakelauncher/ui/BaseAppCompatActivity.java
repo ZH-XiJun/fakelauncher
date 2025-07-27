@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.utils;
+package com.wtbruh.fakelauncher.ui;
 
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
@@ -7,12 +7,12 @@ import android.view.KeyEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.wtbruh.fakelauncher.VolumeActivity;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 /**
  * 继承AppCompatActivity，添加自己的代码，并让其他Activity继承自己
  */
-public class MyAppCompatActivity extends AppCompatActivity {
+public class BaseAppCompatActivity extends AppCompatActivity {
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override

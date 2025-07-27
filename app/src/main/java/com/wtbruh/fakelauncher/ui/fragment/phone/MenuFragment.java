@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.phone;
+package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import android.os.Bundle;
 
@@ -13,9 +13,9 @@ import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.utils.MyFragment;
+import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 
-public class MenuFragment extends MyFragment {
+public class MenuFragment extends BaseFragment {
 
     private int mNumber = 0;
 

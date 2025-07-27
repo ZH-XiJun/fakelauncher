@@ -12,10 +12,10 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
-import com.wtbruh.fakelauncher.ui.phone.DialerFragment;
-import com.wtbruh.fakelauncher.ui.phone.MenuFragment;
-import com.wtbruh.fakelauncher.utils.MyFragment;
-import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
+import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.MenuFragment;
+import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
+import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 
 /**
  * <h3>SubActivity</h3>
@@ -24,7 +24,7 @@ import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
  * 具体接受哪些参数需要看对应Fragment的代码配置
  */
 
-public class SubActivity extends MyAppCompatActivity {
+public class SubActivity extends BaseAppCompatActivity {
 
     public final static int LEFT_BUTTON = R.id.leftButton;
     public final static int CENTER_BUTTON = R.id.centerButton;
@@ -84,7 +84,7 @@ public class SubActivity extends MyAppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (( (MyFragment) mCurrentFragment ).onKeyDown(keyCode, event)) return true;
+        if (( (BaseFragment) mCurrentFragment ).onKeyDown(keyCode, event)) return true;
         return super.onKeyDown(keyCode, event);
     }
 

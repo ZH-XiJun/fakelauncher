@@ -11,7 +11,7 @@
     tools:context=".MainActivity"
     tools:ignore="HardcodedText" >
 
-    <com.wtbruh.fakelauncher.utils.StrokeTextView
+    <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
         android:id="@+id/time"
         app:strokeTextColor="@color/black"
         app:strokeTextWidth="3"
@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <com.wtbruh.fakelauncher.utils.StrokeTextView
+    <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
         android:id="@+id/date"
         app:strokeTextColor="@color/black"
         app:strokeTextWidth="1"
@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/time" />
 
 
-    <com.wtbruh.fakelauncher.utils.StrokeTextView
+    <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
         android:id="@+id/lunarDate"
         app:strokeTextColor="@color/black"
         app:strokeTextWidth="1"
@@ -76,7 +76,7 @@
         android:visibility="invisible"
         app:layout_constraintTop_toTopOf="@+id/lunarDate">
 
-        <com.wtbruh.fakelauncher.utils.StrokeTextView
+        <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/connection"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3"
@@ -90,7 +90,7 @@
             android:layout_width="20dp"
             android:layout_height="wrap_content" />
 
-        <com.wtbruh.fakelauncher.utils.StrokeTextView
+        <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/battery"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3"
@@ -149,7 +149,7 @@
         app:layout_constraintStart_toEndOf="@id/cardLogo"
         app:layout_constraintTop_toBottomOf="@id/statusBar_simCard">
 
-        <com.wtbruh.fakelauncher.utils.StrokeTextView
+        <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/card1_provider"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3"
@@ -161,7 +161,7 @@
             android:textSize="48sp"
             android:textStyle="bold" />
 
-        <com.wtbruh.fakelauncher.utils.StrokeTextView
+        <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/card2_provider"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3"
@@ -184,7 +184,7 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.wtbruh.fakelauncher.utils.StrokeTextView
+        <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/menu"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3"

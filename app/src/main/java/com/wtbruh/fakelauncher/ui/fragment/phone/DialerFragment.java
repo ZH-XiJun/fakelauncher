@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.phone;
+package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,11 +15,11 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
-import com.wtbruh.fakelauncher.utils.MyFragment;
+import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
-public class DialerFragment extends MyFragment {
+public class DialerFragment extends BaseFragment {
     private final static String TAG = DialerFragment.class.getSimpleName();
     private static final String ARG_INPUT = "input";
     private SharedPreferences mPrefs;

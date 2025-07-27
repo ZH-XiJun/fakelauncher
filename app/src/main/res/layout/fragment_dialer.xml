@@ -7,7 +7,7 @@
     android:gravity="bottom"
     android:orientation="vertical"
     android:background="@color/black"
-    tools:context=".ui.phone.DialerFragment">
+    tools:context=".ui.fragment.phone.DialerFragment">
 
     <TextView
         android:id="@+id/dialer"

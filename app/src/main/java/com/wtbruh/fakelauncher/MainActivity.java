@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -28,11 +29,11 @@ import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
-import com.wtbruh.fakelauncher.ui.phone.DialerFragment;
-import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
+import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.LunarCalender;
-import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
+import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
@@ -43,7 +44,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends MyAppCompatActivity implements PowerConnectionReceiver.getStat {
+public class MainActivity extends BaseAppCompatActivity implements PowerConnectionReceiver.getStat {
     private final static int TIME = 0;
     private final static int DATE = 1;
     private final static int WEEK = 2;
@@ -173,6 +174,14 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         return super.onKeyUp(keyCode, event);
     }
 
+    void test() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Man what can i say")
+                .setMessage("Mamba out")
+                .create()
+                .show();
+    }
+
     /**
      * Init of MainActivity | MainActivity初始化
      */
@@ -199,6 +208,9 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
         if (mStyle.equals(mStyles[1])) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
+            // for test
+            test();
+
             View cardLogo = findViewById(R.id.cardLogo);
             cardLogo.post(() -> {
                 cardLogo.getLayoutParams().width = cardLogo.getHeight() * 11/28;
@@ -212,7 +224,7 @@ public class MainActivity extends MyAppCompatActivity implements PowerConnection
 
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
-            setLockApp(MainActivity.this, getTaskId());
+            // setLockApp(MainActivity.this, getTaskId());
 
         }
     }

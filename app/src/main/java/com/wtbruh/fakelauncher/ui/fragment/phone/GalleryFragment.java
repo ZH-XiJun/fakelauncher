@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.phone;
+package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -35,8 +35,8 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
-import com.wtbruh.fakelauncher.utils.MyFragment;
+import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Gallery 相册
  */
-public class GalleryFragment extends MyFragment {
+public class GalleryFragment extends BaseFragment {
 
     private final static String TAG = GalleryFragment.class.getSimpleName();
     public final static String MIME_IMAGE = "image/";
@@ -244,10 +244,11 @@ public class GalleryFragment extends MyFragment {
                     Uri fileUri = file.getUri();
                     String fileName = file.getName();
                     String mimeType = file.getType();
-
+                    String key;
                     Log.d(TAG, "Found file! Name:" + fileName + ", Type: " + mimeType);
                     // 判断是否为视频或图片，都不是就赋值key为null
-                    String key = mimeType.startsWith(MIME_IMAGE)?
+                    if (mimeType == null) key = null;
+                    else key = mimeType.startsWith(MIME_IMAGE)?
                             MIME_IMAGE : (mimeType.startsWith(MIME_VIDEO)?
                             MIME_VIDEO : null);
                     if (key != null) {

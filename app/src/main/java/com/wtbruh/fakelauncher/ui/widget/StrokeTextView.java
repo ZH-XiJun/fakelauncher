@@ -1,7 +1,6 @@
-package com.wtbruh.fakelauncher.utils;
+package com.wtbruh.fakelauncher.ui.widget;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -10,12 +9,8 @@ import android.util.AttributeSet;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.ui.settings.SettingsFragment;
-import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
 
 public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView {
     private static final int[] STROKE_ATTRS = new int[]{R.attr.strokeTextColor, R.attr.strokeTextWidth};

@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.utils;
+package com.wtbruh.fakelauncher.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

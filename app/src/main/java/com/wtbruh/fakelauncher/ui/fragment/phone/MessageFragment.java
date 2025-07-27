@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.phone;
+package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import android.os.Bundle;
 
@@ -11,14 +11,14 @@ import android.view.ViewGroup;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.utils.MyFragment;
+import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MessageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MessageFragment extends MyFragment {
+public class MessageFragment extends BaseFragment {
 
     public static final String URI_HEADER = "content://sms/";
     public static final String PATH_INBOX = "inbox";

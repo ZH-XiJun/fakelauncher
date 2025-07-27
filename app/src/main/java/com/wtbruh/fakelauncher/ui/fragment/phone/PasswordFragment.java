@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.phone;
+package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,8 +18,8 @@ import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
 import com.wtbruh.fakelauncher.SubActivity;
-import com.wtbruh.fakelauncher.ui.settings.SubSettingsFragment;
-import com.wtbruh.fakelauncher.utils.MyFragment;
+import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 /**
@@ -27,7 +27,7 @@ import com.wtbruh.fakelauncher.utils.UIHelper;
  * Use the {@link PasswordFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PasswordFragment extends MyFragment {
+public class PasswordFragment extends BaseFragment {
     private final static String TAG = PasswordFragment.class.getSimpleName();
 
     public PasswordFragment() {

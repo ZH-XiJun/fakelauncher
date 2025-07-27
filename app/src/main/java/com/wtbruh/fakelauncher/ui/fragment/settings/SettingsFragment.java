@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.settings;
+package com.wtbruh.fakelauncher.ui.fragment.settings;
 
 import android.os.Bundle;
 

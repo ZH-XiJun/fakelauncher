@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.phone;
+package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.utils.MyFragment;
+import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 /**
@@ -26,7 +26,7 @@ import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
  * Use the {@link CameraFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CameraFragment extends MyFragment {
+public class CameraFragment extends BaseFragment {
     private final static String TAG = CameraFragment.class.getSimpleName();
     private CameraSelector nowCamera = CameraSelector.DEFAULT_BACK_CAMERA;
 

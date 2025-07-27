@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher;
+package com.wtbruh.fakelauncher.ui;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -13,9 +13,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.wtbruh.fakelauncher.utils.MyAppCompatActivity;
+import com.wtbruh.fakelauncher.R;
 
-public class VolumeActivity extends MyAppCompatActivity {
+public class VolumeActivity extends BaseAppCompatActivity {
     private AudioManager mAudioManager;
     private ProgressBar bar;
     private ImageView icon;

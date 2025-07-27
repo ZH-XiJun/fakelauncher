@@ -1,4 +1,4 @@
-package com.wtbruh.fakelauncher.ui.settings;
+package com.wtbruh.fakelauncher.ui.fragment.settings;
 
 
 import static androidx.core.content.ContextCompat.getSystemService;
@@ -27,7 +27,6 @@ import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class SubSettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
@@ -113,20 +112,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         Bundle args = getArguments();
         if (args != null) {
             page = args.getString(ARG_PAGE, SettingsFragment.PAGE_PERMISSION);
-            switch (page) {
-                case SettingsFragment.PAGE_BEHAVIOUR:
-                    xml = R.xml.preference_behaviour;
-                    break;
-                case SettingsFragment.PAGE_VIEW:
-                    xml = R.xml.preference_view;
-                    break;
-                case SettingsFragment.PAGE_PERMISSION:
+            xml = switch (page) {
+                case SettingsFragment.PAGE_BEHAVIOUR -> R.xml.preference_behaviour;
+                case SettingsFragment.PAGE_VIEW -> R.xml.preference_view;
                 // If argument invalid, fallback to permission page
                 // 如果乱传参数，默认也是打开权限页面
-                default:
-                    xml = R.xml.preference_permission;
-                    break;
-            }
+                default -> R.xml.preference_permission;
+            };
         }
         setPreferencesFromResource(xml, rootKey);
         init(page);

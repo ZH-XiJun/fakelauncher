@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/black"
     android:gravity="center"
-    tools:context=".ui.phone.GalleryFragment">
+    tools:context=".ui.fragment.phone.GalleryFragment">
 
     <SurfaceView
         android:id="@+id/videoView"

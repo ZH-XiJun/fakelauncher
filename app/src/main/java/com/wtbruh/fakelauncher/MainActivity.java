@@ -2,9 +2,11 @@ package com.wtbruh.fakelauncher;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -19,7 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -35,6 +37,7 @@ import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.LunarCalender;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
+import com.wtbruh.fakelauncher.utils.ScreenObserver;
 import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -44,12 +47,13 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends BaseAppCompatActivity implements PowerConnectionReceiver.getStat {
+public class MainActivity extends BaseAppCompatActivity implements PowerConnectionReceiver.getStat, ScreenObserver.ScreenStateListener {
+    private Dialog dialog;
+    // date
     private final static int TIME = 0;
     private final static int DATE = 1;
     private final static int WEEK = 2;
 
-    private Timer mTimer;
     // battery
     private int batteryLevel;
     private final static int[] batteryIcons = {
@@ -61,19 +65,34 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private boolean mCharging = false;
     private boolean mAccurateBattery = false;
 
+    // 广播接收器 Broadcast receiver
+    private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
+    private boolean mReceiverRegistered = false;
+
     // UI style
     private String mStyle;
     private String[] mStyles;
+
+    // is screen off 是否熄屏
+    private boolean isLocked = false;
+
+    // key long press check 按键长按检查
+    private boolean isKeyLongPressed = false;
+
     // Regularly refresh data
+    // 计时任务
     private String previousDate;
     private String previousTime;
     private int previousBattery;
+    private Timer mTimer;
 
+    // key count 按键计数
     private int count = 0;
+
+    // Device owner
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
-    private boolean mReceiverRegistered = false;
     private DevicePolicyManager mDpm;
-    private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
+
     // todo: support Dhizuku
     /*
     private ServiceConnection mServiceConnection;
@@ -125,18 +144,55 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            // Open menu UI
-            // 打开菜单界面
-            Log.d(TAG, "Pressed menu key");
-
+        // Star key long press detection
+        // 长按星键检测
+        if (keyCode == KeyEvent.KEYCODE_STAR) {
+            if (event.getRepeatCount() == 0) {
+                event.startTracking();
+                return true;
+            }
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (mStyle.equals(mStyles[0])) {
+            if (isLocked) {
+                if (keyCode == KeyEvent.KEYCODE_STAR) {
+                    isKeyLongPressed = true;
+                    onUnlocked();
+                }
+            }
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (mStyle.equals(mStyles[0])) {
+            if (isLocked) { // 需要解锁的情况 Need star key unlock
+                if (keyCode == KeyEvent.KEYCODE_MENU) {
+                    dialog = UIHelper.showDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
+                        if (keyCode1 == KeyEvent.KEYCODE_STAR) {
+                            onUnlocked();
+                            dialogInterface.dismiss();
+                        }
+                        return false;
+                    });
+                } else {
+                    if (!isKeyLongPressed)
+                        dialog = UIHelper.showDialog(this, R.string.dialog_long_press_star_unlock, null);
+                }
+                // 展示提示弹窗后不会执行下面的代码
+                // The codes below will not be executed. Only show dialog
+                return super.onKeyUp(keyCode, event);
+            }
+            if (isKeyLongPressed) {
+                isKeyLongPressed = false;
+                return true;
+            }
+            // Unlocked 已解锁后
             counter(keyCode);
             if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
@@ -174,13 +230,18 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         return super.onKeyUp(keyCode, event);
     }
 
-    void test() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Man what can i say")
-                .setMessage("Mamba out")
-                .create()
-                .show();
+    @Override
+    public void onScreenOn() {
+        onLocked();
     }
+    @Override
+    public void onScreenOff() {
+        // Clear dialog on screen off
+        if (dialog != null && dialog.isShowing()) dialog.dismiss();
+        dialog = null;
+    }
+    @Override
+    public void onUserPresent() {}
 
     /**
      * Init of MainActivity | MainActivity初始化
@@ -208,9 +269,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mStyle.equals(mStyles[1])) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
-            // for test
-            test();
-
             View cardLogo = findViewById(R.id.cardLogo);
             cardLogo.post(() -> {
                 cardLogo.getLayoutParams().width = cardLogo.getHeight() * 11/28;
@@ -222,9 +280,12 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             card1.setText(mTelHelper.getProvidersName(0));
             card2.setText(mTelHelper.getProvidersName(1));
 
+            ScreenObserver screenObserver = new ScreenObserver(this);
+            screenObserver.startScreenObserver(this);
+
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
-            // setLockApp(MainActivity.this, getTaskId());
+            setLockApp(MainActivity.this, getTaskId());
 
         }
     }
@@ -321,6 +382,26 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      */
     public static boolean isXposedModuleActivated() {
         return false;
+    }
+
+    /**
+     * Footer customization<br>
+     * 界面底部自定义
+     * @param resId 文字的资源id
+     */
+    private void setFooterBar(int resId) {
+        TextView leftButtonTv = findViewById(R.id.main_leftButton);
+        leftButtonTv.setText(resId);
+    }
+
+    private void onLocked() {
+        isLocked = true;
+        setFooterBar(R.string.unlock_leftButton);
+    }
+    private void onUnlocked() {
+        isLocked = false;
+        dialog = UIHelper.showDialog(MainActivity.this, R.string.dialog_unlocked, null);
+        setFooterBar(R.string.main_leftButton);
     }
 
     /**
@@ -517,6 +598,12 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         });
     }
 
+    /**
+     * Check if user needs to show accurate battery.<br>
+     * If so, lunar calendar should be hidden<br>
+     * 检查用户是否需要显示精确电量，<br>
+     * 如果是，则需隐藏农历显示
+     */
     private void batteryAccurate() {
         View statusBarView = findViewById(R.id.StatusBar);
         View lunarView = findViewById(R.id.lunarDate);
@@ -647,4 +734,5 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     public static int getLockApp(Context context) {
         return ContentProvider.getTaskId(context);
     }
+
 }

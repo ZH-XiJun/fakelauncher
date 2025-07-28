@@ -1,11 +1,20 @@
 package com.wtbruh.fakelauncher.utils;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.R;
@@ -130,5 +139,44 @@ public class UIHelper {
         lastTriggerTime = currentTime;
         // If the activity is already on top, do not launch
         return ApplicationHelper.topActivity.contains(cls.getSimpleName());
+    }
+
+    /**
+     * <h3>Custom dialog | 自定义弹窗</h3>
+     * <p>Imitate the style of dialog in feature phone<br>
+     * 模仿老人机的弹窗样式</p>
+     * @param context 上下文
+     * @param msgResId 要显示的文本的资源id
+     * @param listener 按键监听器
+     */
+    public static Dialog showDialog(Context context, int msgResId, @Nullable DialogInterface.OnKeyListener listener) {
+        // Load custom layout
+        // 加载自制布局
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_custom, null, false);
+        // Set message
+        // 设置消息文本
+        TextView messageTv = view.findViewById(R.id.dialogMessage);
+        messageTv.setText(msgResId);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_FakeLauncher_Dialog);
+        AlertDialog dialog =  builder.setView(view).create();
+        // Touch event is not allowed
+        // 杜绝触屏操作，不然穿帮了
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+        if (listener != null) dialog.setOnKeyListener(listener);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            // Disable transition anim
+            // 去掉过渡动画
+            window.setWindowAnimations(0);
+        }
+
+        // 展示3秒后关闭
+        new Handler().postDelayed(() -> {
+            if (dialog.isShowing()) dialog.dismiss();
+        }, 3000);
+        return dialog;
     }
 }

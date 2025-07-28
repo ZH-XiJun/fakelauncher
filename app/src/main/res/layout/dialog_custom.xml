@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/dialogMessage"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingStart="25dp"
+        android:paddingEnd="25dp"
+        android:text="@string/dialog_long_press_star_unlock"
+        android:textColor="@color/black"
+        android:textSize="36sp" />
+</LinearLayout>

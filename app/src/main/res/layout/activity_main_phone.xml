@@ -185,7 +185,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
-            android:id="@+id/menu"
+            android:id="@+id/main_leftButton"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3"
             android:layout_width="0dp"

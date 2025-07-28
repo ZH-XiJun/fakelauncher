@@ -13,4 +13,8 @@
         <item name="statusBarBackground">@android:color/transparent</item>
         -->
     </style>
+
+    <style name="Theme.FakeLauncher.Dialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@drawable/dialog_rounded_bg</item>
+    </style>
 </resources>

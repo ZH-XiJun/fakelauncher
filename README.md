@@ -66,7 +66,7 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 
 - [ ] Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
 - [ ] Support for old Android
-- [ ] Add "Star key unlock" feature
+- [x] Add "Star key unlock" feature
 - [ ] Add Media Player (MP3) UI style
 - [ ] ~~Add stroke text~~ Resizable text stroke width
 - [ ] Add Contacts page

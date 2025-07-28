@@ -1,115 +1,119 @@
 <resources>
     <!-- App -->
     <string name="app_name" translatable="false">fakelauncher</string>
-    <string name="app_settings_name" translatable="true">FakeL Settings</string>
-    <string name="shortcut_name" translatable="true">Open fake UI</string>
+    <string name="app_settings_name">FakeL Settings</string>
+    <string name="shortcut_name">Open fake UI</string>
     <string name="XposedDescription" translatable="false">通过Xposed触发屏幕固定以限制应用使其不可退出，从而达到伪装目的</string>
     <!-- Power connection -->
-    <string name="charging" translatable="true">Charging</string>
-    <string name="not_charging" translatable="true">Unplugged</string>
+    <string name="charging">Charging</string>
+    <string name="not_charging">Unplugged</string>
     <!-- Button hint -->
-    <string name="main_leftButton" translatable="true">Menu</string>
-    <string name="option_leftButton" translatable="true">Option</string>
-    <string name="common_leftButton" translatable="true">OK</string>
-    <string name="common_rightButton" translatable="true">Back</string>
-    <string name="edittext_rightButton" translatable="true">Delete</string>
-    <string name="play_centerButton" translatable="true">Play</string>
-    <string name="pause_centerButton" translatable="true">Pause</string>
-    <string name="resume_centerButton" translatable="true">Resume</string>
+    <string name="main_leftButton">Menu</string>
+    <string name="option_leftButton">Option</string>
+    <string name="unlock_leftButton">Unlock</string>
+    <string name="common_leftButton">OK</string>
+    <string name="common_rightButton">Back</string>
+    <string name="edittext_rightButton">Delete</string>
+    <string name="play_centerButton">Play</string>
+    <string name="pause_centerButton">Pause</string>
+    <string name="resume_centerButton">Resume</string>
 
     <!-- Menu items -->
-    <string name="menu_call" translatable="true">Call</string>
-    <string name="menu_camera" translatable="true">Camera</string>
-    <string name="menu_gallery" translatable="true">Gallery</string>
-    <string name="menu_contact" translatable="true">Contacts</string>
-    <string name="menu_sms" translatable="true">SMS</string>
-    <string name="menu_set" translatable="true">Settings</string>
+    <string name="menu_call">Call</string>
+    <string name="menu_camera">Camera</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_contact">Contacts</string>
+    <string name="menu_sms">SMS</string>
+    <string name="menu_set">Settings</string>
     <!-- Main UI hint -->
-    <string name="sim_inseted" translatable="true">Inserted</string>
-    <string name="sim_removed" translatable="true">Removed</string>
+    <string name="sim_inseted">Inserted</string>
+    <string name="sim_removed">Removed</string>
+    <string name="dialog_long_press_star_unlock">Long press "*" to unlock</string>
+    <string name="dialog_press_star_unlock">Now press "*" key</string>
+    <string name="dialog_unlocked">Unlocked</string>
     <!-- todo: English date format-->
-    <string name="date_format" translatable="true">yyyy-MM-dd</string>
+    <string name="date_format">yyyy-MM-dd</string>
     <!-- Password UI hint -->
-    <string name="enter_password" translatable="true">Please enter password</string>
-    <string name="password_wrong" translatable="true">Wrong password!</string>
-    <string name="password_empty" translatable="true">Please input password!</string>
+    <string name="enter_password">Please enter password</string>
+    <string name="password_wrong">Wrong password!</string>
+    <string name="password_empty">Please input password!</string>
     <!-- Dialer UI hint -->
-    <string name="dialer_empty" translatable="true">Please input phone number</string>
+    <string name="dialer_empty">Please input phone number</string>
     <!-- Camera UI hint -->
-    <string name="camera_open_fail" translatable="true">Camera open fail</string>
+    <string name="camera_open_fail">Camera open fail</string>
     <!-- Gallery UI hint -->
-    <string name="gallery_no_photo" translatable="true">No photo</string>
-    <string name="gallery_loading" translatable="true">Loading</string>
-    <string name="gallery_load_failed" translatable="true">Load failed</string>
+    <string name="gallery_no_photo">No photo</string>
+    <string name="gallery_loading">Loading</string>
+    <string name="gallery_load_failed">Load failed</string>
     <!-- Message UI hint -->
-    <string name="message_empty" translatable="true">No message</string>
+    <string name="message_empty">No message</string>
     <!-- Contacts UI hint -->
-    <string name="contacts_empty" translatable="true">No contact</string>
+    <string name="contacts_empty">No contact</string>
     <!-- Volume UI hint -->
-    <string name="volume_adjust" translatable="true">Volume adjust</string>
+    <string name="volume_adjust">Volume adjust</string>
     <!-- Preferences -->
-    <string name="pref_tap_me" translatable="true">Tap me!</string>
-    <string name="pref_caution" translatable="true">Be careful as the feature you\'ve enabled is not common in real feature phones</string>
-    <string name="pref_operation_completed" translatable="true">Operation completed</string>
+    <string name="pref_tap_me">Tap me!</string>
+    <string name="pref_caution">Be careful as the feature you\'ve enabled is not common in real feature phones</string>
+    <string name="pref_operation_completed">Operation completed</string>
 
-    <string name="pref_page_permissions" translatable="true">Permissions and privileges</string>
-    <string name="pref_page_permissions_summary" translatable="true">Program needs them to run normally</string>
-    <string name="pref_category_permissions" translatable="true">Permissions</string>
-    <string name="pref_grant_all_permissions" translatable="true">Use privilege provider to grant all permissions</string>
-    <string name="pref_grant_all_permissions_summary" translatable="true">Choose a privilege provider first</string>
-    <string name="pref_permission_grant_status" translatable="true">Permissions granting status</string>
-    <string name="pref_gallery_access" translatable="true">Choose a path to access pictures for gallery</string>
-    <string name="pref_gallery_access_summary" translatable="true">Use Storage Access Framework (SAF) to grant permission</string>
+    <string name="pref_page_permissions">Permissions and privileges</string>
+    <string name="pref_page_permissions_summary">Program needs them to run normally</string>
+    <string name="pref_category_permissions">Permissions</string>
+    <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
+    <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
+    <string name="pref_permission_grant_status">Permissions granting status</string>
+    <string name="pref_gallery_access">Choose a path to access pictures for gallery</string>
+    <string name="pref_gallery_access_summary">Use Storage Access Framework (SAF) to grant permission</string>
 
     <string name="pref_category_privileges">Privileges</string>
     <string name="pref_check_xposed">Xposed module activation status</string>
     <string name="pref_xposed_activated">Xposed module is activated! </string>
     <string name="pref_xposed_not_activated">Xposed module is not activated yet</string>
-    <string name="pref_privilege_provider" translatable="true">Privilege provider</string>
-    <string name="pref_provider_none" translatable="true">None</string>
+    <string name="pref_privilege_provider">Privilege provider</string>
+    <string name="pref_provider_none">None</string>
     <string name="pref_provider_root" translatable="false">Root</string>
     <string name="pref_provider_shizuku" translatable="false">Shizuku</string>
-    <string name="pref_check_privilege" translatable="true">Check if privilege has been granted</string>
-    <string name="pref_check_privilege_granted" translatable="true">Granted</string>
-    <string name="pref_check_privilege_denied" translatable="true">Denied</string>
-    <string name="pref_check_privilege_none" translatable="true">You have no privilege provider, so why do you tap me?</string>
-    <string name="pref_enable_dhizuku" translatable="true">Use Dhizuku</string>
-    <string name="pref_check_device_admin" translatable="true">Check device owner</string>
-    <string name="pref_activated_device_admin" translatable="true">Privilege low - Device Admin</string>
-    <string name="pref_activated_device_owner" translatable="true">Activated - Device Owner</string>
-    <string name="pref_activated_dhizuku" translatable="true">Activated - Dhizuku</string>
+    <string name="pref_check_privilege">Check if privilege has been granted</string>
+    <string name="pref_check_privilege_granted">Granted</string>
+    <string name="pref_check_privilege_denied">Denied</string>
+    <string name="pref_check_privilege_none">You have no privilege provider, so why do you tap me?</string>
+    <string name="pref_enable_dhizuku">Use Dhizuku</string>
+    <string name="pref_check_device_admin">Check device owner</string>
+    <string name="pref_activated_device_admin">Privilege low - Device Admin</string>
+    <string name="pref_activated_device_owner">Activated - Device Owner</string>
+    <string name="pref_activated_dhizuku">Activated - Dhizuku</string>
     <string name="pref_deactivate_device_owner">Deactivate device owner</string>
     <string name="pref_deactivated">Deactivated</string>
 
-    <string name="pref_page_view" translatable="true">View</string>
-    <string name="pref_page_view_summary" translatable="true">Configurations about UI</string>
-    <string name="pref_style" translatable="true">UI style</string>
-    <string name="pref_style_phone" translatable="true">Feature phone</string>
-    <string name="pref_style_player" translatable="true">Media player</string>
-    <string name="pref_time_show_seconds" translatable="true">Show seconds in the clock</string>
-    <string name="pref_time_show_seconds_summary" translatable="true">Time display will be accurate to seconds</string>
-    <string name="pref_show_accurate_battery" translatable="true">Show accurate battery percent</string>
-    <string name="pref_show_accurate_battery_summary" translatable="true">Battery icon will be hidden at the same time</string>
+    <string name="pref_page_view">View</string>
+    <string name="pref_page_view_summary">Configurations about UI</string>
+    <string name="pref_style">UI style</string>
+    <string name="pref_style_phone">Feature phone</string>
+    <string name="pref_style_player">Media player</string>
+    <string name="pref_time_show_seconds">Show seconds in the clock</string>
+    <string name="pref_time_show_seconds_summary">Time display will be accurate to seconds</string>
+    <string name="pref_show_accurate_battery">Show accurate battery percent</string>
+    <string name="pref_show_accurate_battery_summary">Battery icon will be hidden at the same time</string>
 
-    <string name="pref_page_behaviour" translatable="true">Behaviour</string>
-    <string name="pref_page_behaviour_summary" translatable="true">Control some behaviours of the program</string>
-    <string name="pref_dpad_center_open_menu" translatable="true">Dpad center can open menu</string>
-    <string name="pref_dpad_center_open_menu_summary" translatable="true">"Dpad center" is the center of the direction keys</string>
-    <string name="pref_vibrate_on_start" translatable="true">Vibrate when opening fake UI</string>
-    <string name="pref_vibrate_on_start_summary" translatable="true">So you can aware that fake UI has been opened</string>
-    <string name="pref_exit_fakeui_method" translatable="true">Method to exit Fake UI</string>
-    <string name="pref_exit_fakeui_config" translatable="true">Config for triggering exit</string>
-    <string name="pref_exit_dpad" translatable="true">D-pad keys in MainUI</string>
-    <string name="pref_exit_dialer" translatable="true">Dialer secret code</string>
-    <string name="pref_exit_password" translatable="true">Custom password while entering Settings in menu</string>
+    <string name="pref_page_behaviour">Behaviour</string>
+    <string name="pref_page_behaviour_summary">Control some behaviours of the program</string>
+    <string name="pref_dpad_center_open_menu">Dpad center can open menu</string>
+    <string name="pref_dpad_center_open_menu_summary">"Dpad center" is the center of the direction keys</string>
+    <string name="pref_vibrate_on_start">Vibrate when opening fake UI</string>
+    <string name="pref_vibrate_on_start_summary">So you can aware that fake UI has been opened</string>
+    <string name="pref_exit_fakeui_method">Method to exit Fake UI</string>
+    <string name="pref_exit_fakeui_config">Config for triggering exit</string>
+    <string name="pref_exit_dpad">D-pad keys in MainUI</string>
+    <string name="pref_exit_dialer">Dialer secret code</string>
+    <string name="pref_exit_password">Custom password while entering Settings in menu</string>
 
     <!-- Toast message -->
-    <string name="toast_open_settings_from_launcher" translatable="true">Please open settings from launcher to grant Dhizuku.</string>
-    <string name="toast_reopen_to_refresh" translatable="true">Please reopen this page to refresh grant status.</string>
+    <string name="toast_open_settings_from_launcher">Please open settings from launcher to grant Dhizuku.</string>
+    <string name="toast_reopen_to_refresh">Please reopen this page to refresh grant status.</string>
 
     <!-- Dialog -->
-    <string name="dialog_title_exit_dpad" translatable="true">D-pad key command setup</string>
-    <string name="dialog_title_exit_dialer" translatable="true">Dialer secret code setup</string>
-    <string name="dialog_title_exit_dialer_hint" translatable="true">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
-    <string name="dialog_title_exit_passwd" translatable="true">Settings page password setup</string>
+    <string name="dialog_title_exit_dpad">D-pad key command setup</string>
+    <string name="dialog_title_exit_dialer">Dialer secret code setup</string>
+    <string name="dialog_title_exit_dialer_hint">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
+    <string name="dialog_title_exit_passwd">Settings page password setup</string>
 </resources>

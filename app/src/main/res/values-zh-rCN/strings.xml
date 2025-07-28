@@ -9,6 +9,7 @@
     <!-- 按键提示 -->
     <string name="main_leftButton">菜单</string>
     <string name="option_leftButton">选项</string>
+    <string name="unlock_leftButton">解锁</string>
     <string name="common_leftButton">确定</string>
     <string name="common_rightButton">返回</string>
     <string name="edittext_rightButton">删除</string>
@@ -25,7 +26,10 @@
     <!-- 主界面文字 -->
     <string name="sim_inseted">已插入</string>
     <string name="sim_removed">未插入</string>
-    <string name="date_format" translatable="true">yyyy年MM月dd日</string>
+    <string name="dialog_long_press_star_unlock">长按*键解锁</string>
+    <string name="dialog_press_star_unlock">再按*键解锁</string>
+    <string name="dialog_unlocked">已解锁</string>
+    <string name="date_format">yyyy年MM月dd日</string>
     <!-- 密码界面文字提示 -->
     <string name="enter_password">请输入安全密码</string>
     <string name="password_wrong">密码错误！</string>

@@ -125,6 +125,88 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         init();
     }
 
+    /**
+     * Init of MainActivity | MainActivity初始化
+     */
+    private void init() {
+        Log.d(TAG, "Now start init, UI style: " + mStyle);
+        // Common init 通用初始化代码
+        // 时间字体大小自适应适配
+        TextView time = findViewById(R.id.time);
+        time.post(() -> {
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
+            // 获取缩放后的字体大小
+            float textSize = time.getTextSize(); // 单位：px
+            Log.d(TAG, "now text size: " + textSize);
+            time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
+            time.requestLayout();
+        });
+        batteryAccurate();
+        // Start timer 启动计时任务
+        updateInfo();
+        // Register the receiver 注册接收器
+        receiverRegister(true);
+        // Manually get connection status 手动获取连接状态
+        getConnectionStatus();
+        if (mStyle.equals(mStyles[1])) {
+            // todo: mp3 ui init
+        } else { // Default/Fallback: feature phone UI
+            View cardLogo = findViewById(R.id.cardLogo);
+            cardLogo.post(() -> {
+                cardLogo.getLayoutParams().width = cardLogo.getHeight() * 11/28;
+                cardLogo.requestLayout();
+            });
+            TelephonyHelper mTelHelper = new TelephonyHelper(this);
+            TextView card1 = findViewById(R.id.card1_provider);
+            TextView card2 = findViewById(R.id.card2_provider);
+            card1.setText(mTelHelper.getProvidersName(0));
+            card2.setText(mTelHelper.getProvidersName(1));
+
+            ScreenObserver screenObserver = new ScreenObserver(this);
+            screenObserver.startScreenObserver(this);
+
+            initDeviceOwner();
+            // Start pin mode 启用屏幕固定
+            setLockApp(MainActivity.this, getTaskId());
+
+        }
+    }
+
+    /**
+     * 当想要退出App时，重复启动MainActivity可触发退出
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(TAG, "Repeatedly launched MainActivity, it's time to do exit");
+        exit();
+    }
+
+    /**
+     * do necessary codes before calling onDestroy()<br>
+     * 调用onDestroy()之前需要执行的代码
+     */
+    private void exit() {
+        // Disable pin mode
+        // 关闭屏幕固定
+        setLockApp(MainActivity.this, -1);
+        // Wait for pin mode disabled, or finishAndRemoveTask() won't work
+        // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "An error was occurred while waiting screen pinning to close: "+e);
+        }
+        // todo: support Dhizuku
+        /*
+        Dhizuku.stopUserService(mServiceArgs);
+        // 断开与UserService的连接
+        Dhizuku.unbindUserService(mServiceConnection);
+         */
+        // kill myself
+        finishAndRemoveTask();
+    }
+
     @Override
     protected void onDestroy() {
         if (getLockApp(MainActivity.this) != -1) setLockApp(MainActivity.this, -1);
@@ -244,63 +326,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     public void onUserPresent() {}
 
     /**
-     * Init of MainActivity | MainActivity初始化
-     */
-    private void init() {
-        Log.d(TAG, "Now start init, UI style: " + mStyle);
-        // Common init 通用初始化代码
-        // 时间字体大小自适应适配
-        TextView time = findViewById(R.id.time);
-        time.post(() -> {
-            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
-            // 获取缩放后的字体大小
-            float textSize = time.getTextSize(); // 单位：px
-            Log.d(TAG, "now text size: " + textSize);
-            time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
-            time.requestLayout();
-        });
-        batteryAccurate();
-        // Start timer 启动计时任务
-        updateInfo();
-        // Register the receiver 注册接收器
-        receiverRegister(true);
-        // Manually get connection status 手动获取连接状态
-        getConnectionStatus();
-        if (mStyle.equals(mStyles[1])) {
-            // todo: mp3 ui init
-        } else { // Default/Fallback: feature phone UI
-            View cardLogo = findViewById(R.id.cardLogo);
-            cardLogo.post(() -> {
-                cardLogo.getLayoutParams().width = cardLogo.getHeight() * 11/28;
-                cardLogo.requestLayout();
-            });
-            TelephonyHelper mTelHelper = new TelephonyHelper(this);
-            TextView card1 = findViewById(R.id.card1_provider);
-            TextView card2 = findViewById(R.id.card2_provider);
-            card1.setText(mTelHelper.getProvidersName(0));
-            card2.setText(mTelHelper.getProvidersName(1));
-
-            ScreenObserver screenObserver = new ScreenObserver(this);
-            screenObserver.startScreenObserver(this);
-
-            initDeviceOwner();
-            // Start pin mode 启用屏幕固定
-            setLockApp(MainActivity.this, getTaskId());
-
-        }
-    }
-
-    /**
-     * 当想要退出App时，重复启动MainActivity可触发退出
-     */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Log.d(TAG, "Repeatedly launched MainActivity, it's time to do exit");
-        exit();
-    }
-
-    /**
      * init of DeviceOwner | DeviceOwner 初始化
      */
     private void initDeviceOwner() {
@@ -349,31 +374,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             default:
                 Log.e(TAG, "No enough privilege to start screen pinning silently!!!");
         }
-    }
-
-    /**
-     * do necessary codes before calling onDestroy()<br>
-     * 调用onDestroy()之前需要执行的代码
-     */
-    private void exit() {
-        // Disable pin mode
-        // 关闭屏幕固定
-        setLockApp(MainActivity.this, -1);
-        // Wait for pin mode disabled, or finishAndRemoveTask() won't work
-        // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "An error was occurred while waiting screen pinning to close: "+e);
-        }
-        // todo: support Dhizuku
-        /*
-        Dhizuku.stopUserService(mServiceArgs);
-        // 断开与UserService的连接
-        Dhizuku.unbindUserService(mServiceConnection);
-         */
-        // kill myself
-        finishAndRemoveTask();
     }
 
     /**

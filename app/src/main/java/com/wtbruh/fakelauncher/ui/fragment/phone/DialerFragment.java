@@ -24,7 +24,6 @@ public class DialerFragment extends BaseFragment {
     private static final String ARG_INPUT = "input";
     private SharedPreferences mPrefs;
     private TextView mEditText;
-    private SubActivity mActivity;
 
     public DialerFragment() {
         // Required empty public constructor
@@ -108,7 +107,6 @@ public class DialerFragment extends BaseFragment {
     private void init() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         mEditText = rootView.findViewById(R.id.dialer);
-        mActivity = (SubActivity) getActivity();
         if (getArguments() != null) {
             mEditText.setText(getArguments().getString(ARG_INPUT));
             setFooterBar(SubActivity.R_EDITTEXT);

@@ -37,35 +37,36 @@
 
     <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
         android:id="@+id/date"
-        app:strokeTextColor="@color/black"
-        app:strokeTextWidth="1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="1234年56月78日"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="40sp"
         android:textStyle="bold"
+        app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/lunarDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time" />
+        app:layout_constraintTop_toBottomOf="@+id/time"
+        app:strokeTextColor="@color/black"
+        app:strokeTextWidth="1" />
 
 
     <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
         android:id="@+id/lunarDate"
-        app:strokeTextColor="@color/black"
-        app:strokeTextWidth="1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="75dp"
         android:text="六月廿七"
+        android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="60sp"
         android:textStyle="bold"
+        app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/statusBar_simCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date" />
+        app:layout_constraintTop_toBottomOf="@+id/date"
+        app:strokeTextColor="@color/black"
+        app:strokeTextWidth="1" />
 
     <LinearLayout
         android:id="@+id/StatusBar"
@@ -116,15 +117,15 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintBottom_toBottomOf="@id/cardProvider"
         app:layout_constraintEnd_toStartOf="@id/cardProvider"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/cardProvider">
 
         <ImageView
             android:id="@+id/card1_logo"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_margin="5dp"
             android:layout_weight="1"
@@ -141,37 +142,37 @@
 
     <LinearLayout
         android:id="@+id/cardProvider"
-        android:layout_width="wrap_content"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/main_ActionBar"
+        app:layout_constraintBottom_toTopOf="@id/main_ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cardLogo"
         app:layout_constraintTop_toBottomOf="@id/statusBar_simCard">
 
         <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/card1_provider"
-            app:strokeTextColor="@color/black"
-            app:strokeTextWidth="3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sim_removed"
-            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="我是你爸"
+            android:textAlignment="viewStart"
             android:textColor="@color/white"
-            android:textSize="48sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:autoSizeTextType="uniform"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="3" />
 
         <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/card2_provider"
-            app:strokeTextColor="@color/black"
-            app:strokeTextWidth="3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:text="@string/sim_removed"
-            android:textAlignment="center"
+            android:textAlignment="viewStart"
             android:textColor="@color/white"
-            android:textSize="48sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:autoSizeTextType="uniform"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="3" />
 
     </LinearLayout>
 

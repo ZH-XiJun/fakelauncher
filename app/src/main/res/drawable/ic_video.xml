@@ -11,5 +11,5 @@
     <path
         android:fillColor="@color/white"
         android:fillAlpha="25"
-        android:pathData="M 133,42 L 34,100 L 133,158 Z" />
+        android:pathData="M 65,42 L 166,100 L 65,158 Z" />
 </vector>

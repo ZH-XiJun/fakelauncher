@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
-        app:srcCompat="@drawable/menu_call" />
+        app:srcCompat="@drawable/ic_menu_call" />
 
     <TextView
         android:id="@+id/appName"

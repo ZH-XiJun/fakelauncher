@@ -128,7 +128,7 @@
             android:layout_height="0dp"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/sim_card1" />
+            app:srcCompat="@drawable/ic_sim_card1" />
 
         <ImageView
             android:id="@+id/card2_logo"
@@ -136,7 +136,7 @@
             android:layout_height="0dp"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/sim_card2" />
+            app:srcCompat="@drawable/ic_sim_card2" />
     </LinearLayout>
 
     <LinearLayout

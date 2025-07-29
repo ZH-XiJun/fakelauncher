@@ -99,27 +99,27 @@ public class MenuFragment extends BaseFragment {
         TextView appName = rootView.findViewById(R.id.appName);
         switch (number) {
             case CALL: // Call 电话
-                appIcon.setImageResource(R.drawable.menu_call);
+                appIcon.setImageResource(R.drawable.ic_menu_call);
                 appName.setText(R.string.menu_call);
                 break;
             case CONTACT: // Contact 联系人
-                appIcon.setImageResource(R.drawable.menu_contact);
+                appIcon.setImageResource(R.drawable.ic_menu_contact);
                 appName.setText(R.string.menu_contact);
                 break;
             case SMS: // SMS 短信
-                appIcon.setImageResource(R.drawable.menu_sms);
+                appIcon.setImageResource(R.drawable.ic_menu_sms);
                 appName.setText(R.string.menu_sms);
                 break;
             case CAMERA: // Camera 相机
-                appIcon.setImageResource(R.drawable.menu_camera);
+                appIcon.setImageResource(R.drawable.ic_menu_camera);
                 appName.setText(R.string.menu_camera);
                 break;
             case GALLERY: // Gallery 相册
-                appIcon.setImageResource(R.drawable.menu_gallery);
+                appIcon.setImageResource(R.drawable.ic_menu_gallery);
                 appName.setText(R.string.menu_gallery);
                 break;
             case SETTINGS: // Settings 设置
-                appIcon.setImageResource(R.drawable.menu_set);
+                appIcon.setImageResource(R.drawable.ic_menu_set);
                 appName.setText(R.string.menu_set);
                 break;
         }

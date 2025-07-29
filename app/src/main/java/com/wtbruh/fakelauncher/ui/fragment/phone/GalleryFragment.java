@@ -293,7 +293,7 @@ public class GalleryFragment extends BaseFragment {
             super(context, R.layout.gridview_item, uris);
             this.context = context;
             this.uris = uris;
-            this.overlay = ContextCompat.getDrawable(context, R.drawable.vector_gridview_video);
+            this.overlay = ContextCompat.getDrawable(context, R.drawable.ic_video);
         }
         // AI说这样能提高运行效率
         private static class ViewHolder {

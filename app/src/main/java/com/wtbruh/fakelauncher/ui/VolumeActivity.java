@@ -104,10 +104,10 @@ public class VolumeActivity extends BaseAppCompatActivity {
          */
         text.setText(String.valueOf(volume)); // Originally display volume 直接按照系统提供的范围显示音量，不转换为0~100形式，避免bug
         if (volume == 0 && "unmute".equals(icon.getTag())) {
-            icon.setImageResource(R.drawable.volume_speaker_off);
+            icon.setImageResource(R.drawable.ic_volume_speaker_off);
             icon.setTag("mute");
         } else if (volume != 0 && "mute".equals(icon.getTag())) {
-            icon.setImageResource(R.drawable.volume_speaker_on);
+            icon.setImageResource(R.drawable.ic_volume_speaker_on);
             icon.setTag("unmute");
         }
     }

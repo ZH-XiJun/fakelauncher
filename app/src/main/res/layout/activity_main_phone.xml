@@ -71,21 +71,20 @@
     <LinearLayout
         android:id="@+id/StatusBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:gravity="center"
-        android:orientation="horizontal"
         android:visibility="invisible"
         app:layout_constraintTop_toTopOf="@+id/lunarDate">
 
         <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/connection"
-            app:strokeTextColor="@color/black"
-            app:strokeTextWidth="3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
             android:text="@string/not_charging"
             android:textColor="@color/white"
-            android:textSize="50sp" />
+            app:autoSizeTextType="uniform"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="3" />
 
         <Space
             android:layout_width="20dp"
@@ -93,14 +92,15 @@
 
         <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
             android:id="@+id/battery"
-            app:strokeTextColor="@color/black"
-            app:strokeTextWidth="3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="125dp"
+            android:layout_height="match_parent"
             android:text="100%"
-            android:textAlignment="textEnd"
+            android:textAlignment="viewEnd"
             android:textColor="@color/white"
-            android:textSize="50sp" />
+            android:textSize="50sp"
+            app:autoSizeTextType="uniform"
+            app:strokeTextColor="@color/black"
+            app:strokeTextWidth="3" />
 
     </LinearLayout>
 

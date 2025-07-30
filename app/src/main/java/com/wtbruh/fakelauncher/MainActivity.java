@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -169,7 +167,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
             setLockApp(MainActivity.this, getTaskId());
-
         }
     }
 
@@ -246,7 +243,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     dialog = UIHelper.showDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
                         if (keyCode1 == KeyEvent.KEYCODE_STAR) {
                             onUnlocked();
-                            dialogInterface.dismiss();
                         }
                         return false;
                     });
@@ -397,10 +393,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         setFooterBar(R.string.unlock_leftButton);
     }
     private void onUnlocked() {
-        isLocked = false;
+        // New dialog should be opened before closing the old one.
+        Dialog dialog2;
+        dialog2 = UIHelper.showDialog(MainActivity.this, R.string.dialog_unlocked, null);
         if (dialog != null && dialog.isShowing()) dialog.dismiss();
-        dialog = UIHelper.showDialog(MainActivity.this, R.string.dialog_unlocked, null);
+        dialog = dialog2;
         setFooterBar(R.string.main_leftButton);
+        isLocked = false;
     }
 
     /**

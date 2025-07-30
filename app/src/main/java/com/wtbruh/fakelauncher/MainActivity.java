@@ -33,6 +33,7 @@ import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.utils.ApplicationHelper;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.LunarCalender;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
@@ -226,28 +227,15 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Star key long press detection
-        // 长按星键检测
-        if (keyCode == KeyEvent.KEYCODE_STAR) {
-            if (event.getRepeatCount() == 0) {
-                event.startTracking();
-                return true;
+        if (mStyle.equals(mStyles[0])) {
+            // Star key long press detection
+            // 长按星键检测
+            if (isLocked && keyCode == KeyEvent.KEYCODE_STAR && event.getRepeatCount() >= 2) {
+                isKeyLongPressed = true;
+                onUnlocked();
             }
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        if (mStyle.equals(mStyles[0])) {
-            if (isLocked) {
-                if (keyCode == KeyEvent.KEYCODE_STAR) {
-                    isKeyLongPressed = true;
-                    onUnlocked();
-                }
-            }
-        }
-        return super.onKeyLongPress(keyCode, event);
     }
 
     @Override
@@ -264,7 +252,15 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     });
                 } else {
                     if (!isKeyLongPressed)
-                        dialog = UIHelper.showDialog(this, R.string.dialog_long_press_star_unlock, null);
+                        dialog = UIHelper.showDialog(this, R.string.dialog_long_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
+                            if (keyCode1 != KeyEvent.KEYCODE_BACK) {
+                                if (keyEvent.getRepeatCount() >= 2) {
+                                    isKeyLongPressed = true;
+                                    onUnlocked();
+                                }
+                            }
+                            return false;
+                        });
                 }
                 // 展示提示弹窗后不会执行下面的代码
                 // The codes below will not be executed. Only show dialog
@@ -395,11 +391,14 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     }
 
     private void onLocked() {
+        String topActivity = ApplicationHelper.topActivity;
+        if (topActivity != null) if (!topActivity.contains(MainActivity.class.getSimpleName())) return;
         isLocked = true;
         setFooterBar(R.string.unlock_leftButton);
     }
     private void onUnlocked() {
         isLocked = false;
+        if (dialog != null && dialog.isShowing()) dialog.dismiss();
         dialog = UIHelper.showDialog(MainActivity.this, R.string.dialog_unlocked, null);
         setFooterBar(R.string.main_leftButton);
     }

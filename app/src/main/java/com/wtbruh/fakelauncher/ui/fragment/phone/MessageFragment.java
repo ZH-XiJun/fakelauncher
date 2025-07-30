@@ -51,7 +51,7 @@ public class MessageFragment extends BaseFragment {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         return false;
     }
 

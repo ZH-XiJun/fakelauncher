@@ -9,7 +9,7 @@ import com.wtbruh.fakelauncher.SubActivity;
 
 public abstract class BaseFragment extends Fragment {
     public View rootView;
-    public abstract boolean onKeyDown(int keyCode, KeyEvent event);
+    public abstract boolean onKeyUp(int keyCode, KeyEvent event);
 
     public void setFooterBar(String... texts) {
         ((SubActivity) getActivity()).setFooterBar(texts);

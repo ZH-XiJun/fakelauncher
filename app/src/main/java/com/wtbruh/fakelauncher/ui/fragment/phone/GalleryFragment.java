@@ -186,7 +186,7 @@ public class GalleryFragment extends BaseFragment {
 
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
 

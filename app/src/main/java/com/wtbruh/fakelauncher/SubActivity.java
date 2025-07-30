@@ -83,9 +83,9 @@ public class SubActivity extends BaseAppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (( (BaseFragment) mCurrentFragment ).onKeyDown(keyCode, event)) return true;
-        return super.onKeyDown(keyCode, event);
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (((BaseFragment) mCurrentFragment).onKeyUp(keyCode, event)) return true;
+        return super.onKeyUp(keyCode, event);
     }
 
     /**

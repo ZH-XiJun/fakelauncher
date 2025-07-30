@@ -52,7 +52,7 @@ public class PasswordFragment extends BaseFragment {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         EditText editText = rootView.findViewById(R.id.editText);
         String content = editText.getText().toString();
 

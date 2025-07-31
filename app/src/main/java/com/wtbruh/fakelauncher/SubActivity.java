@@ -29,15 +29,6 @@ public class SubActivity extends BaseAppCompatActivity {
     public final static int LEFT_BUTTON = R.id.leftButton;
     public final static int CENTER_BUTTON = R.id.centerButton;
     public final static int RIGHT_BUTTON = R.id.rightButton;
-    public final static String L_DEFAULT = "L_DEFAULT";
-    public final static String L_EMPTY = "L_EMPTY";
-    public final static String L_OPTION = "L_OPTION";
-    public final static String R_DEFAULT = "R_DEFAULT";
-    public final static String R_EMPTY = "R_EMPTY";
-    public final static String R_EDITTEXT = "R_EDITTEXT";
-    public final static String C_PLAY = "C_PLAY";
-    public final static String C_PAUSE = "C_PAUSE";
-    public final static String C_RESUME = "C_RESUME";
 
     private final static String TAG = SubActivity.class.getSimpleName();
 
@@ -63,7 +54,7 @@ public class SubActivity extends BaseAppCompatActivity {
         // 设置状态栏颜色为黑色
         getWindow().setStatusBarColor(Color.BLACK);
         // 设置底部状态栏为默认状态
-        setFooterBar(L_DEFAULT, R_DEFAULT);
+        setFooterBar(BaseFragment.L_DEFAULT, BaseFragment.R_DEFAULT);
         // 获取附加数据
         Intent intent = getIntent();
         String[] args = intent.getStringArrayExtra("args");
@@ -134,25 +125,25 @@ public class SubActivity extends BaseAppCompatActivity {
             }
             else return;
             switch (text) {
-                case L_DEFAULT:
+                case BaseFragment.L_DEFAULT:
                     view.setText(R.string.common_leftButton);
                     break;
-                case L_OPTION:
+                case BaseFragment.L_OPTION:
                     view.setText(R.string.option_leftButton);
                     break;
-                case R_DEFAULT:
+                case BaseFragment.R_DEFAULT:
                     view.setText(R.string.common_rightButton);
                     break;
-                case R_EDITTEXT:
+                case BaseFragment.R_EDITTEXT:
                     view.setText(R.string.edittext_rightButton);
                     break;
-                case C_PLAY:
+                case BaseFragment.C_PLAY:
                     view.setText(R.string.play_centerButton);
                     break;
-                case C_PAUSE:
+                case BaseFragment.C_PAUSE:
                     view.setText(R.string.pause_centerButton);
                     break;
-                case C_RESUME:
+                case BaseFragment.C_RESUME:
                     view.setText(R.string.resume_centerButton);
                     break;
                 default:

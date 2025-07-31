@@ -49,7 +49,7 @@ public class MenuFragment extends BaseFragment {
     }
     @Override
     public void onResume() {
-        setFooterBar(SubActivity.L_DEFAULT, SubActivity.R_DEFAULT);
+        setFooterBar(L_DEFAULT, R_DEFAULT);
         super.onResume();
     }
 
@@ -85,7 +85,7 @@ public class MenuFragment extends BaseFragment {
 
     private void init() {
         switchSection(mNumber);
-        setFooterBar(SubActivity.L_DEFAULT, SubActivity.R_DEFAULT);
+        setFooterBar(L_DEFAULT, R_DEFAULT);
     }
 
     /**

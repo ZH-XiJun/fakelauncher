@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 
 /**
@@ -57,7 +56,7 @@ public class MessageFragment extends BaseFragment {
 
     private void init() {
         // todo:Message
-        setFooterBar(SubActivity.L_EMPTY);
+        setFooterBar(L_EMPTY);
         readSMS();
     }
 

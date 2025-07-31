@@ -18,7 +18,6 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,7 +25,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -36,7 +34,6 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
@@ -94,7 +91,7 @@ public class GalleryFragment extends BaseFragment {
     private void init(){
         // 加载图片的时候左边的按键提示先别显示出来
         // Do not show left button hint when loading
-        setFooterBar(SubActivity.L_EMPTY);
+        setFooterBar(L_EMPTY);
         // 绑定控件 View binding
         galleryView = rootView.findViewById(R.id.gallery);
         galleryView.setFocusable(false);
@@ -184,12 +181,12 @@ public class GalleryFragment extends BaseFragment {
                 bar.setMax(mediaPlayer.getDuration());
                 progressBarUpdate();
                 // 播放完成后修改按键提示
-                mediaPlayer.setOnCompletionListener(mp -> setFooterBar(SubActivity.C_PLAY));
+                mediaPlayer.setOnCompletionListener(mp -> setFooterBar(C_PLAY));
                 // 显示视频组件
                 videoView.setVisibility(VISIBLE);
                 videoLayout.setVisibility(VISIBLE);
                 // 修改按键提示为“暂停”
-                setFooterBar(SubActivity.C_PAUSE);
+                setFooterBar(C_PAUSE);
             });
 
         }
@@ -288,10 +285,10 @@ public class GalleryFragment extends BaseFragment {
                     if (videoLayout.getVisibility() == VISIBLE) {
                         if (mediaPlayer.isPlaying()) {
                             mediaPlayer.pause();
-                            setFooterBar(SubActivity.C_RESUME);
+                            setFooterBar(C_RESUME);
                         } else {
                             mediaPlayer.start();
-                            setFooterBar(SubActivity.C_PAUSE);
+                            setFooterBar(C_PAUSE);
                         }
                     }
                 }
@@ -351,7 +348,7 @@ public class GalleryFragment extends BaseFragment {
                             galleryView.setVisibility(VISIBLE);
 
                             textHint.setVisibility(GONE);
-                            setFooterBar(SubActivity.L_OPTION);
+                            setFooterBar(L_OPTION);
                         }
                     });
                 } catch (IllegalStateException e) {

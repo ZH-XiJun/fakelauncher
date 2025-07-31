@@ -14,7 +14,6 @@ import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
@@ -66,7 +65,7 @@ public class DialerFragment extends BaseFragment {
 
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
             if (content.equals(getString(R.string.dialer_empty))) {
-                setFooterBar(SubActivity.R_EDITTEXT);
+                setFooterBar(R_EDITTEXT);
                 mEditText.setText(UIHelper.textEditor(keyCode, ""));
             } else {
                 mEditText.setText(UIHelper.textEditor(keyCode, content));
@@ -80,7 +79,7 @@ public class DialerFragment extends BaseFragment {
                 // When there are some chars, right button will be used to delete chars
                 // 如果有字，右键应该是删除键
                 if (content.length() == 1) {
-                    setFooterBar(SubActivity.R_DEFAULT);
+                    setFooterBar(R_DEFAULT);
                     mEditText.setText(R.string.dialer_empty);
                 } else {
                     mEditText.setText(UIHelper.textEditor(keyCode, content));
@@ -109,7 +108,7 @@ public class DialerFragment extends BaseFragment {
         mEditText = rootView.findViewById(R.id.dialer);
         if (getArguments() != null) {
             mEditText.setText(getArguments().getString(ARG_INPUT));
-            setFooterBar(SubActivity.R_EDITTEXT);
+            setFooterBar(R_EDITTEXT);
         }
 
     }

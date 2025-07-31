@@ -2,9 +2,7 @@ package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,13 +15,11 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -109,7 +105,7 @@ public class ContactsFragment extends BaseFragment{
     private void noContact() {
         rootView.findViewById(R.id.contacts_textHint).setVisibility(View.VISIBLE);
         contactsView.setVisibility(View.INVISIBLE);
-        setFooterBar(SubActivity.L_EMPTY);
+        setFooterBar(L_EMPTY);
     }
 
     @Nullable

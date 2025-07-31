@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
-import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
@@ -58,7 +57,7 @@ public class PasswordFragment extends BaseFragment {
 
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {
             if (content.isEmpty()) {
-                setFooterBar(SubActivity.R_EDITTEXT);
+                setFooterBar(R_EDITTEXT);
             }
             editText.setText(UIHelper.textEditor(keyCode, content));
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -71,7 +70,7 @@ public class PasswordFragment extends BaseFragment {
                 // 如果有字，右键应该是删除键
                 editText.setText(UIHelper.textEditor(keyCode, content));
                 if (content.length() == 1) {
-                    setFooterBar(SubActivity.R_DEFAULT);
+                    setFooterBar(R_DEFAULT);
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {

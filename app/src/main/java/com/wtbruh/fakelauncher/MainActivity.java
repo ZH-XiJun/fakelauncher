@@ -185,6 +185,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * 调用onDestroy()之前需要执行的代码
      */
     private void exit() {
+        if (mTimer != null) mTimer.cancel();
         // Disable pin mode
         // 关闭屏幕固定
         setLockApp(MainActivity.this, -1);

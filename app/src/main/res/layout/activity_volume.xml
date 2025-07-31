@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:background="@color/black"
     android:orientation="vertical"
-    tools:context=".ui.VolumeActivity">
+    tools:context=".ui.VolumeActivity"
+    tools:ignore="HardcodedText">
 
     <TextView
         android:id="@+id/volume_adjust"
@@ -29,12 +30,10 @@
         android:id="@+id/volumeBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_margin="10dp"
         android:indeterminate="false"
         android:max="100"
-        android:maxHeight="48dip"
-        android:minHeight="48dip"
         android:progress="50" />
 
     <TextView
@@ -58,7 +57,7 @@
         android:orientation="horizontal">
 
         <Space
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 

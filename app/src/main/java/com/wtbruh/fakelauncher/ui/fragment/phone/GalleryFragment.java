@@ -15,7 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,10 +26,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -37,11 +39,16 @@ import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
+import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Gallery 相册
@@ -51,12 +58,17 @@ public class GalleryFragment extends BaseFragment {
     private final static String TAG = GalleryFragment.class.getSimpleName();
     public final static String MIME_IMAGE = "image/";
     public final static String MIME_VIDEO = "video/";
-    private GridView gridView;
+
     private ImageView fullscreenView;
     private TextView textHint;
+    private View videoLayout;
     private SurfaceView videoView;
+    private RecyclerView galleryView;
+    private ProgressBar bar;
+
     private MediaPlayer mediaPlayer = null;
-    private int mNowSelectedViewPosition = 0;
+    private GalleryAdapter adapter;
+    private Timer timer;
     private List<HashMap<String, Uri>> mPhotoUriList;
 
     public GalleryFragment() {
@@ -84,7 +96,14 @@ public class GalleryFragment extends BaseFragment {
         // Do not show left button hint when loading
         setFooterBar(SubActivity.L_EMPTY);
         // 绑定控件 View binding
-        gridView = rootView.findViewById(R.id.gridView);
+        galleryView = rootView.findViewById(R.id.gallery);
+        galleryView.setFocusable(false);
+        galleryView.setItemAnimator(null);
+        galleryView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+
+        videoLayout = rootView.findViewById(R.id.video);
+        bar = rootView.findViewById(R.id.videoProgressBar);
+
         fullscreenView = rootView.findViewById(R.id.fullscreenView);
         textHint = rootView.findViewById(R.id.gallery_textHint);
         videoView = rootView.findViewById(R.id.videoView);
@@ -97,7 +116,6 @@ public class GalleryFragment extends BaseFragment {
 
             @Override
             public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -106,7 +124,7 @@ public class GalleryFragment extends BaseFragment {
             }
         });
         // 从SharedPreferences拿到用户给我们授权访问的目录的Uri
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
         String uriStr = sp.getString(SubSettingsFragment.PREF_GALLERY_ACCESS_URI, "");
         if (! uriStr.isEmpty()) {
             // 有东西，那就尝试读下照片
@@ -122,7 +140,7 @@ public class GalleryFragment extends BaseFragment {
     private void noPhoto() {
         // 显示“无照片”对应的TextView，其它的都隐藏
         // Hide all view instead of "No photo"
-        gridView.setVisibility(GONE);
+        galleryView.setVisibility(GONE);
         textHint.setVisibility(VISIBLE);
         textHint.setText(R.string.gallery_no_photo);
     }
@@ -133,98 +151,162 @@ public class GalleryFragment extends BaseFragment {
     }
 
     /**
-     * Init of GridView items<br>
-     * GridView 元素初始化
+     * Something should be done when clicking an image<br>
+     * 点击图片后要做的事情
      */
-    private void itemInit() {
-        // Record position for opening file
-        // 记录下当前被选中的位置以实现打开对应文件
-        gridView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                mNowSelectedViewPosition = position;
-            }
+    private void performClick(int position) {
+        Log.d(TAG, "Detected click. position: " + position);
+        galleryView.setVisibility(GONE);
+        HashMap<String, Uri> map = mPhotoUriList.get(position);
+        Uri uri;
+        if ((uri = map.get(MIME_IMAGE)) != null) {
+            // 图片处理 Photo processing
+            Glide.with(requireContext())
+                    .load(uri)
+                    .priority(Priority.LOW)
+                    .into(fullscreenView);
+            fullscreenView.setVisibility(VISIBLE);
+        } else if ((uri = map.get(MIME_VIDEO)) != null) {
+            // 视频处理 Video processing
+            // 播放视频
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(requireContext(), uri);
+                mediaPlayer.prepareAsync();
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+            } catch (IOException e) {
+                Log.e(TAG, "IOException thrown during preparing mediaPlayer");
+                loadFailed();
+                return;
             }
-        });
-        // File opening
-        // 打开文件
-        gridView.setOnItemClickListener((adapterView, view, position, l) -> {
-            Log.d(TAG, "Detected click. position: "+position);
-            gridView.setVisibility(GONE);
-            HashMap<String, Uri> map = mPhotoUriList.get(position);
-            Uri uri;
-            if ((uri = map.get(MIME_IMAGE)) != null) {
-                // 图片处理 Photo processing
-                Glide.with(getContext())
-                        .load(uri)
-                        .priority(Priority.LOW)
-                        .into(fullscreenView);
-                fullscreenView.setVisibility(VISIBLE);
-            } else if ((uri = map.get(MIME_VIDEO)) != null) {
-                mediaPlayer = new MediaPlayer();
-                // 视频处理 Video processing
-                try {
-                    mediaPlayer.setDataSource(getContext(), uri);
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    Log.e(TAG, "IOException thrown during preparing mediaPlayer");
-                    loadFailed();
-                    return;
-                }
+            mediaPlayer.setOnPreparedListener(mediaPlayer -> {
                 mediaPlayer.start();
-                mediaPlayer.setOnCompletionListener(mediaPlayer -> setFooterBar(SubActivity.C_PLAY));
+                bar.setMax(mediaPlayer.getDuration());
+                progressBarUpdate();
+                // 播放完成后修改按键提示
+                mediaPlayer.setOnCompletionListener(mp -> setFooterBar(SubActivity.C_PLAY));
+                // 显示视频组件
                 videoView.setVisibility(VISIBLE);
+                videoLayout.setVisibility(VISIBLE);
+                // 修改按键提示为“暂停”
                 setFooterBar(SubActivity.C_PAUSE);
-            }
-        });
+            });
+
+        }
     }
 
+    private void closeVideoWindow() {
+        if (mediaPlayer.isPlaying()) mediaPlayer.stop();
+        mediaPlayer.reset();
+        mediaPlayer.release();
+        mediaPlayer = null;
+        timer.cancel();
+        bar.setProgress(0);
+        videoView.setVisibility(GONE);
+        videoLayout.setVisibility(GONE);
+        galleryView.setVisibility(VISIBLE);
+    }
 
+    /**
+     * Regularly update progress bar
+     */
+    private void progressBarUpdate() {
+        TextView tv = rootView.findViewById(R.id.videoPresentTime);
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null) {
+                    int currentPosition = mediaPlayer.getCurrentPosition();
+                    bar.setProgress(currentPosition);
+                    tv.setText(currentPosToString(currentPosition));
+                }
+            }
+        }, 0, 1000);
+    }
+
+    private void moveFocus(int newPosition) {
+        galleryView.scrollToPosition(newPosition);
+        adapter.setSelectedPosition(newPosition);
+    }
+
+    private String currentPosToString(int milliseconds) {
+        int seconds = (milliseconds / 1000) % 60;
+        int minutes = (milliseconds / (1000 * 60)) % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+    }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+
         switch (keyCode) {
-            case KeyEvent.KEYCODE_MENU:
-
-                View view = gridView.getChildAt(mNowSelectedViewPosition);
-                if (view != null) {
-                    view.performClick();
-
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-            case KeyEvent.KEYCODE_ENTER:
-                if (videoView.getVisibility() == VISIBLE) {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        setFooterBar(SubActivity.C_RESUME);
+            case KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                if (galleryView.getVisibility() == VISIBLE) {
+                    int pos = adapter.getSelectedPosition();
+                    int spanCount = ((GridLayoutManager) Objects.requireNonNull(galleryView.getLayoutManager())).getSpanCount();
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_UP -> {
+                            if (pos >= spanCount) moveFocus(pos - spanCount);
+                        }
+                        case KeyEvent.KEYCODE_DPAD_DOWN -> {
+                            if (pos < adapter.getItemCount() - spanCount) moveFocus(pos + spanCount);
+                        }
+                        case KeyEvent.KEYCODE_DPAD_LEFT -> {
+                            if (pos > 0) moveFocus(pos - 1);
+                        }
+                        case KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                            if (pos < adapter.getItemCount() - 1) moveFocus(pos + 1);
+                        }
                     }
-                    else {
-                        mediaPlayer.start();
-                        setFooterBar(SubActivity.C_PAUSE);
+                    return true;
+                } else if (videoLayout.getVisibility() == VISIBLE) {
+                    int currentPos = mediaPlayer.getCurrentPosition();
+                    int maxPos = mediaPlayer.getDuration();
+                    int changeAmount = maxPos / 10;
+                    int newPos = 0;
+
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_LEFT -> {
+                            // go backward 后退
+                            if ((newPos = currentPos - changeAmount) < 0) newPos = 0;
+                        }
+                        case KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                            // go forward 前进
+                            if ((newPos = currentPos + changeAmount) > maxPos) newPos = maxPos;
+                        }
+                    }
+                    bar.setProgress(newPos);
+                    mediaPlayer.seekTo(newPos);
+                    return true;
+                }
+            }
+
+            case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                if (galleryView.getVisibility() == VISIBLE) {
+                    performClick(adapter.getSelectedPosition());
+                } else {
+                    if (videoLayout.getVisibility() == VISIBLE) {
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                            setFooterBar(SubActivity.C_RESUME);
+                        } else {
+                            mediaPlayer.start();
+                            setFooterBar(SubActivity.C_PAUSE);
+                        }
                     }
                 }
-                break;
-            case KeyEvent.KEYCODE_BACK:
+            }
+            case KeyEvent.KEYCODE_BACK -> {
                 if (fullscreenView.getVisibility() == VISIBLE) {
                     fullscreenView.setVisibility(GONE);
-                    gridView.setVisibility(VISIBLE);
+                    galleryView.setVisibility(VISIBLE);
                     return true;
-                } else if (videoView.getVisibility() == VISIBLE) {
-                    if (mediaPlayer.isPlaying()) mediaPlayer.stop();
-                    mediaPlayer.reset();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                    videoView.setVisibility(GONE);
-                    gridView.setVisibility(VISIBLE);
+                } else if (videoLayout.getVisibility() == VISIBLE) {
+                    closeVideoWindow();
                     setFooterBar();
                     return true;
                 }
-                break;
+            }
         }
         return false;
     }
@@ -235,7 +317,7 @@ public class GalleryFragment extends BaseFragment {
      * @param uri 文件夹的uri（由SAF提供）
      */
     private void readAllPhotos(Uri uri) {
-        DocumentFile dir = DocumentFile.fromTreeUri(getContext(), uri);
+        DocumentFile dir = DocumentFile.fromTreeUri(requireContext(), uri);
         new Thread(() -> {
             if (dir != null && dir.exists()) {
                 DocumentFile[] files = dir.listFiles();
@@ -264,11 +346,12 @@ public class GalleryFragment extends BaseFragment {
                         if (mPhotoUriList.isEmpty()) {
                             noPhoto();
                         } else {
-                            gridView.setAdapter(new ImageAdapter(getContext(), mPhotoUriList));
+                            adapter = new GalleryAdapter(requireContext(), mPhotoUriList);
+                            galleryView.setAdapter(adapter);
+                            galleryView.setVisibility(VISIBLE);
+
                             textHint.setVisibility(GONE);
-                            gridView.setVisibility(VISIBLE);
                             setFooterBar(SubActivity.L_OPTION);
-                            itemInit();
                         }
                     });
                 } catch (IllegalStateException e) {
@@ -285,19 +368,53 @@ public class GalleryFragment extends BaseFragment {
      * Adapter for Gallery view<br>
      * 为相册界面自定义的适配器
      */
-    static class ImageAdapter extends ArrayAdapter<HashMap<String, Uri>> {
+    private static class GalleryAdapter extends BaseAdapter {
+
         private final Context context;
         private final Drawable overlay;
         private final List<HashMap<String, Uri>> uris;
-        public ImageAdapter(@NonNull Context context, List<HashMap<String, Uri>> uris) {
-            super(context, R.layout.gridview_item, uris);
+
+        public GalleryAdapter(@NonNull Context context, List<HashMap<String, Uri>> uris) {
             this.context = context;
             this.uris = uris;
             this.overlay = ContextCompat.getDrawable(context, R.drawable.ic_video);
         }
-        // AI说这样能提高运行效率
-        private static class ViewHolder {
-            ImageView imageView;
+
+        private static class ViewHolder extends BaseAdapter.ViewHolder {
+            ImageView iv;
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                iv = itemView.findViewById(R.id.image);
+            }
+        }
+
+        private void setImage(ImageView iv, int position) {
+            iv.getOverlay().clear();
+            // 取出Uri列表的数据
+            HashMap<String, Uri> map = uris.get(position);
+            Uri uri;
+            boolean isVideo = (uri = map.get(MIME_VIDEO)) != null;
+            if (isVideo || (uri = map.get(MIME_IMAGE)) != null)  {
+                // 图片处理
+                Glide.with(context)
+                        .load(uri)
+                        .frame(0)
+                        .priority(Priority.LOW)
+                        .into(new CustomTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                iv.setImageDrawable(resource);
+                                if (isVideo){
+                                    addVideoIcon(iv);
+                                }
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                                iv.setImageDrawable(placeholder);
+                            }
+                        });
+            }
         }
 
         private void addVideoIcon(ImageView imageView) {
@@ -319,45 +436,24 @@ public class GalleryFragment extends BaseFragment {
 
         @NonNull
         @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-            ViewHolder holder;
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.gallery_item, parent, false);
+            return new ViewHolder(view);
+        }
 
-            if (convertView == null) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.gridview_item, parent, false);
-                holder = new ViewHolder();
-                holder.imageView = convertView.findViewById(R.id.image);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-                holder.imageView.getOverlay().clear();
+        @Override
+        public int getItemCount() {
+            return uris.size();
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull BaseAdapter.ViewHolder holder, int position) {
+            if (holder instanceof ViewHolder) {
+                setImage(((ViewHolder) holder).iv, position);
             }
-
-            // 取出Uri列表的数据
-            HashMap<String, Uri> map = uris.get(position);
-            Uri uri;
-            boolean isVideo = (uri = map.get(MIME_VIDEO)) != null;
-            if (isVideo || (uri = map.get(MIME_IMAGE)) != null)  {
-                // 图片处理
-                Glide.with(context)
-                        .load(uri)
-                        .frame(0)
-                        .priority(Priority.LOW)
-                        .into(new CustomTarget<Drawable>() {
-                            @Override
-                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                holder.imageView.setImageDrawable(resource);
-                                if (isVideo){
-                                    addVideoIcon(holder.imageView);
-                                }
-                            }
-
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {
-                                holder.imageView.setImageDrawable(placeholder);
-                            }
-                        });
-            }
-            return convertView;
+            super.onBindViewHolder(holder, position);
         }
     }
+
 }

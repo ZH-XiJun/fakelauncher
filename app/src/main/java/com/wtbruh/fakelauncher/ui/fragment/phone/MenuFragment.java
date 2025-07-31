@@ -131,31 +131,19 @@ public class MenuFragment extends BaseFragment {
      * @param number 第几个App
      */
     private void startApp (int number) {
-        Fragment fragment = null;
-        switch (number) {
-            case CALL:
-                fragment = DialerFragment.newInstance();
-                break;
-            case CONTACT:
-                fragment = ContactsFragment.newInstance();
-                break;
-            case SMS:
-                fragment = MessageFragment.newInstance();
-                break;
-            case CAMERA:
-                fragment = CameraFragment.newInstance();
-                break;
-            case GALLERY:
-                fragment = GalleryFragment.newInstance();
-                break;
-            case SETTINGS:
-                fragment = PasswordFragment.newInstance();
-                break;
-        }
+        Fragment fragment = switch (number) {
+            case CALL -> DialerFragment.newInstance();
+            case CONTACT -> ContactsFragment.newInstance();
+            case SMS -> MessageFragment.newInstance();
+            case CAMERA -> CameraFragment.newInstance();
+            case GALLERY -> GalleryFragment.newInstance();
+            case SETTINGS -> PasswordFragment.newInstance();
+            default -> null;
+        };
         if (fragment == null) {
             return;
         }
-        ((SubActivity)getActivity()).fragmentStarter(fragment);
+        ((SubActivity)requireActivity()).fragmentStarter(fragment);
     }
 
 }

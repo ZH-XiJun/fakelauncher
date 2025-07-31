@@ -69,9 +69,9 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 - [x] Add "Star key unlock" feature
 - [ ] Add Media Player (MP3) UI style
 - [ ] ~~Add stroke text~~ Resizable text stroke width
-- [ ] Add Contacts page
+- [x] Add Contacts page
 - [ ] Add Message page
-- [ ] Video progress bar, select file in fullscreen photo view, option menu (Gallery)
+- [ ] ~~Video progress bar~~, select file in fullscreen photo view, option menu (Gallery)
 - [ ] Dpad action can be customized (Exit method)
 - [ ] Camera can take photos
 - [ ] Dialer can make a phone call (Custom calling UI may not impossible)

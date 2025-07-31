@@ -10,6 +10,8 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -98,7 +100,7 @@
         <provider
             android:name=".utils.ContentProvider"
             android:authorities="com.wtbruh.fakelauncher"
-            android:exported="true" />
+            android:exported="false" />
 
         <!-- Shizuku -->
         <provider

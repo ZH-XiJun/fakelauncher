@@ -321,17 +321,14 @@ public class GalleryFragment extends BaseFragment {
                 mPhotoUriList = new ArrayList<>();
                 for (DocumentFile file : files) {
                     Uri fileUri = file.getUri();
-                    String fileName = file.getName();
                     String mimeType = file.getType();
                     String key;
-                    Log.d(TAG, "Found file! Name:" + fileName + ", Type: " + mimeType);
                     // 判断是否为视频或图片，都不是就赋值key为null
                     if (mimeType == null) key = null;
                     else key = mimeType.startsWith(MIME_IMAGE)?
                             MIME_IMAGE : (mimeType.startsWith(MIME_VIDEO)?
                             MIME_VIDEO : null);
                     if (key != null) {
-                        // Log.d(TAG, "Found a photo! Name:" + fileName + ", URI: " + fileUri);
                         HashMap<String, Uri> map = new HashMap<>();
                         map.put(key, fileUri);
                         mPhotoUriList.add(map);

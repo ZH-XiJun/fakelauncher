@@ -8,16 +8,22 @@
     <string name="charging">Charging</string>
     <string name="not_charging">Unplugged</string>
     <!-- Button hint -->
+    <!-- Left btn -->
     <string name="main_leftButton">Menu</string>
     <string name="option_leftButton">Option</string>
     <string name="unlock_leftButton">Unlock</string>
     <string name="common_leftButton">OK</string>
+    <string name="save_leftButton">Save</string>
+    <!-- Right btn -->
     <string name="common_rightButton">Back</string>
     <string name="edittext_rightButton">Delete</string>
+    <!-- Center btn -->
     <string name="play_centerButton">Play</string>
     <string name="pause_centerButton">Pause</string>
     <string name="resume_centerButton">Resume</string>
-
+    <string name="stop_centerButton">Stop</string>
+    <string name="shoot_centerButton">Shoot</string>
+    <string name="record_centerButton">Record</string>
     <!-- Menu items -->
     <string name="menu_call">Call</string>
     <string name="menu_camera">Camera</string>

@@ -7,15 +7,22 @@
     <string name="charging">正在充电</string>
     <string name="not_charging">未在充电</string>
     <!-- 按键提示 -->
+    <!-- 左键 -->
     <string name="main_leftButton">菜单</string>
     <string name="option_leftButton">选项</string>
     <string name="unlock_leftButton">解锁</string>
     <string name="common_leftButton">确定</string>
+    <string name="save_leftButton">保存</string>
+    <!-- 右键 -->
     <string name="common_rightButton">返回</string>
     <string name="edittext_rightButton">删除</string>
+    <!-- 中键 -->
     <string name="play_centerButton">播放</string>
     <string name="pause_centerButton">暂停</string>
     <string name="resume_centerButton">继续</string>
+    <string name="stop_centerButton">停止</string>
+    <string name="shoot_centerButton">拍照</string>
+    <string name="record_centerButton">录像</string>
     <!-- 菜单文字 -->
     <string name="menu_call">电话</string>
     <string name="menu_camera">相机</string>

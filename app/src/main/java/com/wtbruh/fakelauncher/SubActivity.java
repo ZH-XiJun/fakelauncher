@@ -12,10 +12,14 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
-import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
+import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <h3>SubActivity</h3>
@@ -58,9 +62,33 @@ public class SubActivity extends BaseAppCompatActivity {
         // 获取附加数据
         Intent intent = getIntent();
         String[] args = intent.getStringArrayExtra("args");
-        if (args != null) {
-            if (args[0].equals(DialerFragment.class.getSimpleName())) {
-                mCurrentFragment = DialerFragment.newInstance(args);
+        // 通过反射找到对应Fragment
+        String fragmentName;
+        Class<?> fragmentClass = null;
+        if (args != null && ! (fragmentName = args[0]).isEmpty()) {
+            // Get newInstance(String[] args) method
+            try {
+                fragmentClass = Class.forName(fragmentName);
+                if (Fragment.class.isAssignableFrom(fragmentClass)) {
+                    Method newInstance = fragmentClass.getMethod("newInstance", String[].class);
+                    newInstance.setAccessible(true);
+                    mCurrentFragment = (Fragment) newInstance.invoke(fragmentClass, (Object) args);
+                    return;
+                }
+            } catch (ClassNotFoundException e) {
+                Log.e(TAG, "Got a non-existent class: "+e);
+                return;
+            } catch (NoSuchMethodException e) {
+                Log.e(TAG, "Class doesn't have newInstance() accepts parameters: " + e);
+            } catch (Exception e) {
+                Log.e(TAG, "Got error: "+e);
+                return;
+            }
+            // Get newInstance() method
+            try {
+                mCurrentFragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                Log.e(TAG, "Got error: "+e);
             }
         }
     }
@@ -107,53 +135,60 @@ public class SubActivity extends BaseAppCompatActivity {
         mCurrentFragment = fragment;
     }
 
+    public void showOptionMenu(int[] resIds, OptionMenuFragment.onKeyUpListener listener) {
+        List<String> data = new ArrayList<>();
+        for (int resId : resIds) data.add(getString(resId));
+        showOptionMenu(data, listener);
+    }
+
+    public void showOptionMenu(List<String> items, OptionMenuFragment.onKeyUpListener listener) {
+        Fragment f = new OptionMenuFragment(items, listener);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.optionMenu, f);
+        ft.commit();
+        mCurrentFragment = f;
+    }
+
+    public void closeOptionMenu() {
+        if (mCurrentFragment instanceof OptionMenuFragment) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.remove(mCurrentFragment);
+            ft.commit();
+            mCurrentFragment = fm.findFragmentById(R.id.container);
+        }
+    }
+
     /**
      * Footer customization<br>
      * 界面底部自定义
      * @param texts 按键提示语
      */
-    public void setFooterBar(String... texts) {
+    public void setFooterBar(String[]... texts) {
         TextView view;
         boolean showCenterButton = false;
-        for (String text : texts) {
-            Log.d(TAG, "setFooterBar: "+text);
-            if (text.contains("L_")) view = findViewById(LEFT_BUTTON);
-            else if (text.contains("R_")) view = findViewById(RIGHT_BUTTON);
-            else if (text.contains("C_")) {
-                view = findViewById(CENTER_BUTTON);
-                showCenterButton = true;
-            }
-            else return;
-            switch (text) {
-                case BaseFragment.L_DEFAULT:
-                    view.setText(R.string.common_leftButton);
-                    break;
-                case BaseFragment.L_OPTION:
-                    view.setText(R.string.option_leftButton);
-                    break;
-                case BaseFragment.R_DEFAULT:
-                    view.setText(R.string.common_rightButton);
-                    break;
-                case BaseFragment.R_EDITTEXT:
-                    view.setText(R.string.edittext_rightButton);
-                    break;
-                case BaseFragment.C_PLAY:
-                    view.setText(R.string.play_centerButton);
-                    break;
-                case BaseFragment.C_PAUSE:
-                    view.setText(R.string.pause_centerButton);
-                    break;
-                case BaseFragment.C_RESUME:
-                    view.setText(R.string.resume_centerButton);
-                    break;
-                default:
-                    view.setText("");
+        for (String[] text : texts) {
+            // 先判断是给哪个键设置的
+            view = switch (text[0]) {
+                case BaseFragment.LEFT_BTN -> findViewById(LEFT_BUTTON);
+                case BaseFragment.RIGHT_BTN -> findViewById(RIGHT_BUTTON);
+                case BaseFragment.CENTER_BTN -> findViewById(CENTER_BUTTON);
+                default -> null;
+            };
+            if (view == null) return;
+            // Check if center button need to show. If showCenterButton is already true, don't do duplicate check
+            // 检查中键是否需要显示。如果showCenterButton在先前的循环中已被设置为true则不要重复检查
+            if (!showCenterButton) showCenterButton = BaseFragment.CENTER_BTN.equals(text[0]);
+            // 获取资源id | get resource id
+            int resId = Integer.parseInt(text[1]);
+            if (resId == -1) view.setVisibility(TextView.INVISIBLE);
+            else {
+                view.setText(resId);
+                view.setVisibility(TextView.VISIBLE);
             }
         }
         view = findViewById(CENTER_BUTTON);
-        if (showCenterButton) {
-            view.setVisibility(TextView.VISIBLE);
-        } else {
+        if (!showCenterButton) {
             view.setVisibility(TextView.INVISIBLE);
         }
     }

@@ -290,7 +290,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                         // Key 0~9 0到9键
                             String.valueOf(keyCode - KeyEvent.KEYCODE_0);
                 };
-                String[] extra = {DialerFragment.class.getSimpleName(), key};
+                String[] extra = {DialerFragment.class.getName(), key};
                 if (!UIHelper.intentStarterDebounce(SubActivity.class)) {
                     startActivity(
                             new Intent().setClass(MainActivity.this, SubActivity.class)

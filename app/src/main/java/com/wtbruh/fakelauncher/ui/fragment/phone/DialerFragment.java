@@ -104,7 +104,7 @@ public class DialerFragment extends BaseFragment {
     }
 
     private void init() {
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
         mEditText = rootView.findViewById(R.id.dialer);
         if (getArguments() != null) {
             mEditText.setText(getArguments().getString(ARG_INPUT));

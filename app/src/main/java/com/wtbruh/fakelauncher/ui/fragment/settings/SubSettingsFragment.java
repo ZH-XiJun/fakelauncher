@@ -83,15 +83,15 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                                 final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
                                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                                 Uri uri = result.getData().getData();
-                                SharedPreferences sp = getDefaultSharedPreferences(getContext());
+                                SharedPreferences sp = getDefaultSharedPreferences(requireContext());
                                 if (uri != null) {
                                     String oldUri = sp.getString(PREF_GALLERY_ACCESS_URI, "");
                                     if (!oldUri.isEmpty() && !oldUri.equals(String.valueOf(uri))) {
                                         Log.d(TAG, "User has granted another directory's access permission, revoking the old one...");
-                                        getActivity().revokeUriPermission(Uri.parse(oldUri), takeFlags);
+                                        requireActivity().revokeUriPermission(Uri.parse(oldUri), takeFlags);
                                     }
                                     // 获取权限
-                                    getActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                                    requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
                                     // 存入SharedPreferences
                                     sp.edit()
                                             .putString(PREF_GALLERY_ACCESS_URI, String.valueOf(uri))
@@ -234,7 +234,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
      * @param pref Preference
      */
     private void prefSetup(Preference pref) {
-        SharedPreferences defaultPref = getDefaultSharedPreferences(getContext());
+        SharedPreferences defaultPref = getDefaultSharedPreferences(requireContext());
         String[] valueArray;
         String value;
         switch (pref.getKey()) {
@@ -394,8 +394,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
             }
             case PREF_DEACTIVATE_DEVICE_OWNER -> {
-                DevicePolicyManager dpm = getSystemService(getActivity(), DevicePolicyManager.class);
-                dpm.clearDeviceOwnerApp(getActivity().getPackageName());
+                DevicePolicyManager dpm = getSystemService(requireContext(), DevicePolicyManager.class);
+                dpm.clearDeviceOwnerApp(requireActivity().getPackageName());
                 prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
             }
             case PREF_GALLERY_ACCESS ->

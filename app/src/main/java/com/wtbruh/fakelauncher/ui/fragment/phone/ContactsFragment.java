@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,11 +16,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
-import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
+import com.wtbruh.fakelauncher.ui.view.SingleTextviewAdapter;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ public class ContactsFragment extends BaseFragment{
     private final static String TAG = ContactsFragment.class.getSimpleName();
 
     RecyclerView contactsView;
-    ContactAdapter adapter;
+    SingleTextviewAdapter adapter;
     List<String> data;
 
     public ContactsFragment() {
@@ -98,7 +96,7 @@ public class ContactsFragment extends BaseFragment{
         // contactsView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         contactsView.setItemAnimator(null);
 
-        adapter = new ContactAdapter(data);
+        adapter = new SingleTextviewAdapter(data);
         contactsView.setAdapter(adapter);
     }
 
@@ -132,40 +130,5 @@ public class ContactsFragment extends BaseFragment{
         Log.d(TAG, "list:"+list);
         cursor.close();
         return list;
-    }
-
-    private static class ContactAdapter extends BaseAdapter {
-        private final List<String> data;
-        public ContactAdapter(List<String> data) {
-            this.data = data;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.contacts_item, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull BaseAdapter.ViewHolder holder, int position) {
-            if (holder instanceof ViewHolder) ((ViewHolder) holder).tv.setText(data.get(position));
-            super.onBindViewHolder(holder, position);
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
-
-        public static class ViewHolder extends BaseAdapter.ViewHolder {
-            TextView tv;
-            @SuppressLint("ClickableViewAccessibility")
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                tv = itemView.findViewById(R.id.item);
-            }
-        }
     }
 }

@@ -45,6 +45,13 @@
     <string name="dialer_empty">请输入电话号码</string>
     <!-- 相机界面文字提示 -->
     <string name="camera_open_fail">打开相机失败</string>
+    <string name="dialog_capture_fail">拍照失败</string>
+    <string name="dialog_record_fail">无法开始录制</string>
+    <string name="dialog_save_fail">保存失败</string>
+    <string name="dialog_save_success">保存成功</string>
+    <!-- 相机选项菜单 -->
+    <string name="camera_option_record">切换录像</string>
+    <string name="camera_option_shoot">切换拍照</string>
     <!-- 相册界面文字提示 -->
     <string name="gallery_no_photo">无照片</string>
     <string name="gallery_loading">加载中</string>

@@ -46,7 +46,14 @@
     <!-- Dialer UI hint -->
     <string name="dialer_empty">Please input phone number</string>
     <!-- Camera UI hint -->
-    <string name="camera_open_fail">Camera open fail</string>
+    <string name="camera_open_fail">Failed to open camera</string>
+    <string name="dialog_capture_fail">Failed to capture</string>
+    <string name="dialog_record_fail">Failed to start recording</string>
+    <string name="dialog_save_fail">Failed to save</string>
+    <string name="dialog_save_success">Successfully saved</string>
+    <!-- Camera option menu -->
+    <string name="camera_option_record">Switch to recording</string>
+    <string name="camera_option_shoot">Switch to capturing</string>
     <!-- Gallery UI hint -->
     <string name="gallery_no_photo">No photo</string>
     <string name="gallery_loading">Loading</string>

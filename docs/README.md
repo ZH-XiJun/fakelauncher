@@ -60,11 +60,11 @@ Take a look of a function that natively supported by Android: [Screen Pinning](h
 
 That's why the App can disable status bar and prevent you from exiting itself and open any other apps. Here I used Xposed to hook system service. When the app starts, xposed will call method to enable Screen Pinning. Similarly, Screen Pinning will be disabled after exiting app.
 
-Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp), a number of codes related to Screen Pinning were simply copied from it.
+Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp), a number of codes related to Screen Pinning were used for reference.
 
 ## TO-DO
 
-- [ ] Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
+- [x] Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
 - [ ] Support for old Android
 - [x] Add "Star key unlock" feature
 - [ ] Add Media Player (MP3) UI style
@@ -73,7 +73,7 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 - [ ] Add Message page
 - [ ] ~~Video progress bar~~, select file in fullscreen photo view, option menu (Gallery)
 - [ ] Dpad action can be customized (Exit method)
-- [ ] Camera can take photos
+- [ ] ~~Camera can take photos~~ Video recording runs on Android 7 and below versions
 - [ ] Dialer can make a phone call (Custom calling UI may not impossible)
 - [x] Lunar calender support
 - [x] Show battery percent through icons instead of accurate numbers

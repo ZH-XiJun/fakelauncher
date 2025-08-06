@@ -3,12 +3,19 @@ package com.wtbruh.fakelauncher.utils;
 import static androidx.core.app.ActivityCompat.requestPermissions;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
+import android.app.admin.IDevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,46 +23,58 @@ import android.widget.Toast;
 import androidx.preference.PreferenceManager;
 
 import com.rosan.dhizuku.api.Dhizuku;
+import com.rosan.dhizuku.api.DhizukuBinderWrapper;
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
+import com.wtbruh.fakelauncher.IUserService;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.service.UserService;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
+
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rikka.shizuku.Shizuku;
 import rikka.sui.Sui;
 
 /**
  *
- * Privilege provider
- * <p>
- * 提权管理
+ * Permission/Privilege provider<br>
+ * 权限/特权 工具类
  *
  * @author ZH-XiJun
- *
  */
 
 public class PrivilegeProvider {
     private final static String TAG = PrivilegeProvider.class.getSimpleName();
-    // Privilege type to int
+    // Device admin level to int
+    // 设备管理员等级
     public final static int DEACTIVATED = 0;
     public final static int DHIZUKU = 1;
     public final static int DEVICE_OWNER = 2;
     public final static int DEVICE_ADMIN = 3;
-    // Run method to int
-    public final static int METHOD_NORMAL = 0;
-    public final static int METHOD_ROOT = 1;
-    public final static int METHOD_SHIZUKU = 2;
+    // Operate method to int
+    // 执行操作所需权限
+    public final static int METHOD_NORMAL = 4;
+    public final static int METHOD_ROOT = 5;
+    public final static int METHOD_SHIZUKU = 6;
     // Command define
+    // 固定指令
     public final static String CMD_SU = "su";
-    public final static String CMD_BUSYBOX = "busybox";
     public final static String CMD_SH = "sh";
-    public final static String CMD_SH_FULL = "/system/bin/sh";
-    public final static String CMD_RISH= "rish";
+    // Result code for handling and recognizing command output
+    public final static String CMD_RESULT_CODE = "c";
+    public final static String CMD_STDOUT = "o";
+    public final static String CMD_STDERR = "e";
 
     public final static int PERMISSION_REQUEST_CODE = 123;
 
@@ -68,7 +87,7 @@ public class PrivilegeProvider {
      * @return true或false
      */
     public static boolean checkPermission(Context context, String item) {
-        if (item.equals(Manifest.permission.WRITE_SETTINGS)) {
+        if (item.equals(Manifest.permission.WRITE_SETTINGS) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.System.canWrite(context);
         }
         PackageManager pm = context.getPackageManager();
@@ -80,27 +99,19 @@ public class PrivilegeProvider {
      * Request permission<br>
      * 请求权限
      *
-     * @param activity Activity对象
-     * @param item 要请求的权限，可以多个
+     * @param activity Activity对象 | Activity object
+     * @param item 要请求的权限，可以多个 | Permissions to request. Allow multiple
      */
     public static void requestPermission(Activity activity, String... item) {
-        /*
-        if (item.equals(Manifest.permission.WRITE_SETTINGS)) { // WRITE_SETTINGS 修改系统设置权限
-            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                    Uri.parse("package:" + activity.getPackageName()));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.startActivity(intent);
-        } else {
-            requestPermissions(activity, new String[]{item}, PERMISSION_REQUEST_CODE);
-        } */
         requestPermissions(activity, item, PERMISSION_REQUEST_CODE);
     }
 
     /**
+     * Get all permissions declared by program in AndroidManifest.xml<br>
      * 获取App在 AndroidManifest.xml 内声明的所有权限<br>
-     * Get all permissions declared by program in AndroidManifest.xml
-     * @param context 上下文
-     * @return 所有权限组成的字符串数组
+     *
+     * @param context 上下文 | Context
+     * @return 所有权限组成的字符串数组 | An string array made up of all permissions
      */
     public static String[] getAllPermissions(Context context) {
         try {
@@ -111,6 +122,8 @@ public class PrivilegeProvider {
 
             ArrayList<String> arrayList = new ArrayList<>();
             for (String permission: raw) {
+                // Filter out permissions defined by Android, other program defined permissions are not required
+                // 筛选出Android的权限，其他程序定义的权限不需要
                 if (permission.contains("android.permission.")) {
                     arrayList.add(permission);
                 }
@@ -123,6 +136,12 @@ public class PrivilegeProvider {
         }
     }
 
+    /**
+     * Request all permissions declared in AndroidManifest.xml<br>
+     * 请求AndroidManifest.xml声明的所有权限
+     * @param activity Activity对象 | Activity object
+     * @param method 请求方式（请求所需的特权） | request method (Privilege the operation needs)
+     */
     public static void requestAllPermissions(Activity activity, int method) {
         if (method == METHOD_NORMAL) {
             requestPermissions(activity, getAllPermissions(activity), PERMISSION_REQUEST_CODE);
@@ -132,78 +151,150 @@ public class PrivilegeProvider {
         for (String permission: getAllPermissions(activity)) {
             arrayList.add("pm grant com.wtbruh.fakelauncher " + permission);
         }
-
-        runMultiCmd(method, arrayList.toArray(new String[0]));
+        runCommand(activity, method, arrayList.toArray(new String[0]));
     }
 
-
     /**
-     * Add prefix for command<br>
-     * 为指令添加前缀
+     * Args for launching UserService defined by Shizuku<br>
+     * 用于启动Shizuku UserService的参数
      *
-     * @param method 要添加什么样的前缀
-     * @param cmd 你的指令（字符串数组）
-     * @return 添加了前缀的指令（字符串数组）
+     * @param context 上下文 | Context
+     * @return ShizukuUserServiceArgs
      */
-    private static String[] prefix(int method, String[] cmd) {
-        String[] prefix;
-        switch (method) {
-            case METHOD_ROOT:
-                prefix = new String[]{CMD_SU, "-c"};
-                break;
-            // case METHOD_SHIZUKU:
-                // wip
-            case METHOD_NORMAL:
-            default:
-                return cmd;
-        }
-
-        String[] result = new String[cmd.length + prefix.length];
-        System.arraycopy(prefix, 0, result, 0, prefix.length);
-        System.arraycopy(cmd, 0, result, prefix.length, cmd.length);
-        return result;
+    public static Shizuku.UserServiceArgs getShizukuUserServiceArgs(Context context) {
+        return new Shizuku.UserServiceArgs(new ComponentName(context, UserService.class))
+                .daemon(false)
+                .processNameSuffix("shizuku-service")
+                .debuggable(false)
+                .version(1);
     }
 
     /**
-     * Check privilege 检查特殊权限
+     * Do operation using Shizuku privilege<br>
+     * 使用Shizuku权限进行操作
      *
-     * @param method 特殊权限类型
-     * @return 是否已获得授权
+     * @param context 上下文 | Context
+     * @param action 操作 | Actions
+     */
+    public static void useShizuku(Context context, ShizukuAction action) {
+        // Shizuku only support Android 6+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+        ServiceConnection connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder iBinder) {
+                Log.d(TAG, "Successfully connected to UserService");
+                action.invoke(iBinder, this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "Disconnected from UserService");
+            }
+        };
+        if (checkPrivilege(METHOD_SHIZUKU)) {
+            Shizuku.UserServiceArgs args = getShizukuUserServiceArgs(context);
+            Shizuku.bindUserService(args, connection);
+        }
+    }
+
+    /**
+     * Get DPM using Dhizuku privilege<br>
+     * 使用Dhizuku权限获取DPM
+     *
+     * @param appContext Context | 上下文
+     * @return DPM 对象 | DPM object
+     */
+    @SuppressLint("PrivateApi")
+    public static DevicePolicyManager binderWrapperDevicePolicyManager(Context appContext) {
+        try {
+            Context context = appContext.createPackageContext(Dhizuku.getOwnerPackageName(), Context.CONTEXT_IGNORE_SECURITY);
+            DevicePolicyManager manager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            Field field = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { // need HiddenApiBypass
+                List<Field> fields = HiddenApiBypass.getInstanceFields(manager.getClass());
+                int index = 0;
+                while (index <= fields.size()) {
+                    Field f = fields.get(index);
+                    if (f.getName().equals("mService")) {
+                        field = f;
+                        break;
+                    }
+                    index++;
+                }
+            } else { // Common reflect operation
+                field = manager.getClass().getDeclaredField("mService");
+            }
+            if (field == null) throw new NoSuchFieldException("unable to get field \"mService\"");
+            field.setAccessible(true);
+            IDevicePolicyManager oldInterface = (IDevicePolicyManager) field.get(manager);
+            if (oldInterface instanceof DhizukuBinderWrapper) return manager;
+            if (oldInterface == null) throw new NullPointerException("Got null IDevicePolicyManager");
+            IBinder oldBinder = oldInterface.asBinder();
+            IBinder newBinder = Dhizuku.binderWrapper(oldBinder);
+            IDevicePolicyManager newInterface = IDevicePolicyManager.Stub.asInterface(newBinder);
+            field.set(manager, newInterface);
+            return manager;
+        } catch (Exception e) {
+            Log.e(TAG, "Error on wrapping dpm: "+e);
+        }
+        return null;
+    }
+
+    /**
+     * Check privilege | 检查特殊权限
+     *
+     * @param method 特殊权限类型 | Privilege type
+     * @return 是否已获得授权 | Is permission granted
      */
     public static boolean checkPrivilege(int method) {
         switch (method) {
-            case METHOD_ROOT:
+            case METHOD_ROOT -> {
                 try {
                     Log.d(TAG, "Checking root permission");
-                    return runCmd(new String[]{"id"}, METHOD_ROOT) == 0;
+                    Bundle bundle = runCommand(METHOD_ROOT, "id");
+                    return bundle.getInt(CMD_RESULT_CODE) == 0;
                 } catch (RuntimeException e) {
                     return false;
                 }
-            case METHOD_SHIZUKU:
-                if (Sui.init("com.wtbruh.fakelauncher")) Log.d(TAG, "Sui is available");
-                if (Shizuku.isPreV11()) {
-                    // Pre-v11 is unsupported
-                    return false;
-                }
-                try {
-                    if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                        // Granted
-                        return true;
-                    } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-                        // Users choose "Deny and don't ask again"
-                        return false;
-                    } else {
-                        // Request the permission
-                        Shizuku.requestPermission(114514);
+            }
+            case METHOD_SHIZUKU -> {
+                // Shizuku requires Android 6+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (Sui.init("com.wtbruh.fakelauncher")) Log.d(TAG, "Sui is available");
+                    if (Shizuku.isPreV11()) {
+                        // Pre-v11 is unsupported
                         return false;
                     }
-                } catch (IllegalStateException e){
-                    return false;
-                }
-            default:
+                    try {
+                        if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+                            // Granted
+                            return true;
+                        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+                            // Users choose "Deny and don't ask again"
+                            return false;
+                        } else {
+                            // Request the permission
+                            Shizuku.requestPermission(114514);
+                            return false;
+                        }
+                    } catch (IllegalStateException e) {
+                        return false;
+                    }
+                } else return false;
+            }
+            default -> {
                 return false;
+            }
         }
     }
+
+    /**
+     * In convenient of conversion between SharedPreference data and constants defined in PrivilegeProvider<br>
+     * 将SharedPreference获取到的字符串数据转换为便于PrivilegeProvider识别的常量
+     *
+     * @param str 字符串数据 | String data
+     * @return 对应的常量 | Corresponding constant
+     */
     public static int privilegeToInt(String str) {
         return switch (str) {
             case "Root" -> METHOD_ROOT;
@@ -214,8 +305,8 @@ public class PrivilegeProvider {
 
     /**
      * Check device owner 检查设备所有者权限
-     * @param context 应用上下文
-     * @return 特权对应的resource id
+     * @param context 上下文 | Context
+     * @return 设备管理员权限级别对应的常量 | Constant corresponding to device admin level
      */
     public static int checkDeviceAdmin(Context context) {
         boolean dhizuku = PreferenceManager.getDefaultSharedPreferences(context)
@@ -244,46 +335,113 @@ public class PrivilegeProvider {
         return DEACTIVATED;
     }
 
+    public static void requestDeviceOwner(Context context, int method) {
+        String cmd = "dpm set-device-owner " + new ComponentName(context.getPackageName(), DeviceAdminReceiver.class.getName()).flattenToShortString();
+        runCommand(context, method, cmd);
+    }
+
     /**
      *
-     * Single command running<br>
-     * 单条指令运行
+     * <h3>Multiple command running</h3>
+     * <h3>多条指令运行</h3>
      *
-     * @param cmd 指令（字符串数组）
-     * @param method 想以什么权限运行（会调用prefix方法添加对应前缀）
-     * @return 指令运行完成的返回值
+     * @param context 上下文 | Context
+     * @param method 想以什么权限运行 | Privilege type
+     * @param cmd 指令 | Commands
+     * @return 指令运行后的输出数据 | Command output data
      */
-    public static int runCmd(String[] cmd, int method){
-        ProcessBuilder psb = new ProcessBuilder();
-        psb.command(prefix(method, cmd));
+    public static Bundle runCommand(Context context, int method, String... cmd) {
+        if (method == METHOD_SHIZUKU && context != null) {
+            AtomicReference<Bundle> bundle = new AtomicReference<>();
+            useShizuku(context, (iBinder, connection) -> {
+                try {
+                    bundle.set(IUserService.Stub.asInterface(iBinder).runMultiCmd(cmd));
+                    Shizuku.unbindUserService(getShizukuUserServiceArgs(context), connection, true);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return bundle.get();
+        }
+
+        String s;
+        if (method == METHOD_ROOT) {
+            s = CMD_SU;
+        } else {
+            s = CMD_SH;
+        }
         try {
-            Process ps = psb.start();
-            return ps.waitFor();
-        } catch (Exception e) {
+            Process ps = Runtime.getRuntime().exec(s);
+            DataOutputStream o = new DataOutputStream(ps.getOutputStream());
+            for (String command : cmd) {
+                o.writeBytes(command + "\n");
+            }
+            o.writeBytes("exit\n");
+            o.flush();
+            o.close();
+
+            return processOutput(ps, "gbk");
+        } catch (IOException | InterruptedException e) {
+            // todo: error handling is too rude
             throw new RuntimeException(e);
         }
     }
 
-    public static int runMultiCmd(int method, String... cmds) {
-        String s;
-        switch (method) {
-            case METHOD_ROOT -> s = "su";
-            case METHOD_SHIZUKU -> s = "rish";
-            default -> s = "sh";
+    /**
+     *
+     * <h3>Multiple command running</h3>
+     * <h3>多条指令运行</h3>
+     * <h5>If need Shizuku support, context is required.</h5>
+     * <h5>如要调用Shizuku，还需要上下文！</h5>
+     *
+     * @param method 想以什么权限运行 | Privilege type
+     * @param cmds 多条指令 | Commands
+     * @return 指令运行后的输出数据 | Command output data
+     */
+    public static Bundle runCommand(int method, String... cmds) {
+        return runCommand(null, method, cmds);
+    }
 
+    /**
+     * Pack output data into a bundle<br>
+     * 将输出数据打包成一个bundle
+     *
+     * @param process 进程对象 | Process object
+     * @param charsetName 指定文本编码（如utf-8，gbk）| Charset (utf-8, gbk, etc.)
+     * @return 打包成bundle的数据 | Data packaged into bundle
+     * @throws IOException InputStream抛出来的，我不到啊 | Thrown by InputStream
+     * @throws InterruptedException Process抛出来的，我补刀啊 | Thrown by Process
+     */
+    public static Bundle processOutput(Process process, String charsetName) throws IOException, InterruptedException {
+        BufferedReader i = new BufferedReader(new InputStreamReader(process.getInputStream(), charsetName));
+        BufferedReader e = new BufferedReader(new InputStreamReader(process.getErrorStream(), charsetName));
+
+        StringBuilder sb = new StringBuilder(); // 看什么看？sb骂的就是你
+        String line;
+
+        while ((line = i.readLine()) != null) {
+            sb.append(line).append("\n");
         }
-        try {
-            Process ps = Runtime.getRuntime().exec(s);
-            DataOutputStream output = new DataOutputStream(ps.getOutputStream());
-            for (String cmd : cmds) {
-                output.writeBytes(cmd + "\n");
-            }
-            output.writeBytes("exit\n");
-            output.flush();
-            output.close();
-            return ps.waitFor();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+        String outputData = sb.toString();
+
+        sb.setLength(0);
+
+        while ((line = e.readLine()) != null) {
+            sb.append(line).append("\n");
         }
+        String errorData = sb.toString();
+
+        i.close();
+        e.close();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(CMD_STDOUT, outputData);
+        bundle.putString(CMD_STDERR, errorData);
+        bundle.putInt(CMD_RESULT_CODE, process.waitFor());
+        return bundle;
+    }
+
+    public interface ShizukuAction {
+        void invoke(IBinder binder, ServiceConnection connection);
     }
 }

@@ -68,6 +68,8 @@
     <string name="pref_tap_me">Tap me!</string>
     <string name="pref_caution">Be careful as the feature you\'ve enabled is not common in real feature phones</string>
     <string name="pref_operation_completed">Operation completed</string>
+    <string name="pref_operation_failed">Operation failed</string>
+    <string name="pref_wait">Please wait…</string>
 
     <string name="pref_page_permissions">Permissions and privileges</string>
     <string name="pref_page_permissions_summary">Program needs them to run normally</string>
@@ -89,6 +91,7 @@
     <string name="pref_check_privilege">Check if privilege has been granted</string>
     <string name="pref_check_privilege_granted">Granted</string>
     <string name="pref_check_privilege_denied">Denied</string>
+    <string name="pref_check_privilege_denied_click">Denied, click to grant</string>
     <string name="pref_check_privilege_none">You have no privilege provider, so why do you tap me?</string>
     <string name="pref_enable_dhizuku">Use Dhizuku</string>
     <string name="pref_check_device_admin">Check device owner</string>
@@ -123,10 +126,12 @@
     <!-- Toast message -->
     <string name="toast_open_settings_from_launcher">Please open settings from launcher to grant Dhizuku.</string>
     <string name="toast_reopen_to_refresh">Please reopen this page to refresh grant status.</string>
+    <string name="toast_tap_to_refresh">Click me again for latest result</string>
 
     <!-- Dialog -->
     <string name="dialog_title_exit_dpad">D-pad key command setup</string>
     <string name="dialog_title_exit_dialer">Dialer secret code setup</string>
     <string name="dialog_title_exit_dialer_hint">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
     <string name="dialog_title_exit_passwd">Settings page password setup</string>
+    <string name="dialog_message_active_device_owner">Active device owner using %s?</string>
 </resources>

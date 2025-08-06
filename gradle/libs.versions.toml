@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.0"
+hiddenapibypass = "6.1"
 shizukuApi = "13.1.5"
 xposedApi = "82"
 cameraCore = "1.4.2"
@@ -27,6 +28,7 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
 androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizukuApi" }
 dhizuku-api = { module = "io.github.iamr0s:Dhizuku-API", version.ref = "dhizukuApi" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }

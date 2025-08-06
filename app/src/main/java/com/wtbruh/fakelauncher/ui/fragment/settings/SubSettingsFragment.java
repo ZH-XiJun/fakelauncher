@@ -9,7 +9,9 @@ import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -224,7 +226,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
      * @param defaultSummary 默认的简介
      */
     private void addWarningToSummary(Preference pref, int defaultSummary) {
-        boolean prefValue = pref.getSharedPreferences().getBoolean(pref.getKey(), false);
+        boolean prefValue = Objects.requireNonNull(pref.getSharedPreferences()).getBoolean(pref.getKey(), false);
         pref.setSummary(prefValue? R.string.pref_caution : defaultSummary);
     }
 
@@ -235,77 +237,102 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
      */
     private void prefSetup(Preference pref) {
         SharedPreferences defaultPref = getDefaultSharedPreferences(requireContext());
-        String[] valueArray;
-        String value;
         switch (pref.getKey()) {
-            case PREF_PRIVILEGE_PROVIDER:
+            case PREF_PRIVILEGE_PROVIDER -> {
+                // Shizuku available on Android 6+
+                boolean shizuku = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
                 setListPrefSummary(
-                        defaultPref.getString(pref.getKey(), "None"),
-                        pref,
-                        R.array.pref_privilege_provider,
-                        R.array.pref_privilege_provider_string
+                    defaultPref.getString(pref.getKey(), getString(R.string.pref_privilege_provider_default)),
+                    pref,
+                    shizuku? R.array.pref_privilege_provider : R.array.pref_privilege_provider_old,
+                    shizuku? R.array.pref_privilege_provider_string : R.array.pref_privilege_provider_old_string
                 );
-                break;
-            case PREF_STYLE:
-                setListPrefSummary(
-                        defaultPref.getString(pref.getKey(), "phone"),
-                        pref,
-                        R.array.pref_style,
-                        R.array.pref_style_string
-                );
-                break;
-            case PREF_EXIT_FAKEUI_METHOD:
-                setListPrefSummary(
-                        defaultPref.getString(pref.getKey(), "dpad"),
-                        pref,
-                        R.array.pref_exit_fakeui_method,
-                        R.array.pref_exit_fakeui_method_string
-                );
-                break;
-            case PREF_EXIT_FAKEUI_CONFIG:
-                DialogPreference dPref = (DialogPreference) pref;
-                // DialogPreference dPref = findPreference(PREF_EXIT_FAKEUI_CONFIG);
-                valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
-                value = defaultPref.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
+            }
+            case PREF_STYLE -> setListPrefSummary(
+                    defaultPref.getString(pref.getKey(), getString(R.string.pref_style_default)),
+                    pref,
+                    R.array.pref_style,
+                    R.array.pref_style_string
+            );
+            case PREF_EXIT_FAKEUI_METHOD -> setListPrefSummary(
+                    defaultPref.getString(pref.getKey(), getString(R.string.pref_exit_fakeui_method_default)),
+                    pref,
+                    R.array.pref_exit_fakeui_method,
+                    R.array.pref_exit_fakeui_method_string
+            );
+            case PREF_EXIT_FAKEUI_CONFIG -> {
+                DialogPreference p = (DialogPreference) pref;
+                String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
+                String value = defaultPref.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
                 if (value.equals(valueArray[1])) {
-                    dPref.setDialogTitle(R.string.dialog_title_exit_dialer);
-                    dPref.setDialogMessage(R.string.dialog_title_exit_dialer_hint);
+                    p.setDialogTitle(R.string.dialog_title_exit_dialer);
+                    p.setDialogMessage(R.string.dialog_title_exit_dialer_hint);
                 } else if (value.equals(valueArray[2])) {
-                    dPref.setDialogTitle(R.string.dialog_title_exit_passwd);
-                    dPref.setDialogMessage(null);
+                    p.setDialogTitle(R.string.dialog_title_exit_passwd);
+                    p.setDialogMessage(null);
                 } else if (value.equals(valueArray[0])) {
-                    dPref.setDialogTitle(R.string.dialog_title_exit_dpad);
-                    dPref.setDialogMessage(null);
+                    p.setDialogTitle(R.string.dialog_title_exit_dpad);
+                    p.setDialogMessage(null);
                 }
-                break;
-            case PREF_CHECK_XPOSED:
+            }
+            case PREF_CHECK_XPOSED -> {
                 if (MainActivity.isXposedModuleActivated()) {
                     pref.setSummary(R.string.pref_xposed_activated);
                 } else {
                     pref.setSummary(R.string.pref_xposed_not_activated);
                 }
-                break;
-            case PREF_CHECK_DEVICE_ADMIN:
-                switch (PrivilegeProvider.checkDeviceAdmin(getContext())) {
-                    case PrivilegeProvider.DHIZUKU:
+            }
+            case PREF_CHECK_DEVICE_ADMIN -> {
+                pref.setEnabled(true);
+                Preference p = findPreference(PREF_DEACTIVATE_DEVICE_OWNER);
+                if (p == null) break;
+                switch (PrivilegeProvider.checkDeviceAdmin(requireContext())) {
+                    case PrivilegeProvider.DHIZUKU -> {
                         pref.setSummary(R.string.pref_activated_dhizuku);
-                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(false);
-                        break;
-                    case PrivilegeProvider.DEVICE_OWNER:
+                        p.setVisible(false);
+                    }
+                    case PrivilegeProvider.DEVICE_OWNER -> {
                         pref.setSummary(R.string.pref_activated_device_owner);
-                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(true);
-                        break;
-                    case PrivilegeProvider.DEVICE_ADMIN:
+                        p.setVisible(true);
+                    }
+                    case PrivilegeProvider.DEVICE_ADMIN -> {
                         pref.setSummary(R.string.pref_activated_device_admin);
-                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(false);
-                        break;
-                    case PrivilegeProvider.DEACTIVATED:
-                    default:
-                        pref.setSummary(R.string.pref_deactivated);
-                        findPreference(PREF_DEACTIVATE_DEVICE_OWNER).setVisible(false);
-                        break;
+                        p.setVisible(false);
+                    }
+                    default -> {
+                        String provider;
+                        boolean isPrivilegeProviderNone =
+                                (provider = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default))).equals("None");
+                        boolean isDhizukuEnabled =
+                                defaultPref.getBoolean(PREF_ENABLE_DHIZUKU, false);
+                        int newSummary = isDhizukuEnabled? R.string.pref_deactivated :
+                                isPrivilegeProviderNone? R.string.pref_deactivated: R.string.pref_check_privilege_denied_click;
+                        if (!Objects.equals(pref.getSummary(), getString(newSummary)) || isDhizukuEnabled) pref.setSummary(newSummary);
+                        else if (!isPrivilegeProviderNone) {
+                            UIHelper.showConfirmDialog(
+                                    requireContext(),
+                                    getString(android.R.string.dialog_alert_title),
+                                    getString(R.string.dialog_message_active_device_owner, provider),
+                                    (dialogInterface, i) -> {
+                                        PrivilegeProvider.requestDeviceOwner(requireContext(), PrivilegeProvider.privilegeToInt(provider));
+                                        // Toast.makeText(requireActivity(), R.string.toast_tap_to_refresh, Toast.LENGTH_SHORT).show();
+                                        Preference p2 = findPreference(PREF_ENABLE_DHIZUKU);
+                                        if (p2 == null) return;
+                                        p2.setEnabled(false);
+                                        pref.setSummary(R.string.pref_wait);
+                                        pref.setEnabled(false);
+                                        new Handler().postDelayed(() -> {
+                                            p2.setEnabled(true);
+                                            prefSetup(pref);
+                                        }, 5000);
+                                    },
+                                    null
+                            );
+                        }
+                        p.setVisible(false);
+                    }
                 }
-                break;
+            }
         }
     }
 
@@ -320,11 +347,12 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
         int defaultSummary = 0;
         switch (key) {
-            case PREF_PRIVILEGE_PROVIDER:
+            case PREF_PRIVILEGE_PROVIDER -> {
                 prefSetup(pref);
-                if ((pref = findPreference(PREF_CHECK_PRIVILEGE)) != null) pref.setSummary(R.string.pref_tap_me);
-                break;
-            case PREF_EXIT_FAKEUI_METHOD:
+                if ((pref = findPreference(PREF_CHECK_PRIVILEGE)) != null)
+                    pref.setSummary(R.string.pref_tap_me);
+            }
+            case PREF_EXIT_FAKEUI_METHOD -> {
                 EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG);
                 prefSetup(pref);
                 if (exitFakeuiConfig != null) {
@@ -334,19 +362,14 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                             .apply();
                     exitFakeuiConfig.setText("");
                 }
-                break;
-            case PREF_ENABLE_DHIZUKU:
+            }
+            case PREF_ENABLE_DHIZUKU -> {
                 if ((pref = findPreference(PREF_CHECK_DEVICE_ADMIN)) != null) prefSetup(pref);
-                break;
-            case PREF_STYLE:
-                prefSetup(pref);
-                break;
-            case PREF_TIME_SHOW_SECOND:
-                defaultSummary = R.string.pref_time_show_seconds_summary;
-                break;
-            case PREF_SHOW_ACCURATE_BATTERY:
-                defaultSummary = R.string.pref_show_accurate_battery_summary;
-                break;
+            }
+            case PREF_STYLE -> prefSetup(pref);
+            case PREF_TIME_SHOW_SECOND -> defaultSummary = R.string.pref_time_show_seconds_summary;
+            case PREF_SHOW_ACCURATE_BATTERY ->
+                    defaultSummary = R.string.pref_show_accurate_battery_summary;
         }
         if (defaultSummary != 0) addWarningToSummary(pref, defaultSummary);
     }
@@ -359,7 +382,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         String value;
         switch (key) {
             case PREF_CHECK_PRIVILEGE -> {
-                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, "None");
+                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {
                     if (!"None".equals(value)) {
                         boolean isGranted = PrivilegeProvider.checkPrivilege(PrivilegeProvider.privilegeToInt(value));
@@ -378,25 +401,38 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             }
             case PREF_CHECK_DEVICE_ADMIN -> prefSetup(pref);
             case PREF_PERMISSION_GRANT_STATUS ->
-                    UIHelper.intentStarter(getActivity(), SettingsActivity.PermissionStatus.class);
+                    UIHelper.intentStarter(requireActivity(), SettingsActivity.PermissionStatus.class);
             case PREF_GRANT_ALL_PERMISSIONS -> {
-                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, "None");
+                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {
-                    PrivilegeProvider.requestAllPermissions(getActivity(), PrivilegeProvider.privilegeToInt(value));
-                    requireActivity().runOnUiThread(() -> pref.setSummary(R.string.pref_operation_completed));
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    requireActivity().runOnUiThread(() -> pref.setSummary(""));
+                    PrivilegeProvider.requestAllPermissions(requireActivity(), PrivilegeProvider.privilegeToInt(value));
+                    requireActivity().runOnUiThread(() -> {
+                        pref.setSummary(R.string.pref_operation_completed);
+                        new Handler().postDelayed(() -> pref.setSummary(""), 2000);
+                    });
+
                 }).start();
 
             }
             case PREF_DEACTIVATE_DEVICE_OWNER -> {
                 DevicePolicyManager dpm = getSystemService(requireContext(), DevicePolicyManager.class);
+                if (dpm == null) break;
                 dpm.clearDeviceOwnerApp(requireActivity().getPackageName());
-                prefSetup(findPreference(PREF_CHECK_DEVICE_ADMIN));
+
+                Preference p;
+                Preference p2;
+                if ((p = findPreference(PREF_CHECK_DEVICE_ADMIN)) == null ||
+                        (p2 = findPreference(PREF_ENABLE_DHIZUKU)) == null) break;
+                p.setSummary(R.string.pref_wait);
+                p.setEnabled(false);
+                p2.setEnabled(false);
+                pref.setEnabled(false);
+
+                new Handler().postDelayed(() -> {
+                    prefSetup(p);
+                    pref.setEnabled(true);
+                    p2.setEnabled(true);
+                }, 1000);
             }
             case PREF_GALLERY_ACCESS ->
                     SAFlauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));

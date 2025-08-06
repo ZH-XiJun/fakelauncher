@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- pref_privilege_provider -->
-    <string-array name="pref_privilege_provider">
+    <string-array name="pref_privilege_provider" parent="pref_privilege_provider_old">
         <item>None</item>
         <item>Root</item>
         <item>Shizuku</item>
+    </string-array>
+
+    <string-array name="pref_privilege_provider_old">
+        <item>None</item>
+        <item>Root</item>
     </string-array>
 
     <string-array name="pref_privilege_provider_string">
         <item>@string/pref_provider_none</item>
         <item>@string/pref_provider_root</item>
         <item>@string/pref_provider_shizuku</item>
+    </string-array>
+
+    <string-array name="pref_privilege_provider_old_string">
+        <item>@string/pref_provider_none</item>
+        <item>@string/pref_provider_root</item>
     </string-array>
 
     <string name="pref_privilege_provider_default" translatable="false">None</string>

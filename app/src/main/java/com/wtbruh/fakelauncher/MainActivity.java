@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,6 +28,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
+import com.rosan.dhizuku.api.Dhizuku;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
@@ -92,12 +94,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
     private DevicePolicyManager mDpm;
 
-    // todo: support Dhizuku
-    /*
-    private ServiceConnection mServiceConnection;
-    private DhizukuUserServiceArgs mServiceArgs;
-    private IUserService mUserService;
-     */
     private final static String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -174,7 +170,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * 当想要退出App时，重复启动MainActivity可触发退出
      */
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         Log.d(TAG, "Repeatedly launched MainActivity, it's time to do exit");
         exit();
@@ -196,12 +192,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         } catch (InterruptedException e) {
             Log.e(TAG, "An error was occurred while waiting screen pinning to close: "+e);
         }
-        // todo: support Dhizuku
-        /*
-        Dhizuku.stopUserService(mServiceArgs);
-        // 断开与UserService的连接
-        Dhizuku.unbindUserService(mServiceConnection);
-         */
         // kill myself
         finishAndRemoveTask();
     }
@@ -322,52 +312,18 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * init of DeviceOwner | DeviceOwner 初始化
      */
     private void initDeviceOwner() {
-        ComponentName receiver = new ComponentName(this, DeviceAdminReceiver.class);
         // Check privilege level
         // 检查权限等级
         mDeviceAdminType = PrivilegeProvider.checkDeviceAdmin(this);
-        switch (mDeviceAdminType) {
+        mDpm = switch (mDeviceAdminType) {
             // Dhizuku已激活
-            // todo: support Dhizuku
-            /*
-            case PrivilegeProvider.DHIZUKU:
-                Dhizuku.init();
-                mServiceArgs = new DhizukuUserServiceArgs(new ComponentName(this, UserService.class));
-                mServiceConnection = new ServiceConnection() {
-                    @Override
-                    public void onServiceConnected(ComponentName name, IBinder iBinder) {
-                        mUserService = IUserService.Stub.asInterface(iBinder);
-                        Log.d(TAG, "Successfully connected to UserService");
-                    }
-                    @Override
-                    public void onServiceDisconnected(ComponentName name) {
-                        Log.d(TAG, "Disconnected from UserService");
-                    }
-                };
-                boolean isBound = Dhizuku.bindUserService(mServiceArgs, mServiceConnection);
-                if (isBound) {
-                    Dhizuku.startUserService(mServiceArgs);
-                    Log.d(TAG, "Dhizuku init completed");
-                    break;
-                }
-                Log.d(TAG, "Start UserService failed, unable to init Dhizuku");
-                break;
-                 */
+            case PrivilegeProvider.DHIZUKU -> PrivilegeProvider.binderWrapperDevicePolicyManager(this);
             // Device Owner已激活
-            case PrivilegeProvider.DEVICE_OWNER:
-                // 直接用自己的上下文
-                mDpm = getSystemService(DevicePolicyManager.class);
-                mDpm.setLockTaskPackages(receiver, new String[] {getPackageName()});
-
-                Log.d(TAG, "Device owner init completed");
-                break;
-            // 权限低，没法玩
-            case PrivilegeProvider.DEVICE_ADMIN:
-            case PrivilegeProvider.DEACTIVATED:
-            default:
-                Log.e(TAG, "No enough privilege to start screen pinning silently!!!");
-        }
+            case PrivilegeProvider.DEVICE_OWNER -> ContextCompat.getSystemService(this, DevicePolicyManager.class);
+            default -> null;
+        };
     }
+
 
     /**
      * Xposed 模块自检测
@@ -558,7 +514,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             if (mCharging) {
                 if (mAccurateBattery) connection_view.setText(R.string.charging);
                 else {
-                    Log.d(TAG, "called");
                     new Thread(() -> {
                         while (mCharging) {
                             int z = batteryLevel;
@@ -687,37 +642,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             ContentProvider.setTaskId(activity, id);
             return;
         }
-        // todo: support Dhizuku
         new Thread(() -> {
-            ComponentName receiver = new ComponentName(this, DeviceAdminReceiver.class);
-            /*
-            int retryCount = 0;
-            while ( mUserService == null && retryCount < 5) {
-                retryCount++;
-                Log.d(TAG, "User service doesn't start, wait 500ms, retry count: "+retryCount);
-                try {
-                    Thread.sleep(500);
-                } catch (Exception e) {
-                    Log.e(TAG, "An error occurred when waiting for UserService start: "+e);
-                    retryCount = 5;
-                }
-            }
-         */
+            ComponentName receiver = switch (mDeviceAdminType) {
+                case PrivilegeProvider.DHIZUKU -> Dhizuku.getOwnerComponent();
+                default -> new ComponentName(this, DeviceAdminReceiver.class);
+            };
             // Check device admin permission
-            switch (mDeviceAdminType) {
-                case PrivilegeProvider.DHIZUKU:
-                    // todo: support Dhizuku
-                    /*
-                    try {
-                        mUserService.setLockTaskPackages(receiver, new String[] {getPackageName()});
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
-                     */
-                case PrivilegeProvider.DEVICE_OWNER:
-                    mDpm.setLockTaskPackages(receiver, new String[] {getPackageName()});
-                    break;
-            }
+            if (mDpm != null) mDpm.setLockTaskPackages(receiver, new String[]{getPackageName()});
             if (id != -1) {
                 activity.startLockTask();
             } else {

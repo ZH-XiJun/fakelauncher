@@ -287,7 +287,7 @@ public class CameraFragment extends BaseFragment {
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
                         Log.e(TAG, "Error on capturing: " + exception);
-                        UIHelper.showDialog(requireContext(), R.string.dialog_capture_fail, null);
+                        UIHelper.showCustomDialog(requireContext(), R.string.dialog_capture_fail, null);
                         if (isCapturing) isCapturing = false;
                         setDefaultFooterBar();
                     }
@@ -386,7 +386,7 @@ public class CameraFragment extends BaseFragment {
 
     private void showSaveResultDialog(boolean result) {
         int message = result? R.string.dialog_save_success : mode? R.string.dialog_save_fail : R.string.dialog_record_fail;
-        Dialog dialog = UIHelper.showDialog(requireContext(), message, null);
+        Dialog dialog = UIHelper.showCustomDialog(requireContext(), message, null);
         dialog.setOnDismissListener(dialogInterface -> {
             capturePreview.setVisibility(GONE);
             cameraView.setVisibility(VISIBLE);

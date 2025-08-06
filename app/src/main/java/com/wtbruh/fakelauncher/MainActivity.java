@@ -241,7 +241,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mStyle.equals(mStyles[0])) {
             if (isLocked) { // 需要解锁的情况 Need star key unlock
                 if (keyCode == KeyEvent.KEYCODE_MENU) {
-                    dialog = UIHelper.showDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
+                    dialog = UIHelper.showCustomDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
                         if (keyCode1 == KeyEvent.KEYCODE_STAR) {
                             onUnlocked();
                         }
@@ -249,7 +249,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     });
                 } else {
                     if (!isKeyLongPressed)
-                        dialog = UIHelper.showDialog(this, R.string.dialog_long_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
+                        dialog = UIHelper.showCustomDialog(this, R.string.dialog_long_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
                             if (keyCode1 != KeyEvent.KEYCODE_BACK) {
                                 if (keyEvent.getRepeatCount() >= 2) {
                                     isKeyLongPressed = true;
@@ -396,7 +396,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private void onUnlocked() {
         // New dialog should be opened before closing the old one.
         Dialog dialog2;
-        dialog2 = UIHelper.showDialog(MainActivity.this, R.string.dialog_unlocked, null);
+        dialog2 = UIHelper.showCustomDialog(MainActivity.this, R.string.dialog_unlocked, null);
         if (dialog != null && dialog.isShowing()) dialog.dismiss();
         dialog = dialog2;
         setFooterBar(R.string.main_leftButton);

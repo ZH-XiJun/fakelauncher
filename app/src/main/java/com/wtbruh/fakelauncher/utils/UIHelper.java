@@ -13,17 +13,15 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 
 public class UIHelper {
     private static long lastTriggerTime = 0;
     private static final long DEBOUNCE_TIME = 300;
-
-    private final static String TAG = UIHelper.class.getSimpleName();
 
     /**
      * <h3>Text editor | 文本内容编辑器</h3>
@@ -37,17 +35,15 @@ public class UIHelper {
      * @return 最终文本内容
      */
     public static String textEditor(int keyCode, String content) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                return content.substring(0, content.length() - 1);
-            case KeyEvent.KEYCODE_POUND:
-                return content + "#";
-            case KeyEvent.KEYCODE_STAR:
-                return content + "*";
-            default:
+        return switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK -> content.substring(0, content.length() - 1);
+            case KeyEvent.KEYCODE_POUND -> content + "#";
+            case KeyEvent.KEYCODE_STAR -> content + "*";
+            default -> {
                 int num = keyCode - KeyEvent.KEYCODE_0;
-                return content + num;
-        }
+                yield content + num;
+            }
+        };
     }
 
     /**
@@ -60,7 +56,7 @@ public class UIHelper {
     public static boolean checkExitMethod(Context context, int expected) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String[] valueArray = context.getResources().getStringArray(R.array.pref_exit_fakeui_method);
-        String exitMethod = pref.getString("exit_fakeui_method", valueArray[0]);
+        String exitMethod = pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
         return exitMethod.equals(valueArray[expected]);
     }
 
@@ -82,46 +78,6 @@ public class UIHelper {
         activity.overridePendingTransition(0, 0);
     }
 
-    /**
-     * <h3>Intent Starter | Intent启动器</h3>
-     * <p>Simple package for starting intent, which will send intent flags<br>
-     * 启动intent的简单封装，会发送Intent标志</p>
-     *
-     * @param activity 你的Activity对象
-     * @param cls 要启动的Activity的class
-     * @param flags 要添加的标志，允许多个
-     */
-    public static void intentStarter(Activity activity, Class<?> cls, int... flags) {
-        if (intentStarterDebounce(cls)) return;
-        Intent intent = new Intent();
-        intent.setClass(activity, cls);
-        for (int flag : flags) intent.addFlags(flag);
-        activity.startActivity(intent);
-        // Disable transition anim
-        // 去掉过渡动画
-        activity.overridePendingTransition(0, 0);
-    }
-
-    /**
-     * <h3>Intent Starter | Intent启动器</h3>
-     * <p>Simple package for starting intent, which will send extra message<br>
-     * 启动intent的简单封装，会发送额外信息</p>
-     *
-     * @param activity 你的Activity对象
-     * @param cls 要启动的Activity的class
-     * @param extraName 额外数据名称
-     * @param extra 额外数据内容
-     */
-    public static void intentStarter(Activity activity, Class<?> cls, String extraName, String extra) {
-        if (intentStarterDebounce(cls)) return;
-        Intent intent = new Intent();
-        intent.setClass(activity, cls);
-        intent.putExtra(extraName, extra);
-        activity.startActivity(intent);
-        // Disable transition anim
-        // 去掉过渡动画
-        activity.overridePendingTransition(0, 0);
-    }
     /**
      * <h3>Intent Starter Debounce<br>
      * Intent启动器 防抖机制</h3>
@@ -149,7 +105,7 @@ public class UIHelper {
      * @param msgResId 要显示的文本的资源id
      * @param listener 按键监听器
      */
-    public static Dialog showDialog(Context context, int msgResId, @Nullable DialogInterface.OnKeyListener listener) {
+    public static Dialog showCustomDialog(Context context, int msgResId, DialogInterface.OnKeyListener listener) {
         // Load custom layout
         // 加载自制布局
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_custom, null, false);
@@ -178,5 +134,19 @@ public class UIHelper {
             if (dialog.isShowing()) dialog.dismiss();
         }, 3000);
         return dialog;
+    }
+
+    public static Dialog showConfirmDialog(Context context, String title, String msg, DialogInterface.OnKeyListener keyListener, DialogInterface.OnClickListener positiveListener, DialogInterface.OnClickListener negativeListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        return builder.setTitle(title)
+                .setMessage(msg)
+                .setOnKeyListener(keyListener)
+                .setPositiveButton(android.R.string.yes, positiveListener)
+                .setNegativeButton(android.R.string.no, negativeListener)
+                .show();
+    }
+
+    public static Dialog showConfirmDialog(Context context, String title, String msg, DialogInterface.OnClickListener positiveListener, DialogInterface.OnClickListener negativeListener) {
+        return showConfirmDialog(context, title, msg, null, positiveListener, negativeListener);
     }
 }

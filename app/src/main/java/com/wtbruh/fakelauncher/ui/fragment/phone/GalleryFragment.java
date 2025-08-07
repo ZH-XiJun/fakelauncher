@@ -171,8 +171,8 @@ public class GalleryFragment extends BaseFragment {
                 mediaPlayer.setDataSource(requireContext(), uri);
                 mediaPlayer.prepareAsync();
 
-            } catch (IOException e) {
-                Log.e(TAG, "IOException thrown during preparing mediaPlayer");
+            } catch (Exception e) {
+                Log.e(TAG, "Error during preparing mediaPlayer", e);
                 loadFailed();
                 return;
             }
@@ -197,10 +197,11 @@ public class GalleryFragment extends BaseFragment {
         mediaPlayer.reset();
         mediaPlayer.release();
         mediaPlayer = null;
-        timer.cancel();
+        if (timer != null) timer.cancel();
         bar.setProgress(0);
         videoView.setVisibility(GONE);
         videoLayout.setVisibility(GONE);
+        textHint.setVisibility(GONE);
         galleryView.setVisibility(VISIBLE);
     }
 
@@ -216,7 +217,7 @@ public class GalleryFragment extends BaseFragment {
                 if (mediaPlayer != null) {
                     int currentPosition = mediaPlayer.getCurrentPosition();
                     bar.setProgress(currentPosition);
-                    tv.setText(currentPosToString(currentPosition));
+                    tv.post(() -> tv.setText(currentPosToString(currentPosition)));
                 }
             }
         }, 0, 1000);
@@ -298,7 +299,7 @@ public class GalleryFragment extends BaseFragment {
                     fullscreenView.setVisibility(GONE);
                     galleryView.setVisibility(VISIBLE);
                     return true;
-                } else if (videoLayout.getVisibility() == VISIBLE) {
+                } else if (videoLayout.getVisibility() == VISIBLE || (textHint.getVisibility() == VISIBLE && textHint.getText().equals(getString(R.string.gallery_load_failed)))) {
                     closeVideoWindow();
                     setFooterBar();
                     return true;

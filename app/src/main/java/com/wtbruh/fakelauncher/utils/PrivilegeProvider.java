@@ -336,8 +336,12 @@ public class PrivilegeProvider {
     }
 
     public static void requestDeviceOwner(Context context, int method) {
-        String cmd = "dpm set-device-owner " + new ComponentName(context.getPackageName(), DeviceAdminReceiver.class.getName()).flattenToShortString();
+        String cmd = getDeviceOwnerActiveCmd(context);
         runCommand(context, method, cmd);
+    }
+
+    public static String getDeviceOwnerActiveCmd(Context context) {
+        return "dpm set-device-owner " + new ComponentName(context.getPackageName(), DeviceAdminReceiver.class.getName()).flattenToShortString();
     }
 
     /**

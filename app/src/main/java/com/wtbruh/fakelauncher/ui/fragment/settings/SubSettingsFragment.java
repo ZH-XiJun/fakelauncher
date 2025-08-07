@@ -5,7 +5,11 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,6 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.preference.DialogPreference;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -241,11 +246,16 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case PREF_PRIVILEGE_PROVIDER -> {
                 // Shizuku available on Android 6+
                 boolean shizuku = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+                if (!shizuku) {
+                    ListPreference p = (ListPreference) pref;
+                    p.setEntryValues(R.array.pref_privilege_provider_old);
+                    p.setEntries(R.array.pref_privilege_provider_old_string);
+                }
                 setListPrefSummary(
-                    defaultPref.getString(pref.getKey(), getString(R.string.pref_privilege_provider_default)),
-                    pref,
-                    shizuku? R.array.pref_privilege_provider : R.array.pref_privilege_provider_old,
-                    shizuku? R.array.pref_privilege_provider_string : R.array.pref_privilege_provider_old_string
+                        defaultPref.getString(pref.getKey(), getString(R.string.pref_privilege_provider_default)),
+                        pref,
+                        R.array.pref_privilege_provider,
+                        R.array.pref_privilege_provider_string
                 );
             }
             case PREF_STYLE -> setListPrefSummary(
@@ -306,28 +316,37 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         boolean isDhizukuEnabled =
                                 defaultPref.getBoolean(PREF_ENABLE_DHIZUKU, false);
                         int newSummary = isDhizukuEnabled? R.string.pref_deactivated :
-                                isPrivilegeProviderNone? R.string.pref_deactivated: R.string.pref_check_privilege_denied_click;
+                                isPrivilegeProviderNone? R.string.pref_command_activate: R.string.pref_click_to_activate;
                         if (!Objects.equals(pref.getSummary(), getString(newSummary)) || isDhizukuEnabled) pref.setSummary(newSummary);
-                        else if (!isPrivilegeProviderNone) {
-                            UIHelper.showConfirmDialog(
-                                    requireContext(),
-                                    getString(android.R.string.dialog_alert_title),
-                                    getString(R.string.dialog_message_active_device_owner, provider),
-                                    (dialogInterface, i) -> {
-                                        PrivilegeProvider.requestDeviceOwner(requireContext(), PrivilegeProvider.privilegeToInt(provider));
-                                        // Toast.makeText(requireActivity(), R.string.toast_tap_to_refresh, Toast.LENGTH_SHORT).show();
-                                        Preference p2 = findPreference(PREF_ENABLE_DHIZUKU);
-                                        if (p2 == null) return;
-                                        p2.setEnabled(false);
-                                        pref.setSummary(R.string.pref_wait);
-                                        pref.setEnabled(false);
-                                        new Handler().postDelayed(() -> {
-                                            p2.setEnabled(true);
-                                            prefSetup(pref);
-                                        }, 5000);
-                                    },
-                                    null
-                            );
+                        else {
+                            String deviceOwnerActiveCmd = "adb shell "+PrivilegeProvider.getDeviceOwnerActiveCmd(requireContext());
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(getString(R.string.dialog_message_active_device_owner, isPrivilegeProviderNone? "adb shell" : provider));
+                            if (isPrivilegeProviderNone) sb.append(": ")
+                                    .append(deviceOwnerActiveCmd);
+                            new AlertDialog.Builder(requireContext())
+                                    .setTitle(R.string.dialog_title_active_device_owner)
+                                    .setMessage(sb.toString())
+                                    .setPositiveButton(isPrivilegeProviderNone? R.string.dialog_button_copy : android.R.string.yes, (dialogInterface, i) -> {
+                                        if (isPrivilegeProviderNone) {
+                                            ClipboardManager clipboardManager = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                            ClipData clipData = ClipData.newPlainText("sb", deviceOwnerActiveCmd);
+                                            clipboardManager.setPrimaryClip(clipData);
+                                        } else {
+                                            PrivilegeProvider.requestDeviceOwner(requireContext(), PrivilegeProvider.privilegeToInt(provider));
+                                            Preference p2 = findPreference(PREF_ENABLE_DHIZUKU);
+                                            if (p2 == null) return;
+                                            p2.setEnabled(false);
+                                            pref.setSummary(R.string.pref_wait);
+                                            pref.setEnabled(false);
+                                            new Handler().postDelayed(() -> {
+                                                p2.setEnabled(true);
+                                                prefSetup(pref);
+                                            }, 5000);
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .show();
                         }
                         p.setVisible(false);
                     }
@@ -351,6 +370,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 prefSetup(pref);
                 if ((pref = findPreference(PREF_CHECK_PRIVILEGE)) != null)
                     pref.setSummary(R.string.pref_tap_me);
+                Preference p = findPreference(PREF_CHECK_DEVICE_ADMIN);
+                if (p != null) prefSetup(p);
             }
             case PREF_EXIT_FAKEUI_METHOD -> {
                 EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG);

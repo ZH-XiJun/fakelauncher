@@ -135,18 +135,4 @@ public class UIHelper {
         }, 3000);
         return dialog;
     }
-
-    public static Dialog showConfirmDialog(Context context, String title, String msg, DialogInterface.OnKeyListener keyListener, DialogInterface.OnClickListener positiveListener, DialogInterface.OnClickListener negativeListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        return builder.setTitle(title)
-                .setMessage(msg)
-                .setOnKeyListener(keyListener)
-                .setPositiveButton(android.R.string.yes, positiveListener)
-                .setNegativeButton(android.R.string.no, negativeListener)
-                .show();
-    }
-
-    public static Dialog showConfirmDialog(Context context, String title, String msg, DialogInterface.OnClickListener positiveListener, DialogInterface.OnClickListener negativeListener) {
-        return showConfirmDialog(context, title, msg, null, positiveListener, negativeListener);
-    }
 }

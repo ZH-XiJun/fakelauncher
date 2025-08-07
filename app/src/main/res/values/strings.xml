@@ -91,7 +91,6 @@
     <string name="pref_check_privilege">Check if privilege has been granted</string>
     <string name="pref_check_privilege_granted">Granted</string>
     <string name="pref_check_privilege_denied">Denied</string>
-    <string name="pref_check_privilege_denied_click">Denied, click to grant</string>
     <string name="pref_check_privilege_none">You have no privilege provider, so why do you tap me?</string>
     <string name="pref_enable_dhizuku">Use Dhizuku</string>
     <string name="pref_check_device_admin">Check device owner</string>
@@ -100,6 +99,8 @@
     <string name="pref_activated_dhizuku">Activated - Dhizuku</string>
     <string name="pref_deactivate_device_owner">Deactivate device owner</string>
     <string name="pref_deactivated">Deactivated</string>
+    <string name="pref_click_to_activate">Deactivated, click to activate</string>
+    <string name="pref_command_activate">Deactivated, click to check activate command</string>
 
     <string name="pref_page_view">View</string>
     <string name="pref_page_view_summary">Configurations about UI</string>
@@ -137,5 +138,7 @@
     <string name="dialog_title_exit_dialer">Dialer secret code setup</string>
     <string name="dialog_title_exit_dialer_hint">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
     <string name="dialog_title_exit_passwd">Settings page password setup</string>
-    <string name="dialog_message_active_device_owner">Active device owner using %s?</string>
+    <string name="dialog_title_active_device_owner">Active device owner</string>
+    <string name="dialog_message_active_device_owner">Active device owner using %s</string>
+    <string name="dialog_button_copy">Copy</string>
 </resources>

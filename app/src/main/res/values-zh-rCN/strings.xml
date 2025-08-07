@@ -87,7 +87,6 @@
     <string name="pref_check_privilege">检查授权</string>
     <string name="pref_check_privilege_granted">已授权</string>
     <string name="pref_check_privilege_denied">尚未授权</string>
-    <string name="pref_check_privilege_denied_click">尚未授权，点击以授权</string>
     <string name="pref_check_privilege_none">你都没授权器了，你检查你妈呢</string>
     <string name="pref_enable_dhizuku">使用Dhizuku</string>
     <string name="pref_check_device_admin">检查设备所有者权限</string>
@@ -96,6 +95,8 @@
     <string name="pref_activated_dhizuku">已激活 - Dhizuku</string>
     <string name="pref_deactivate_device_owner">停用设备所有者</string>
     <string name="pref_deactivated">未激活</string>
+    <string name="pref_click_to_activate">未激活，点击以激活</string>
+    <string name="pref_command_activate">未激活，点击以查看激活指令</string>
 
     <string name="pref_page_view">界面</string>
     <string name="pref_page_view_summary">UI相关的配置</string>
@@ -133,5 +134,7 @@
     <string name="dialog_title_exit_dialer">拨号盘退出暗码设置</string>
     <string name="dialog_title_exit_dialer_hint">在拨号盘内输入时需要被"*#"包围：*#你设置的代码#*</string>
     <string name="dialog_title_exit_passwd">设置页退出密码设置</string>
-    <string name="dialog_message_active_device_owner">使用%s激活设备所有者吗？</string>
+    <string name="dialog_title_active_device_owner">激活设备所有者</string>
+    <string name="dialog_message_active_device_owner">将尝试使用%s激活设备所有者</string>
+    <string name="dialog_button_copy">复制</string>
 </resources>

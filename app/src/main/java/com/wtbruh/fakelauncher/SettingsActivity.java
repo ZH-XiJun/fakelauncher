@@ -3,11 +3,8 @@ package com.wtbruh.fakelauncher;
 import static com.wtbruh.fakelauncher.utils.PrivilegeProvider.PERMISSION_REQUEST_CODE;
 
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -60,6 +57,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void openSubSettings(String page) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(
+                R.anim.slide_up, // 进入动画
+                R.anim.fall_down, // 退出动画
+                R.anim.slide_up, // 返回堆栈时的进入动画
+                R.anim.fall_down // 返回堆栈时的退出动画
+        );
         ft.replace(R.id.settings_container, (page.equals(SettingsFragment.PAGE_ABOUT))? AboutFragment.newInstance() : SubSettingsFragment.newInstance(page));
         ft.addToBackStack(null);
         ft.commit();
@@ -116,7 +119,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         private ArrayList<HashMap<String, String>> permissionGrantStatus(String[] permissions) {
-            ArrayList<HashMap<String, String>> mylist = new ArrayList<>();
+            ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
             for(String permission : permissions)
             {
@@ -127,9 +130,9 @@ public class SettingsActivity extends AppCompatActivity {
                 } else {
                     map.put("subItem", getResources().getString(R.string.pref_check_privilege_denied));
                 }
-                mylist.add(map);
+                list.add(map);
             }
-            return mylist;
+            return list;
         }
 
         private void itemClick(ListView listView) {

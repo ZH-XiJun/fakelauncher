@@ -15,6 +15,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     public final static String PAGE_PERMISSION = "permission";
     public final static String PAGE_VIEW = "view";
     public final static String PAGE_BEHAVIOUR = "behaviour";
+    public final static String PAGE_ABOUT = "about";
 
 
     @Override
@@ -23,7 +24,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         String[] pages = {
                 PAGE_PERMISSION,
                 PAGE_VIEW,
-                PAGE_BEHAVIOUR
+                PAGE_BEHAVIOUR,
+                PAGE_ABOUT
         };
         Preference pref;
         for (String page : pages) {

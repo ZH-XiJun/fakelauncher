@@ -119,6 +119,10 @@
     <string name="pref_exit_dialer">在拨号盘里输暗码</string>
     <string name="pref_exit_password">在“输入安全密码”界面自定义密码</string>
 
+    <string name="pref_page_about">关于</string>
+    <string name="pref_page_about_summary">屎山代码作者：what_the_bruhhhh</string>
+    <string name="pref_jump_to_github">跳转至GitHub</string>
+
     <!-- Toast 消息 -->
     <string name="toast_open_settings_from_launcher">请从启动器打开设置，才能授权Dhizuku</string>
     <string name="toast_reopen_to_refresh">请重新打开本页面，以刷新授权情况</string>

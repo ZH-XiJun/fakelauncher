@@ -4,10 +4,10 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +18,7 @@ import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.video.FallbackStrategy;
 import androidx.camera.video.FileDescriptorOutputOptions;
+import androidx.camera.video.FileOutputOptions;
 import androidx.camera.video.PendingRecording;
 import androidx.camera.video.Quality;
 import androidx.camera.video.QualitySelector;
@@ -293,17 +294,16 @@ public class CameraFragment extends BaseFragment {
                     }
                 });
             } else {
+                captureTime = System.currentTimeMillis();
                 saveCapturedFile();
             }
         } else if (!mode) recording.stop();
     }
 
-    @SuppressLint("NewApi")
     private void saveCapturedFile() {
-        InputStream i = null;
-        OutputStream o = null;
         String time = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(captureTime);
         String filename;
+        DocumentFile destFile;
         try {
             // 从SharedPreferences拿到用户给我们授权访问的目录的Uri，作为照片存储目录
             // Get gallery URI granted by user for the save destination
@@ -323,32 +323,30 @@ public class CameraFragment extends BaseFragment {
             if (mode) {
                 // 拍照
                 filename = "IMG_" + time + ".jpg";
-                DocumentFile destFile = folder.createFile("image/jpeg", filename);
+                destFile = folder.createFile("image/jpeg", filename);
                 if (destFile == null) throw new IOException("Failed to create file for captured photo");
-
-                i = new FileInputStream(tempFile);
-                o = requireContext().getContentResolver().openOutputStream(destFile.getUri());
-                if (o == null) throw new NullPointerException("Got null OutputStream");
-
-                byte[] buffer = new byte[2048];
-                int byteRead;
-                while ((byteRead = i.read(buffer)) != -1) o.write(buffer, 0, byteRead);
-
-                i.close();
-                o.flush();
-                o.close();
+                copyFileFromCacheDir(destFile);
                 showSaveResultDialog(true);
             } else {
                 // 录像
                 filename = "VID_" + time + ".mp4";
-                DocumentFile destFile = folder.createFile("video/mp4", filename);
+
+                destFile = folder.createFile("video/mp4", filename);
                 if (destFile == null) throw new IOException("Failed to create file for recorded video");
-                ParcelFileDescriptor pfd = requireContext().getContentResolver().openFileDescriptor(destFile.getUri(), "w");
-                if (pfd == null) throw new IOException("Failed to get file descriptor for created file. File Uri: "+destFile.getUri());
 
-                FileDescriptorOutputOptions options = new FileDescriptorOutputOptions.Builder(pfd).build();
+                PendingRecording pr;
 
-                PendingRecording pr = recorder.prepareRecording(requireContext(), options);
+                // Output Options
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+                    tempFile = new File(requireContext().getCacheDir(), "temp.mp4");
+                    FileOutputOptions options = new FileOutputOptions.Builder(tempFile).build();
+                    pr = recorder.prepareRecording(requireContext(), options);
+                } else {
+                    ParcelFileDescriptor pfd = requireContext().getContentResolver().openFileDescriptor(destFile.getUri(), "w");
+                    if (pfd == null) throw new IOException("Failed to get file descriptor for created file. File Uri: "+destFile.getUri());
+                    FileDescriptorOutputOptions options = new FileDescriptorOutputOptions.Builder(pfd).build();
+                    pr = recorder.prepareRecording(requireContext(), options);
+                }
                 if (PrivilegeProvider.checkPermission(requireContext(), Manifest.permission.RECORD_AUDIO)) {
                     pr.withAudioEnabled();
                 }
@@ -360,7 +358,17 @@ public class CameraFragment extends BaseFragment {
                             } else if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
                                 isCapturing = false;
                                 setFooterBar(R_DEFAULT);
-                                showSaveResultDialog(!((VideoRecordEvent.Finalize) videoRecordEvent).hasError());
+                                if (((VideoRecordEvent.Finalize) videoRecordEvent).hasError()) showSaveResultDialog(false);
+                                else {
+                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                        try {
+                                            copyFileFromCacheDir(destFile);
+                                            showSaveResultDialog(true);
+                                        } catch (Exception e) {
+                                            showSaveResultDialog(false);
+                                        }
+                                    } else showSaveResultDialog(true);
+                                }
                                 if (recording != null) {
                                     recording.close();
                                     recording = null;
@@ -374,6 +382,25 @@ public class CameraFragment extends BaseFragment {
             isCapturing = false;
             showSaveResultDialog(false);
             Log.e(TAG, "Error on saving photo/video: "+e);
+        }
+    }
+
+    private void copyFileFromCacheDir(DocumentFile destFile) throws IOException {
+        InputStream i = null;
+        OutputStream o = null;
+        try {
+            i = new FileInputStream(tempFile);
+            o = requireContext().getContentResolver().openOutputStream(destFile.getUri());
+            if (o == null) throw new NullPointerException("Got null OutputStream");
+
+            byte[] buffer = new byte[2048];
+            int byteRead;
+            while ((byteRead = i.read(buffer)) != -1) o.write(buffer, 0, byteRead);
+
+            i.close();
+            o.flush();
+            o.close();
+            if (!tempFile.delete()) Log.w(TAG, "Failed to delete temp file");
         } finally {
             try {
                 if (i != null) i.close();

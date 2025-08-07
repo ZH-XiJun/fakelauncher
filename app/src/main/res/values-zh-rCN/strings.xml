@@ -3,6 +3,7 @@
     <!-- App -->
     <string name="app_settings_name">FakeL 设置</string>
     <string name="shortcut_name">启动伪装界面</string>
+    <string name="description_device_admin">设备管理员屁用没有，别搁这激活我</string>
     <!-- 电源连接状态 -->
     <string name="charging">正在充电</string>
     <string name="not_charging">未在充电</string>

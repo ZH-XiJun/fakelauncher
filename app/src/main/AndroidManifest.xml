@@ -87,6 +87,7 @@
         </receiver>
         <receiver
             android:name=".receiver.DeviceAdminReceiver"
+            android:description="@string/description_device_admin"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <intent-filter>

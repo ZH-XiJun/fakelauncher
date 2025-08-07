@@ -3,7 +3,8 @@
     <string name="app_name" translatable="false">fakelauncher</string>
     <string name="app_settings_name">FakeL Settings</string>
     <string name="shortcut_name">Open fake UI</string>
-    <string name="XposedDescription" translatable="false">通过Xposed触发屏幕固定以限制应用使其不可退出，从而达到伪装目的</string>
+    <string name="XposedDescription" translatable="false">通过Xposed触发屏幕固定以限制应用使其不可退出，从而达到伪装目的 | Trigger screen pinning through Xposed hook to let app unable to exit.</string>
+    <string name="description_device_admin">Do not active me at here because Device Admin is useless. Program needs Device Owner.</string>
     <!-- Power connection -->
     <string name="charging">Charging</string>
     <string name="not_charging">Unplugged</string>

@@ -73,7 +73,7 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 - [ ] Add Message page
 - [ ] ~~Video progress bar~~, select file in fullscreen photo view, option menu (Gallery)
 - [ ] Dpad action can be customized (Exit method)
-- [ ] ~~Camera can take photos~~ Video recording runs on Android 7 and below versions
+- [x] ~~Camera can take photos~~ Video recording runs on Android 7 and below versions
 - [ ] Dialer can make a phone call (Custom calling UI may not impossible)
 - [x] Lunar calender support
 - [x] Show battery percent through icons instead of accurate numbers

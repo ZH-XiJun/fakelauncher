@@ -50,20 +50,22 @@ public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView 
 
     @Override
     protected void onDraw(Canvas canvas) {
-        TextPaint wkPaint = getLayout().getPaint();
-        int preColor = wkPaint.getColor();
-        Paint.Style prePaintStyle = wkPaint.getStyle();
-        // apply stroke paint
-        wkPaint.setColor(strokeColor);
-        wkPaint.setStrokeWidth(strokeWidth);
-        wkPaint.setStyle(Paint.Style.STROKE);
-        // draw text outline
-        getLayout().draw(canvas);
+        try {
+            TextPaint wkPaint = getLayout().getPaint();
+            int preColor = wkPaint.getColor();
+            Paint.Style prePaintStyle = wkPaint.getStyle();
+            // apply stroke paint
+            wkPaint.setColor(strokeColor);
+            wkPaint.setStrokeWidth(strokeWidth);
+            wkPaint.setStyle(Paint.Style.STROKE);
+            // draw text outline
+            getLayout().draw(canvas);
 
-        // restore paint
-        wkPaint.setColor(preColor);
-        wkPaint.setStrokeWidth(0);
-        wkPaint.setStyle(prePaintStyle);
+            // restore paint
+            wkPaint.setColor(preColor);
+            wkPaint.setStrokeWidth(0);
+            wkPaint.setStyle(prePaintStyle);
+        } catch (Exception ignore) {}
         super.onDraw(canvas);
     }
 

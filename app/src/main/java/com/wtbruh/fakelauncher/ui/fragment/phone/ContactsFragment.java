@@ -61,20 +61,22 @@ public class ContactsFragment extends BaseFragment{
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        int position = adapter.getSelectedPosition();
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_UP -> {
-                if (position > 0) {
-                    contactsView.scrollToPosition(position - 1);
-                    adapter.setSelectedPosition(position - 1);
-                    return true;
+        if (adapter != null) {
+            int position = adapter.getSelectedPosition();
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_UP -> {
+                    if (position > 0) {
+                        contactsView.scrollToPosition(position - 1);
+                        adapter.setSelectedPosition(position - 1);
+                        return true;
+                    }
                 }
-            }
-            case KeyEvent.KEYCODE_DPAD_DOWN -> {
-                if (position < adapter.getItemCount() - 1) {
-                    contactsView.scrollToPosition(position + 1);
-                    adapter.setSelectedPosition(position + 1);
-                    return true;
+                case KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    if (position < adapter.getItemCount() - 1) {
+                        contactsView.scrollToPosition(position + 1);
+                        adapter.setSelectedPosition(position + 1);
+                        return true;
+                    }
                 }
             }
         }
@@ -93,7 +95,6 @@ public class ContactsFragment extends BaseFragment{
 
         contactsView.setLayoutManager(new LinearLayoutManager(requireContext()));
         contactsView.setFocusable(false);
-        // contactsView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         contactsView.setItemAnimator(null);
 
         adapter = new SingleTextviewAdapter(data);

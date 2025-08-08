@@ -65,24 +65,15 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 
 ## TO-DO
 
-- [ ] Release v0.2
-- [x] Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
+- [x] Release v0.2
 - [x] Support for old Android (Tested on Android 5.1, Android 13)
-- [x] Add "Star key unlock" feature
 - [ ] Add Media Player (MP3) UI style
 - [ ] ~~Add stroke text~~ Resizable text stroke width
-- [x] Add Contacts page
+- [ ] Complete Contacts page
 - [ ] Add Message page
 - [ ] ~~Video progress bar~~, select file in fullscreen photo view, option menu (Gallery)
 - [ ] Dpad action can be customized (Exit method)
-- [x] ~~Camera can take photos~~ Video recording runs on Android 7 and below versions
 - [ ] Dialer can make a phone call (Custom calling UI may not impossible)
-- [x] Lunar calender support
-- [x] Show battery percent through icons instead of accurate numbers
-- [x] ~~Deprecate the default font of Android, use a bitmap font instead~~ Bitmap font didn't reach my expectations, keep on using Roboto
-- [x] Add Gallery page
-- [x] Add more exit method, like typing a secret code in dialer, add a avaliable password in "Please input password" page, or customize key action in replace of default, to name but a few.
-- [x] Optimize the transmission of task id between UI part and Hook part (PinningApp uses `SettingsProvider`, as well as `adb shell settings put xxx`, UI part needs `WRITE_SECURE_SETTINGS` permission to set task id)
 
 ## Thanks
 - [Android](https://source.android.com/)

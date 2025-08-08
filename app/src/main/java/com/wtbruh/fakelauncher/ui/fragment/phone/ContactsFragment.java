@@ -84,7 +84,7 @@ public class ContactsFragment extends BaseFragment{
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
         contactsView = rootView.findViewById(R.id.contacts);
-        if (!PrivilegeProvider.checkPermission(getContext(), Manifest.permission.READ_CONTACTS) || (data = getBasicContact()) == null) {
+        if (!PrivilegeProvider.checkPermission(getContext(), Manifest.permission.READ_CONTACTS) || (data = getBasicContact()) == null || data.isEmpty()) {
             noContact();
             return;
         }

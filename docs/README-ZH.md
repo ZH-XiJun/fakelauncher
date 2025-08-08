@@ -1,5 +1,5 @@
 <div align="center">
-<img src="readme-assets/app-icon.png" width=128 />
+<img src="readme-assets/app-icon.png" width=174 alt="App图标"/>
 
 ## fakelauncher
 *你自己看，这绝对是个老人机，不是智能机啊*
@@ -28,12 +28,12 @@
 
 ![TCL T508N](readme-assets/E1.jpg)
 
-| 项目 | 参数 |
-| --- | --- |
-| 名称 | TCL onetouch E1 5G |
-| 代号 | T508N |
-| SoC | Unisoc T157 (ums9620) |
-| Android 版本 | 13 Tiramisu |
+| 项目         | 参数                    |
+|------------|-----------------------|
+| 名称         | TCL onetouch E1 5G    |
+| 代号         | T508N                 |
+| SoC        | Unisoc T157 (ums9620) |
+| Android 版本 | 13 Tiramisu           |
 
 </div>
 
@@ -60,6 +60,7 @@
 
 ## TO-DO
 
+- [ ] 发布v0.2
 - [x] 尝试适配Dhizuku，Shizuku等授权器，从而实现免root支持
 - [x] 远古安卓支持（已测试安卓5.1和安卓13）
 - [x] 加入“*键解锁”
@@ -69,7 +70,7 @@
 - [ ] 加入短信页面
 - [ ] ~~视频的进度条~~，照片全屏浏览时可以左右换照片，选项菜单（相册）
 - [ ] Dpad操作可以自定义（退出方法）
-- [ ] ~~相机能拍照~~ 录像功能在安卓8以下版本可用
+- [x] ~~相机能拍照~~ 录像功能在安卓8以下版本可用
 - [ ] 拨号盘可以打电话（但是自定义打电话的界面可能做不到）
 - [x] 农历显示支持
 - [x] 优化电量显示，以图标形式呈现，不显示具体电量

@@ -1,5 +1,5 @@
 <div align="center">
-<img src="readme-assets/app-icon.png" width=128 />
+<img src="readme-assets/app-icon.png" width=174 alt="App icon"/>
 
 ## fakelauncher
 *I swear, it is really just a feature phone, not a smart phone!*
@@ -30,12 +30,12 @@ Here's a feature-phone-like smart phone appears in China:
 
 ![TCL T508N](readme-assets/E1.jpg)
 
-| Item | Value |
-| --- | --- |
-| Name | TCL onetouch E1 5G |
-| Code | T508N |
-| SoC | Unisoc T157 (ums9620) |
-| Android ver. | 13 Tiramisu |
+| Item         | Value                 |
+|--------------|-----------------------|
+| Name         | TCL onetouch E1 5G    |
+| Code         | T508N                 |
+| SoC          | Unisoc T157 (ums9620) |
+| Android ver. | 13 Tiramisu           |
 
 </div>
 
@@ -64,6 +64,7 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 
 ## TO-DO
 
+- [ ] Release v0.2
 - [x] Add support for other privillege providers, like Shizuku, Dhizuku, thus achieving rootless support
 - [x] Support for old Android (Tested on Android 5.1, Android 13)
 - [x] Add "Star key unlock" feature

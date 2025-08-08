@@ -1,7 +1,8 @@
 <div align="center">
 <img src="readme-assets/app-icon.png" width=174 alt="App图标"/>
 
-## fakelauncher
+## fakelauncher ![GitHub Release](https://img.shields.io/github/v/release/ZH-XiJun/fakelauncher?include_prereleases)
+
 *你自己看，这绝对是个老人机，不是智能机啊*
 
 **把你的伪老机（老人机外貌但是有智能系统）伪装成一个真正的老人机**

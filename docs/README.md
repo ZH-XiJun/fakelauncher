@@ -1,7 +1,8 @@
 <div align="center">
 <img src="readme-assets/app-icon.png" width=174 alt="App icon"/>
 
-## fakelauncher
+## fakelauncher ![GitHub Release](https://img.shields.io/github/v/release/ZH-XiJun/fakelauncher?include_prereleases)
+
 *I swear, it is really just a feature phone, not a smart phone!*
 
 **Disguise your feature-phone-like smart phone (feature phone style but uses Android system) as a real feature phone.**

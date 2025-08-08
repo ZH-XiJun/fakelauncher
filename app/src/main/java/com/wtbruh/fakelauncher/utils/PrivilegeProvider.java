@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -386,8 +387,12 @@ public class PrivilegeProvider {
 
             return processOutput(ps, "gbk");
         } catch (IOException | InterruptedException e) {
-            // todo: error handling is too rude
-            throw new RuntimeException(e);
+            Log.e(TAG, "An error occurred when executing commands: ",e);
+            Bundle bundle = new Bundle();
+            bundle.putString(CMD_STDOUT, "");
+            bundle.putString(CMD_STDERR, Arrays.toString(e.getStackTrace()));
+            bundle.putInt(CMD_RESULT_CODE, 1);
+            return bundle;
         }
     }
 

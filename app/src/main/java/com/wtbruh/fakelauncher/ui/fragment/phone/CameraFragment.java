@@ -117,7 +117,7 @@ public class CameraFragment extends BaseFragment {
                 startCamera();
             }
             case KeyEvent.KEYCODE_MENU -> {
-                if (! isCapturing) {
+                if (!isCapturing) {
                     if (cameraView.getVisibility() == VISIBLE) {
                         showOptionMenu();
                     } else if (capturePreview.getVisibility() == VISIBLE) {
@@ -127,7 +127,7 @@ public class CameraFragment extends BaseFragment {
             }
             case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> capture();
             case KeyEvent.KEYCODE_BACK -> {
-                if (capturePreview.getVisibility() == VISIBLE) {
+                if (capturePreview != null && capturePreview.getVisibility() == VISIBLE) {
                     capturePreview.setVisibility(GONE);
                     cameraView.setVisibility(VISIBLE);
                     setDefaultFooterBar();

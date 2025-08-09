@@ -211,23 +211,6 @@ public abstract class HookHelper extends LogHelper {
                 Object[] newArray = new Object[parameterTypesAndCallback.length - 1];
                 System.arraycopy(parameterTypesAndCallback, 0, newArray, 0, newArray.length);
                 getDeclaredMethod(clazz, methodName, newArray);
-                /*旧实现*/
-                /*Class<?>[] classes = new Class<?>[newArray.length];
-                Class<?> newclass = null;
-                for (int i = 0; i < newArray.length; i++) {
-                    Object type = newArray[i];
-                    if (type instanceof Class) {
-                        newclass = (Class<?>) newArray[i];
-                    } else if (type instanceof String) {
-                        newclass = findClassIfExists((String) type);
-                        if (newclass == null) {
-                            logE(tag, "class can't is null class:" + clazz + " method: " + methodName);
-                            return;
-                        }
-                    }
-                    classes[i] = newclass;
-                }
-                checkDeclaredMethod(clazz, methodName, classes);*/
             }
             XposedHelpers.findAndHookMethod(clazz, methodName, parameterTypesAndCallback);
             logI(tag, "Hook: " + clazz + " method: " + methodName);

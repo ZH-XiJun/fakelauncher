@@ -315,10 +315,8 @@ public class PinningHook extends HookHelper {
                         if (top != null) {
                             if ((top.getPackageName().equals("com.wtbruh.fakelauncher") && !fakelauncher.equals(top))) {
                                 param.setResult(true);
-                                return;
                             }
                         }
-                        param.setResult(false);
                     }
                 });
 

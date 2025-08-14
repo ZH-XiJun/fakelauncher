@@ -164,6 +164,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             // Start pin mode 启用屏幕固定
             setLockApp(MainActivity.this, getTaskId());
         }
+        // Disable touch screen
+        UIHelper.touchscreenController(false, this);
     }
 
     /**
@@ -204,6 +206,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         receiverRegister(false);
         // 停止计时任务 Stop timer
         if (mTimer != null) mTimer.cancel();
+        // Enable touch screen
+        UIHelper.touchscreenController(true, this);
         super.onDestroy();
     }
 

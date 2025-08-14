@@ -19,6 +19,8 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 
+import java.io.File;
+
 public class UIHelper {
     private static long lastTriggerTime = 0;
     private static final long DEBOUNCE_TIME = 300;

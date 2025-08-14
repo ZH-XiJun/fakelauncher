@@ -30,9 +30,9 @@ public class UIHelper {
      * 为程序内需要输入文本的场景而自定义的小输入法，<br>
      * 接受Back键、*#键和0~9键</p>
      *
-     * @param keyCode 输入的键值
-     * @param content 输入前文本框里的文本内容
-     * @return 最终文本内容
+     * @param keyCode 输入的键值 | the keycode user input
+     * @param content 输入前文本框里的文本内容 | current content in TextView
+     * @return 最终文本内容 | final content
      */
     public static String textEditor(int keyCode, String content) {
         return switch (keyCode) {
@@ -49,9 +49,9 @@ public class UIHelper {
     /**
      * 检查用户当前设置的退出方式
      *
-     * @param context 上下文
-     * @param expected 预期的退出方式
-     * @return 如果与预期不符，返回false，否则返回true
+     * @param context 上下文 | Context object
+     * @param expected 预期的退出方式 | the exit method you expected
+     * @return 如果与预期不符，返回false，否则返回true | If it does not match the expectations, return false, or return true
      */
     public static boolean checkExitMethod(Context context, int expected) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -65,8 +65,8 @@ public class UIHelper {
      * <p>Simple package for starting intent<br>
      * 启动intent的简单封装</p>
      *
-     * @param activity 你的Activity对象
-     * @param cls 要启动的Activity的class
+     * @param activity 你的Activity对象 | the current activity
+     * @param cls 要启动的Activity的class | the class object of the activity you wanna launch
      */
     public static void intentStarter(Activity activity, Class<?> cls) {
         if (intentStarterDebounce(cls)) return;
@@ -84,8 +84,8 @@ public class UIHelper {
      * <p>Prevent calling intentStarter too frequently<br>
      * 防止过于频繁地调用intentStarter</p>
      *
-     * @param cls 要启动的Activity的class
-     * @return true为调用过于频繁，false为调用频率正常
+     * @param cls 要启动的Activity的class | the class object of the activity you wanna launch
+     * @return true为调用过于频繁，false为调用频率正常 | true means too frequently, false means normal
      */
     public static boolean intentStarterDebounce(Class<?> cls){
         // Only trigger intent starter at regularly intervals
@@ -101,9 +101,9 @@ public class UIHelper {
      * <h3>Custom dialog | 自定义弹窗</h3>
      * <p>Imitate the style of dialog in feature phone<br>
      * 模仿老人机的弹窗样式</p>
-     * @param context 上下文
-     * @param msgResId 要显示的文本的资源id
-     * @param listener 按键监听器
+     * @param context 上下文 | Context object
+     * @param msgResId 要显示的文本的资源id | the resources id of message texts
+     * @param listener 按键监听器 | key listener
      */
     public static Dialog showCustomDialog(Context context, int msgResId, DialogInterface.OnKeyListener listener) {
         // Load custom layout
@@ -134,5 +134,32 @@ public class UIHelper {
             if (dialog.isShowing()) dialog.dismiss();
         }, 3000);
         return dialog;
+    }
+
+    /**
+     * Disable touchscreen through moving files in /dev/input<br>
+     * 通过变动/dev/input内的文件来实现禁用触控
+     * @param mode true为启用触控，false为禁用触控 | true means enable touch, false means disable touch
+     * @param context 上下文对象 | Context object
+     */
+    public static void touchscreenController(boolean mode, Context context) {
+        File dir = context.getFilesDir().getAbsoluteFile();
+        String dirPath = dir.getPath();
+        File input = new File(dir, "input");
+        boolean isInputExists = input.exists();
+        String[] disable_cmd = {
+                "cp -pr /dev/input/ " + dirPath,
+                "rm $(getevent -pl 2>&1 | sed -n '/^add/{h}/ABS_MT_TOUCH/{x;s/[^/]*//p}')"
+        };
+        String[] enable_cmd = {
+                "cp -pr " + dirPath + "/input /dev",
+                "rm -rf " + dirPath + "/input"
+        };
+        if (mode && isInputExists) {
+            PrivilegeProvider.runCommand(PrivilegeProvider.METHOD_ROOT, enable_cmd);
+        } else if (!mode && !isInputExists) {
+            PrivilegeProvider.runCommand(PrivilegeProvider.METHOD_ROOT, disable_cmd);
+        }
+
     }
 }

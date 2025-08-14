@@ -67,7 +67,7 @@ Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp)
 
 - [x] Release v0.2
 - [x] Support for old Android (Tested on Android 5.1, Android 13)
-- [ ] Disable touch at system level (Software level at present, preventing touchable elements from appearing)
+- [x] Disable touch at system level (Software level at present, preventing touchable elements from appearing) (thx maidang2233)
 - [ ] Add Media Player (MP3) UI style
 - [ ] ~~Add stroke text~~ Resizable text stroke width
 - [ ] Complete Contacts page

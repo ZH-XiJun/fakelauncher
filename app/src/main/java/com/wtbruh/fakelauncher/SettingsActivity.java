@@ -24,6 +24,7 @@ import com.wtbruh.fakelauncher.ui.fragment.settings.AboutFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +57,10 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void openSubSettings(String page) {
+        if (page.equals(SettingsFragment.PAGE_OPEN_FAKEUI)) {
+            UIHelper.intentStarter(this, SplashActivity.class);
+            return;
+        }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(
                 R.anim.slide_up, // 进入动画

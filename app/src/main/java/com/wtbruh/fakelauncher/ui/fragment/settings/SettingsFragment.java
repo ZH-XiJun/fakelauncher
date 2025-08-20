@@ -1,6 +1,7 @@
 package com.wtbruh.fakelauncher.ui.fragment.settings;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,12 +17,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     public final static String PAGE_VIEW = "view";
     public final static String PAGE_BEHAVIOUR = "behaviour";
     public final static String PAGE_ABOUT = "about";
+    public final static String PAGE_OPEN_FAKEUI = "fakeui";
 
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setPreferencesFromResource(R.xml.preference_index, rootKey);
         String[] pages = {
+                PAGE_OPEN_FAKEUI,
                 PAGE_PERMISSION,
                 PAGE_VIEW,
                 PAGE_BEHAVIOUR,

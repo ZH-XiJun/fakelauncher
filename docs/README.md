@@ -55,6 +55,8 @@ As a result, `fakelauncher` is developed by me to solve this problem.
 3. Use a key mapping app (For example, `Xposed Edge Pro`) and bind a key to launch fakelauncher (com.wtbruh.fakelauncher.SplashActivity). After launching it, you will be brought to a feature-phone like UI
 4. If you want to exit, go to main screen, and press DPAD keys: Up, Up, Down, Down, Left, Right, Left, Right. Program will exit after pressing these keys.
 
+If requiring a video tutorial, jump to [Bilibili](https://www.bilibili.com/video/BV1AweqzjEJj)
+
 ## How does it work?
 
 Take a look of a function that natively supported by Android: [Screen Pinning](https://support.google.com/android/answer/9455138)
@@ -63,13 +65,25 @@ That's why the App can disable status bar and prevent you from exiting itself an
 
 Specially thanks the program: [PinningApp](https://github.com/HChenX/PinningApp), a number of codes related to Screen Pinning were used for reference.
 
+## Downloads
+
+> [!Note]
+> CI build version can get the newest experience but may not stable. 
+> 
+> Note for those who new to Github: downloading CI builds [requires a Github account.](https://github.com/signup)
+
+Release version: [![GitHub Release](https://img.shields.io/github/v/release/ZH-XiJun/fakelauncher?include_prereleases)](https://github.com/zh-xijun/fakelauncher/releases)
+
+CI build version: [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/zh-xijun/fakelauncher/android.yml)](https://github.com/zh-xijun/fakelauncher/actions/workflows/android.yml)
+
 ## TO-DO
 
 - [x] Release v0.2
 - [x] Support for old Android (Tested on Android 5.1, Android 13)
 - [x] Disable touch at system level (Software level at present, preventing touchable elements from appearing) (thx maidang2233)
 - [ ] Add Media Player (MP3) UI style
-- [ ] ~~Add stroke text~~ Resizable text stroke width
+- [x] ~~Add stroke text~~ Resizable text stroke width
+- [ ] Resizable elements of main UI
 - [ ] Complete Contacts page
 - [ ] Add Message page
 - [ ] ~~Video progress bar~~, select file in fullscreen photo view, option menu (Gallery)

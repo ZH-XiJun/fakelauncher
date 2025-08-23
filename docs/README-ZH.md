@@ -51,6 +51,8 @@
 3. 随便找个按键映射软件（例如`Xposed Edge Pro`）然后绑定个按键用来启动fakelauncher (com.wtbruh.fakelauncher.SplashActivity)。搞好之后，你就获得了一个老人机界面
 4. 如果你想退出去，在主屏幕按Dpad键：上上下下左右左右 就可以出去了
 
+如需视频教程，可前往[Bilibili](https://www.bilibili.com/video/BV1AweqzjEJj)查看
+
 ## 工作原理
 
 先看看安卓原生支持的一个功能：[屏幕固定](https://support.google.com/android/answer/9455138)，但是国内可能访问不了
@@ -59,13 +61,25 @@
 
 在此特别感谢开源项目：[PinningApp](https://github.com/HChenX/PinningApp)，屏幕固定相关的代码基本都抄的他的
 
+## 下载
+
+> [!Note]
+> CI自动构建的版本可以尝鲜到最新功能，但可能不稳定
+>
+> 提醒下没用过Github的：下载CI构建版本[需要一个Github帐号](https://github.com/signup)
+
+正式版：[![GitHub Release](https://img.shields.io/github/v/release/ZH-XiJun/fakelauncher?include_prereleases)](https://github.com/zh-xijun/fakelauncher/releases)
+
+CI构建版：[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/zh-xijun/fakelauncher/android.yml)](https://github.com/zh-xijun/fakelauncher/actions/workflows/android.yml)
+
 ## TO-DO
 
-- [x] 发布v0.2
+- [ ] 发布v0.3
 - [x] 远古安卓支持（已测试安卓5.1和安卓13）
 - [x] 在系统层面上屏蔽触控（目前是在软件层面，避免任何可触控的控件出现）（感谢maidang2233）
 - [ ] 加入MP3界面样式
-- [ ] ~~加入描边字体~~ 字体描边宽度可调整
+- [x] ~~加入描边字体~~ 字体描边宽度可调整
+- [ ] 主界面的界面大小可调
 - [ ] 完善联系人页面
 - [ ] 加入短信页面
 - [ ] ~~视频的进度条~~，照片全屏浏览时可以左右换照片，选项菜单（相册）

@@ -16,4 +16,8 @@
         android:key="show_accurate_battery"
         android:title="@string/pref_show_accurate_battery"
         android:summary="@string/pref_show_accurate_battery_summary" />
+    <Preference
+        android:key="text_stroke_width"
+        android:title="@string/pref_text_stroke_width"
+        android:summary="@string/pref_text_stroke_width_summary" />
 </PreferenceScreen>

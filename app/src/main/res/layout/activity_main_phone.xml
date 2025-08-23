@@ -25,6 +25,7 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         android:theme="@style/Theme.FakeLauncher"
+        android:tag="resizable_height"
         app:autoSizeMaxTextSize="144dp"
         app:autoSizeMinTextSize="72dp"
         app:autoSizeTextType="uniform"
@@ -43,6 +44,7 @@
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
+        android:tag="resizable_height"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/lunarDate"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,6 +62,7 @@
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
+        android:tag="resizable_height"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/statusBar_simCard"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,6 +77,7 @@
         android:layout_height="75dp"
         android:gravity="center"
         android:visibility="invisible"
+        android:tag="resizable_height"
         app:layout_constraintTop_toTopOf="@+id/lunarDate">
 
         <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
@@ -158,6 +162,7 @@
             android:textAlignment="viewStart"
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:tag="resizable_height"
             app:autoSizeTextType="uniform"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3" />
@@ -170,6 +175,7 @@
             android:textAlignment="viewStart"
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:tag="resizable_height|stroke"
             app:autoSizeTextType="uniform"
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3" />

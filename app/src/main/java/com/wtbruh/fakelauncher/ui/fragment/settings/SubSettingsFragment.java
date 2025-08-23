@@ -17,6 +17,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.SeekBar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -30,6 +33,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
+import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -61,6 +65,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
     public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
     // todo: public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
+    public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
 
     public SubSettingsFragment() {
     }
@@ -177,6 +182,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 // titleResId = R.string.pref_page_permissions;
                 break;
             case SettingsFragment.PAGE_VIEW:
+                clickablePrefs = new String[]{
+                        PREF_TEXT_STROKE_WIDTH
+                };
                 setupPrefs = new String[]{
                         PREF_STYLE
                 };
@@ -397,13 +405,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
     @Override
     public boolean onPreferenceClick(Preference pref) {
-        SharedPreferences defaultPref = pref.getSharedPreferences();
-        if (defaultPref == null) return false;
+        SharedPreferences sp = pref.getSharedPreferences();
+        if (sp == null) return false;
         String key = pref.getKey();
         String value;
         switch (key) {
             case PREF_CHECK_PRIVILEGE -> {
-                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
+                value = sp.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {
                     if (!"None".equals(value)) {
                         boolean isGranted = PrivilegeProvider.checkPrivilege(PrivilegeProvider.privilegeToInt(value));
@@ -424,7 +432,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case PREF_PERMISSION_GRANT_STATUS ->
                     UIHelper.intentStarter(requireActivity(), SettingsActivity.PermissionStatus.class);
             case PREF_GRANT_ALL_PERMISSIONS -> {
-                value = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
+                value = sp.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {
                     PrivilegeProvider.requestAllPermissions(requireActivity(), PrivilegeProvider.privilegeToInt(value));
                     requireActivity().runOnUiThread(() -> {
@@ -457,6 +465,31 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             }
             case PREF_GALLERY_ACCESS ->
                     SAFlauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+            case PREF_TEXT_STROKE_WIDTH -> {
+                View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_stroke_text, null);
+                StrokeTextView preview = view.findViewById(R.id.strokeTextPreview);
+                SeekBar bar = view.findViewById(R.id.strokeSeekBar);
+
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+                builder.setTitle(R.string.pref_text_stroke_width)
+                        .setView(view)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> sp.edit().putInt(key, bar.getProgress()).apply())
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .create().show();
+
+                bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        preview.setStrokeWidth(i);
+                    }
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {}
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {}
+                });
+
+                bar.setProgress(sp.getInt(key, 3));
+            }
         }
         return false;
     }

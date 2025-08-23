@@ -112,6 +112,10 @@
     <string name="pref_time_show_seconds_summary">Time display will be accurate to seconds</string>
     <string name="pref_show_accurate_battery">Show accurate battery percent</string>
     <string name="pref_show_accurate_battery_summary">Battery icon will be hidden at the same time</string>
+    <string name="pref_main_ui_height_scale">Main UI zoom scale</string>
+    <string name="pref_main_ui_height_scale_summary">Adjusting the size of elements on main UI</string>
+    <string name="pref_text_stroke_width">Text stroke width</string>
+    <string name="pref_text_stroke_width_summary">Adjusting the width of texts on main UI</string>
 
     <string name="pref_page_behaviour">Behaviour</string>
     <string name="pref_page_behaviour_summary">Control some behaviours of the program</string>

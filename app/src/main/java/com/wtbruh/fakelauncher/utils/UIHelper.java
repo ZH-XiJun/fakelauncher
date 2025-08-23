@@ -117,7 +117,7 @@ public class UIHelper {
         messageTv.setText(msgResId);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_FakeLauncher_Dialog);
-        AlertDialog dialog =  builder.setView(view).create();
+        AlertDialog dialog = builder.setView(view).create();
         // Touch event is not allowed
         // 杜绝触屏操作，不然穿帮了
         dialog.setCanceledOnTouchOutside(false);

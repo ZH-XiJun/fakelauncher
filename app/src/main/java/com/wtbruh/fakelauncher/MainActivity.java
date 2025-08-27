@@ -1,5 +1,7 @@
 package com.wtbruh.fakelauncher;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -17,6 +19,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -33,6 +36,7 @@ import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
 import com.wtbruh.fakelauncher.utils.ApplicationHelper;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.LunarCalender;
@@ -49,46 +53,53 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends BaseAppCompatActivity implements PowerConnectionReceiver.getStat, ScreenObserver.ScreenStateListener {
+
+    // extra args 额外参数
+    public final static String
+            EXTRA_PREVIEW = "preview",
+            EXTRA_EXIT = "exit";
+
+    // UI style
+    public final static String
+            STYLE_PHONE = "phone",
+            STYLE_PLAYER = "player";
+    private String mStyle;
+
     private Dialog dialog;
     // date
-    private final static int TIME = 0;
-    private final static int DATE = 1;
-    private final static int WEEK = 2;
+    private final static int TIME = 0, DATE = 1, WEEK = 2;
 
     // battery
-    private int batteryLevel;
+    private int mBatteryLevel;
     private final static int[] batteryIcons = {
             R.drawable.ic_battery_1,
             R.drawable.ic_battery_2,
             R.drawable.ic_battery_3,
             R.drawable.ic_battery_4
     };
-    private boolean mCharging = false;
-    private boolean mAccurateBattery = false;
+    private boolean mCharging = false, mShowAccurateBattery = false;
 
     // 广播接收器 Broadcast receiver
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
     private boolean mReceiverRegistered = false;
 
-    // UI style
-    private String mStyle;
-    private String[] mStyles;
-
     // is screen off 是否熄屏
-    private boolean isLocked = false;
+    private boolean mLocked = false;
 
     // key long press check 按键长按检查
-    private boolean isKeyLongPressed = false;
+    private boolean mKeyLongPressed = false;
+
+    // preview mode 预览模式
+    private boolean mPreviewMode = false;
 
     // Regularly refresh data
     // 计时任务
-    private String previousDate;
-    private String previousTime;
-    private int previousBattery;
+    private String mPreviousDate, previousTime;
+    private int mPreviousBattery;
     private Timer mTimer;
 
     // key count 按键计数
-    private int count = 0;
+    private int mKeyCount = 0;
 
     // Device owner
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
@@ -103,10 +114,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
         // Switch UI style
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        mStyles = getResources().getStringArray(R.array.pref_style);
         String mDefaultStyle = getResources().getString(R.string.pref_style_default);
         mStyle = pref.getString(SubSettingsFragment.PREF_STYLE, mDefaultStyle);
-        if (mStyle.equals(mStyles[1])) {
+        if (mStyle.equals(STYLE_PLAYER)) {
             setContentView(R.layout.activity_main_player);
         } else {
             setContentView(R.layout.activity_main_phone);
@@ -117,7 +127,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        init();
+        // If expected preview, only initialize UI
+        // 如果只需要预览，就只做UI初始化
+        if (getIntent().getBooleanExtra(EXTRA_PREVIEW, false)) {
+            mPreviewMode = true;
+            initUI();
+        }
+        else init();
     }
 
     /**
@@ -126,37 +142,17 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private void init() {
         Log.d(TAG, "Now start init, UI style: " + mStyle);
         // Common init 通用初始化代码
-        // 时间字体大小自适应适配
-        TextView time = findViewById(R.id.time);
-        time.post(() -> {
-            TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
-            // 获取缩放后的字体大小
-            float textSize = time.getTextSize(); // 单位：px
-            Log.d(TAG, "now text size: " + textSize);
-            time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
-            time.requestLayout();
-        });
-        batteryAccurate();
-        // Start timer 启动计时任务
-        updateInfo();
+        // Manually get battery 手动获取电池电量
+        setBattery();
         // Register the receiver 注册接收器
         receiverRegister(true);
         // Manually get connection status 手动获取连接状态
         getConnectionStatus();
-        if (mStyle.equals(mStyles[1])) {
+        // Start timer 启动计时任务
+        updateInfo();
+        if (mStyle.equals(STYLE_PLAYER)) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
-            View cardLogo = findViewById(R.id.cardLogo);
-            cardLogo.post(() -> {
-                cardLogo.getLayoutParams().width = cardLogo.getHeight() * 11/28;
-                cardLogo.requestLayout();
-            });
-            TelephonyHelper mTelHelper = new TelephonyHelper(this);
-            TextView card1 = findViewById(R.id.card1_provider);
-            TextView card2 = findViewById(R.id.card2_provider);
-            card1.setText(mTelHelper.getProvidersName(0));
-            card2.setText(mTelHelper.getProvidersName(1));
-
             ScreenObserver screenObserver = new ScreenObserver(this);
             screenObserver.startScreenObserver(this);
 
@@ -164,8 +160,50 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             // Start pin mode 启用屏幕固定
             setLockApp(MainActivity.this, getTaskId());
         }
+        // UI init
+        initUI();
         // Disable touch screen
         UIHelper.touchscreenController(false, this);
+    }
+
+    /**
+     * Init of MainActivity user interface | MainActivity 用户界面初始化
+     */
+    private void initUI() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        float scale = (float) sp.getInt(SubSettingsFragment.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
+        batteryAccurate();
+        if (mStyle.equals(STYLE_PLAYER)) {
+            // todo: mp3 ui init
+        } else { // Default/Fallback: feature phone UI
+            TelephonyHelper mTelHelper = new TelephonyHelper(this);
+            StrokeTextView
+                    card1 = findViewById(R.id.card1_provider),
+                    card2 = findViewById(R.id.card2_provider);
+            card1.setText(mTelHelper.getProvidersName(0));
+            card2.setText(mTelHelper.getProvidersName(1));
+        }
+        // Common init 通用初始化代码
+        // 时间字体大小自适应适配
+        TextView time = findViewById(R.id.time);
+        time.post(() -> {
+            boolean pref = sp.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
+            time.setText(pref? "11:45:14" : "19:19" );
+            time.getLayoutParams().height = (int) (time.getHeight() * scale);
+            time.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
+                    // 获取缩放后的字体大小
+                    float textSize = time.getTextSize(); // 单位：px
+                    Log.d(TAG, "now text size: " + textSize);
+                    time.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
+                    time.requestLayout();
+                }
+            });
+            time.requestLayout();
+        });
     }
 
     /**
@@ -174,8 +212,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     @Override
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
-        Log.d(TAG, "Repeatedly launched MainActivity, it's time to do exit");
-        exit();
+        boolean isExit = intent.getBooleanExtra(EXTRA_EXIT, false);
+        if (isExit) exit();
     }
 
     /**
@@ -219,11 +257,11 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (mStyle.equals(mStyles[0])) {
+        if (mStyle.equals(STYLE_PHONE)) {
             // Star key long press detection
             // 长按星键检测
-            if (isLocked && keyCode == KeyEvent.KEYCODE_STAR && event.getRepeatCount() >= 2) {
-                isKeyLongPressed = true;
+            if (mLocked && keyCode == KeyEvent.KEYCODE_STAR && event.getRepeatCount() >= 2) {
+                mKeyLongPressed = true;
                 onUnlocked();
             }
         }
@@ -232,8 +270,11 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (mStyle.equals(mStyles[0])) {
-            if (isLocked) { // 需要解锁的情况 Need star key unlock
+        if (mPreviewMode) {
+            return super.onKeyUp(keyCode, event);
+        }
+        if (mStyle.equals(STYLE_PHONE)) {
+            if (mLocked) { // 需要解锁的情况 Need star key unlock
                 if (keyCode == KeyEvent.KEYCODE_MENU) {
                     dialog = UIHelper.showCustomDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
                         if (keyCode1 == KeyEvent.KEYCODE_STAR) {
@@ -242,11 +283,11 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                         return false;
                     });
                 } else {
-                    if (!isKeyLongPressed)
+                    if (!mKeyLongPressed)
                         dialog = UIHelper.showCustomDialog(this, R.string.dialog_long_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
                             if (keyCode1 != KeyEvent.KEYCODE_BACK) {
                                 if (keyEvent.getRepeatCount() >= 2) {
-                                    isKeyLongPressed = true;
+                                    mKeyLongPressed = true;
                                     onUnlocked();
                                 }
                             }
@@ -257,17 +298,17 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 // The codes below will not be executed. Only show dialog
                 return super.onKeyUp(keyCode, event);
             }
-            if (isKeyLongPressed) {
-                isKeyLongPressed = false;
+            if (mKeyLongPressed) {
+                mKeyLongPressed = false;
                 return true;
             }
             // Unlocked 已解锁后
             counter(keyCode);
             if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-                    SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-                    boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false);
-                    if (!pref) return super.onKeyUp(keyCode, event);
+                    if (!PreferenceManager.getDefaultSharedPreferences(this)
+                            .getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false)
+                    ) return super.onKeyUp(keyCode, event);
                 }
                 // Open menu UI
                 // 打开菜单界面
@@ -328,7 +369,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         };
     }
 
-
     /**
      * Xposed 模块自检测
      * @return 如果已激活，返回结果会被hook修改为true
@@ -350,7 +390,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private void onLocked() {
         String topActivity = ApplicationHelper.topActivity;
         if (topActivity != null) if (!topActivity.contains(MainActivity.class.getSimpleName())) return;
-        isLocked = true;
+        mLocked = true;
         setFooterBar(R.string.unlock_leftButton);
     }
     private void onUnlocked() {
@@ -360,7 +400,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (dialog != null && dialog.isShowing()) dialog.dismiss();
         dialog = dialog2;
         setFooterBar(R.string.main_leftButton);
-        isLocked = false;
+        mLocked = false;
     }
 
     /**
@@ -382,7 +422,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 break;
             }
             case DATE: {
-                String pattern = mStyles[1].equals(mStyle) ? "yyyy-MM-dd" : getResources().getString(R.string.date_format);
+                String pattern = STYLE_PLAYER.equals(mStyle) ? "yyyy-MM-dd" : getResources().getString(R.string.date_format);
                 format = new SimpleDateFormat(pattern, Locale.getDefault());
                 break;
             }
@@ -404,24 +444,24 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             @Override
             public void run() {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    TextView timeView = findViewById(R.id.time);
-                    TextView dateView = findViewById(R.id.date);
-                    TextView lunarView = findViewById(R.id.lunarDate);
-                    TextView weekView = mStyles[1].equals(mStyle) ? findViewById(R.id.week) : null;
-                    String time = getTime(TIME);
-                    String date = getTime(DATE);
+                    TextView timeView = findViewById(R.id.time), 
+                            dateView = findViewById(R.id.date),
+                            lunarView = findViewById(R.id.lunarDate),
+                            weekView = STYLE_PLAYER.equals(mStyle) ? findViewById(R.id.week) : null;
+                    String time = getTime(TIME),
+                            date = getTime(DATE);
                     int battery = getBattery();
                     if (!time.equals(previousTime)) {
                         timeView.setText(time);
                         previousTime = time;
                     }
-                    if (!date.equals(previousDate)) {
+                    if (!date.equals(mPreviousDate)) {
                         if (weekView != null) weekView.setText(getTime(WEEK));
                         if (lunarView != null) lunarView.setText(LunarCalender.getLunarString(LunarCalender.getDateArray()));
                         dateView.setText(date);
-                        previousDate = date;
+                        mPreviousDate = date;
                     }
-                    if (battery != previousBattery) {
+                    if (battery != mPreviousBattery) {
                         setBattery(battery);
                     }
                 });
@@ -430,24 +470,28 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     }
     @SuppressLint("SetTextI18n")
     private void setBattery(int battery) {
-        if (mStyle.equals(mStyles[1])) {
+        if (mStyle.equals(STYLE_PLAYER)) {
             TextView battery_view = findViewById(R.id.battery);
             battery_view.setText(battery+"%");
         }
-        else if (mStyle.equals(mStyles[0])) {
-            if (mAccurateBattery) {
+        else if (mStyle.equals(STYLE_PHONE)) {
+            if (mShowAccurateBattery) {
                 TextView battery_view = findViewById(R.id.battery);
                 battery_view.setText(battery+"%");
             } else {
-                if (battery >= 75) batteryLevel = 3;
-                else if (battery >= 50) batteryLevel = 2;
-                else if (battery >= 25) batteryLevel = 1;
-                else batteryLevel = 0;
+                if (battery >= 75) mBatteryLevel = 3;
+                else if (battery >= 50) mBatteryLevel = 2;
+                else if (battery >= 25) mBatteryLevel = 1;
+                else mBatteryLevel = 0;
 
-                setBatteryIcons(batteryLevel);
+                setBatteryIcons(mBatteryLevel);
             }
         }
-        previousBattery = battery;
+        mPreviousBattery = battery;
+    }
+
+    private void setBattery() {
+        setBattery(getBattery());
     }
 
     /**
@@ -455,12 +499,12 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * @return 返回电量百分比
      */
     private int getBattery() {
-        int defaultValue = -1;
 
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = registerReceiver(null, ifilter);
-        int level = defaultValue;
-        int scale = defaultValue;
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = registerReceiver(null, filter);
+
+        int defaultValue = -1, level = defaultValue, scale = defaultValue;
+
         if (batteryStatus != null) {
             level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, defaultValue);
             scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, defaultValue);
@@ -475,10 +519,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * 手动获取连接状态
      */
     private void getConnectionStatus() {
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = registerReceiver(null, ifilter);
-        int defaultValue = -1;
-        int status = defaultValue;
+        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = registerReceiver(null, filter);
+        int defaultValue = -1, status = defaultValue;
 
         if (batteryStatus != null) {
             status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, defaultValue);
@@ -505,7 +548,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     private void setConnectionStatus() {
 
-        if (mStyle.equals(mStyles[1])) {
+        if (mStyle.equals(STYLE_PLAYER)) {
             View connection_view = findViewById(R.id.connection);
             if (mCharging) {
                 connection_view.setVisibility(View.VISIBLE);
@@ -516,27 +559,25 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         } else {
             TextView connection_view = findViewById(R.id.connection);
             if (mCharging) {
-                if (mAccurateBattery) connection_view.setText(R.string.charging);
+                if (mShowAccurateBattery) connection_view.setText(R.string.charging);
                 else {
-                    new Thread(() -> {
-                        while (mCharging) {
-                            int z = batteryLevel;
-                            while (mCharging && z <= batteryIcons.length - 1) {
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        int z = mBatteryLevel;
+                        @Override
+                        public void run() {
+                            if (!mCharging) cancel();
+                            if (z <= batteryIcons.length - 1) {
                                 setBatteryIcons(z);
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
                                 z += 1;
-                            }
+                            } else z = mBatteryLevel;
                         }
-                    }).start();
+                    },0,1000);
                 }
 
             } else {
-                if (mAccurateBattery) connection_view.setText(R.string.not_charging);
-                else setBatteryIcons(batteryLevel);
+                if (mShowAccurateBattery) connection_view.setText(R.string.not_charging);
+                else setBatteryIcons(mBatteryLevel);
             }
         }
     }
@@ -546,9 +587,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         main.post( () -> {
             Drawable overlay = ContextCompat.getDrawable(this, batteryIcons[level]);
             if (overlay != null) {
-                int screenWidth = main.getWidth();
-                int margin = 10;
-                int scale = 4;
+                int screenWidth = main.getWidth(), margin = 10, scale = 4;
                 overlay.setBounds(screenWidth - margin - overlay.getIntrinsicWidth() / scale, margin, screenWidth - margin, margin + overlay.getIntrinsicHeight() / scale );
                 main.getOverlay().clear();
                 main.getOverlay().add(overlay);
@@ -563,12 +602,16 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * 如果是，则需隐藏农历显示
      */
     private void batteryAccurate() {
-        View statusBarView = findViewById(R.id.StatusBar);
-        View lunarView = findViewById(R.id.lunarDate);
+        View statusBarView = findViewById(R.id.statusBar),
+                dateView = switch (mStyle) {
+                    case STYLE_PLAYER -> findViewById(R.id.week);
+                    default -> findViewById(R.id.lunarDate); // case STYLE_PHONE
+                };
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mAccurateBattery = sharedPrefs.getBoolean(SubSettingsFragment.PREF_SHOW_ACCURATE_BATTERY, false);
-        statusBarView.setVisibility(mAccurateBattery? View.VISIBLE : View.INVISIBLE);
-        lunarView.setVisibility(mAccurateBattery? View.INVISIBLE : View.VISIBLE);
+        mShowAccurateBattery = sharedPrefs.getBoolean(SubSettingsFragment.PREF_SHOW_ACCURATE_BATTERY, false);
+        statusBarView.setVisibility(mShowAccurateBattery? View.VISIBLE : View.INVISIBLE);
+        if (mStyle.equals(STYLE_PHONE)) dateView.setVisibility(mShowAccurateBattery? View.INVISIBLE : View.VISIBLE);
+
     }
 
     /**
@@ -606,31 +649,31 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      */
     private void counter(int keycode) {
         if (! UIHelper.checkExitMethod(this, 0)) return;
-        if (count < 0 || count > 7) count = 0;
+        if (mKeyCount < 0 || mKeyCount > 7) mKeyCount = 0;
         switch (keycode) {
             case KeyEvent.KEYCODE_DPAD_UP:
                 Log.d(TAG, "Pressed key UP");
-                if (count <= 1) count++; else count = 1;
+                if (mKeyCount <= 1) mKeyCount++; else mKeyCount = 1;
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 Log.d(TAG, "Pressed key DOWN");
-                if (count == 2 || count == 3) count++; else count = 0;
+                if (mKeyCount == 2 || mKeyCount == 3) mKeyCount++; else mKeyCount = 0;
                 break;
             case KeyEvent.KEYCODE_DPAD_LEFT:
                 Log.d(TAG, "Pressed key LEFT");
-                if (count == 4 || count == 6) count++; else count = 0;
+                if (mKeyCount == 4 || mKeyCount == 6) mKeyCount++; else mKeyCount = 0;
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 Log.d(TAG, "Pressed key RIGHT");
-                if (count == 5) count ++; else if (count == 7 ) {
-                    count = 0;
+                if (mKeyCount == 5) mKeyCount++; else if (mKeyCount == 7 ) {
+                    mKeyCount = 0;
                     exit();
-                } else count = 0;
+                } else mKeyCount = 0;
                 break;
             default:
-                count = 0;
+                mKeyCount = 0;
         }
-        Log.d(TAG,"count="+count);
+        Log.d(TAG,"count="+ mKeyCount);
     }
 
     /**

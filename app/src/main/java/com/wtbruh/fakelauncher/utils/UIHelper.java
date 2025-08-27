@@ -10,14 +10,17 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
+import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
 
 import java.io.File;
 
@@ -63,6 +66,16 @@ public class UIHelper {
     }
 
     /**
+     * Simple intent maker | 简易Intent速成
+     * @param activity 你的Activity对象 | the current activity
+     * @param cls 要启动的Activity的class | the class object of the activity you wanna launch
+     * @return intent
+     */
+    public static Intent makeIntent(Activity activity, Class<?> cls) {
+        return new Intent().setClass(activity, cls);
+    }
+
+    /**
      * <h3>Intent Starter | Intent启动器</h3>
      * <p>Simple package for starting intent<br>
      * 启动intent的简单封装</p>
@@ -72,12 +85,22 @@ public class UIHelper {
      */
     public static void intentStarter(Activity activity, Class<?> cls) {
         if (intentStarterDebounce(cls)) return;
-        Intent intent = new Intent();
-        intent.setClass(activity, cls);
-        activity.startActivity(intent);
+        activity.startActivity(makeIntent(activity, cls));
         // Disable transition anim
         // 去掉过渡动画
         activity.overridePendingTransition(0, 0);
+    }
+
+    /**
+     * Do exit now!!! | 现在给我退出软件！！！
+     * @param activity 你的Activity对象 | the current activity
+     */
+    public static void doExit(Activity activity) {
+        if (intentStarterDebounce(MainActivity.class)) return;
+        activity.startActivity(
+                makeIntent(activity, MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_EXIT, true)
+        );
     }
 
     /**
@@ -162,6 +185,5 @@ public class UIHelper {
         } else if (!mode && !isInputExists) {
             PrivilegeProvider.runCommand(PrivilegeProvider.METHOD_ROOT, disable_cmd);
         }
-
     }
 }

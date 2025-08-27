@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
@@ -90,15 +89,15 @@ public class PasswordFragment extends BaseFragment {
         TextView error = rootView.findViewById(R.id.passwdError);
         if (passwd.equals("5418814250")) {
             error.setVisibility(View.INVISIBLE);
-            UIHelper.intentStarter(getActivity(), SettingsActivity.class);
+            UIHelper.intentStarter(requireActivity(), SettingsActivity.class);
         } else if (passwd.isEmpty()) {
             error.setText(R.string.password_empty);
             error.setVisibility(View.VISIBLE);
-        } else if (UIHelper.checkExitMethod(getActivity(), 2)) {
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        } else if (UIHelper.checkExitMethod(requireContext(), 2)) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(requireContext());
             if (passwd.equals(pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG, ""))) {
                 Log.d(TAG,"password correct!!!");
-                UIHelper.intentStarter(getActivity(), MainActivity.class);
+                UIHelper.doExit(requireActivity());
             } else {
                 error.setText(R.string.password_wrong);
                 error.setVisibility(View.VISIBLE);

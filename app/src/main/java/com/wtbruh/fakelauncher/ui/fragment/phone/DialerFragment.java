@@ -86,13 +86,13 @@ public class DialerFragment extends BaseFragment {
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
-            if (UIHelper.checkExitMethod(getActivity(), 1)) {
+            if (UIHelper.checkExitMethod(requireContext(), 1)) {
                 Log.d(TAG,"User set dialer for exit method");
                 String secretCode = mPrefs.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG, "");
                 if (!secretCode.isEmpty()){
                     if (mEditText.getText().equals("*#"+secretCode+"#*")) {
                         Log.d(TAG,"secret code correct!!!");
-                        UIHelper.intentStarter(getActivity(), MainActivity.class);
+                        UIHelper.doExit(requireActivity());
                     }
                 }
                 Log.d(TAG,"secret code incorrect or user didn't set secret code");

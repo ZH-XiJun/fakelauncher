@@ -57,6 +57,12 @@ public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView 
         invalidate();
     }
 
+    public void fitWidth() {
+        TextPaint paint = getLayout().getPaint();
+        getLayoutParams().width = (int) paint.measureText((String) getText());
+        requestLayout();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         try {

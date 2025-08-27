@@ -176,12 +176,36 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mStyle.equals(STYLE_PLAYER)) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
+            int[] simpleResizableView = {
+                    R.id.date,
+                    R.id.lunarDate,
+                    R.id.simCard,
+            };
+            if (scale > 0 && scale != 1.0) {
+                for (int resId : simpleResizableView) {
+                    View view = findViewById(resId);
+                    UIHelper.resizeView(scale, view);
+                }
+            }
+
             TelephonyHelper mTelHelper = new TelephonyHelper(this);
             StrokeTextView
                     card1 = findViewById(R.id.card1_provider),
                     card2 = findViewById(R.id.card2_provider);
+            View cardProvider = findViewById(R.id.cardProvider);
             card1.setText(mTelHelper.getProvidersName(0));
             card2.setText(mTelHelper.getProvidersName(1));
+
+            cardProvider.post(() -> {
+                cardProvider.getLayoutParams().width = WRAP_CONTENT;
+                cardProvider.getViewTreeObserver().addOnGlobalLayoutListener(UIHelper.getFitWidthViewsListener(cardProvider, card1, card2));
+                cardProvider.requestLayout();
+            });
+
+            UIHelper.resizeView(scale,
+                    findViewById(R.id.statusBar),
+                    findViewById(R.id.connection),
+                    findViewById(R.id.battery));
         }
         // Common init 通用初始化代码
         // 时间字体大小自适应适配

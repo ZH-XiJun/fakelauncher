@@ -113,7 +113,7 @@
     <string name="pref_show_accurate_battery">Show accurate battery percent</string>
     <string name="pref_show_accurate_battery_summary">Battery icon will be hidden at the same time</string>
     <string name="pref_main_ui_height_scale">Main UI zoom scale</string>
-    <string name="pref_main_ui_height_scale_summary">Adjusting the size of elements on main UI</string>
+    <string name="pref_main_ui_height_scale_summary">Adjusting the size of elements on main UI, click to preview</string>
     <string name="pref_text_stroke_width">Text stroke width</string>
     <string name="pref_text_stroke_width_summary">Adjusting the width of texts on main UI</string>
 

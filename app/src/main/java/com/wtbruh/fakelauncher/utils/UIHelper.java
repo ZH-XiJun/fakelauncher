@@ -104,6 +104,53 @@ public class UIHelper {
     }
 
     /**
+     * Resize views with given scale<br>
+     * 用所给比例缩放控件
+     * @param scale 缩放比例 | zoom scale
+     * @param view 需要调整的控件 | View that needs resize
+     * @param fitWidthViews 需要在该控件完成缩放后适配宽度的TextView | TextViews that need fit its width after the view finished resizing
+     */
+    public static void resizeView(float scale, View view, StrokeTextView... fitWidthViews) {
+        resizeViewWithCustomListener(scale, view,
+                fitWidthViews.length >0? getFitWidthViewsListener(view, fitWidthViews): null);
+    }
+
+    /**
+     * Do fitWidth() after resizing<br>
+     * 用于在调整高度完毕后调用fitWidth()
+     * @param view 需要调整的控件 | View that needs resize
+     * @param fitWidthViews 需要在该控件完成缩放后适配宽度的TextView | TextViews that need fit its width after the view finished resizing
+     */
+    public static ViewTreeObserver.OnGlobalLayoutListener getFitWidthViewsListener(View view, StrokeTextView... fitWidthViews) {
+        return new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                for (StrokeTextView fitWidthView : fitWidthViews) {
+                    fitWidthView.fitWidth();
+                }
+            }
+        };
+    }
+
+    /**
+     * Resize views with given scale, custom listener will be triggered after finished resizing<br>
+     * 用所给比例缩放控件，操作完成后会触发监听器
+     * @param scale 缩放比例 | zoom scale
+     * @param view 需要调整的控件 | View that needs resize
+     * @param listener Listener | 监听器
+     */
+    public static void resizeViewWithCustomListener(float scale, View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
+        view.post(() -> {
+            if (view.getLayoutParams().height > 0) {
+                view.getLayoutParams().height = (int) (view.getHeight() * scale);
+            }
+            if (listener != null) view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
+            view.requestLayout();
+        });
+    }
+
+    /**
      * <h3>Intent Starter Debounce<br>
      * Intent启动器 防抖机制</h3>
      * <p>Prevent calling intentStarter too frequently<br>

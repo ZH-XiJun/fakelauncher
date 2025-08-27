@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
         android:defaultValue="@string/pref_style_default"
         android:entries="@array/pref_style_string"
@@ -20,4 +21,11 @@
         android:key="text_stroke_width"
         android:title="@string/pref_text_stroke_width"
         android:summary="@string/pref_text_stroke_width_summary" />
+    <com.wtbruh.fakelauncher.ui.preference.SeekBarPreference
+        android:key="main_ui_height_scale"
+        android:title="@string/pref_main_ui_height_scale"
+        android:summary="@string/pref_main_ui_height_scale_summary"
+        android:max="50"
+        android:defaultValue="10"
+        app:showSeekBarValue="true"/>
 </PreferenceScreen>

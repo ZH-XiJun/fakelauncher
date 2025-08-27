@@ -33,6 +33,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
+import com.wtbruh.fakelauncher.ui.preference.SeekBarPreference;
 import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
@@ -64,7 +65,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_STYLE = "style";
     public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
     public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
-    // todo: public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
+    public final static String PREF_MAIN_UI_HEIGHT_SCALE = "main_ui_height_scale";
     public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
 
     public SubSettingsFragment() {
@@ -183,7 +184,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 break;
             case SettingsFragment.PAGE_VIEW:
                 clickablePrefs = new String[]{
-                        PREF_TEXT_STROKE_WIDTH
+                        PREF_TEXT_STROKE_WIDTH,
+                        PREF_MAIN_UI_HEIGHT_SCALE
                 };
                 setupPrefs = new String[]{
                         PREF_STYLE
@@ -364,7 +366,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sp, @Nullable String key) {
         if (key == null) return;
 
         Log.d(TAG, "Shared preference changed! key:"+key);
@@ -386,8 +388,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 prefSetup(pref);
                 if (exitFakeuiConfig != null) {
                     prefSetup(exitFakeuiConfig);
-                    sharedPreferences.edit()
-                            .putString(PREF_EXIT_FAKEUI_CONFIG, "")
+                    sp.edit().putString(PREF_EXIT_FAKEUI_CONFIG, "")
                             .apply();
                     exitFakeuiConfig.setText("");
                 }
@@ -395,10 +396,14 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case PREF_ENABLE_DHIZUKU -> {
                 if ((pref = findPreference(PREF_CHECK_DEVICE_ADMIN)) != null) prefSetup(pref);
             }
-            case PREF_STYLE -> prefSetup(pref);
             case PREF_TIME_SHOW_SECOND -> defaultSummary = R.string.pref_time_show_seconds_summary;
             case PREF_SHOW_ACCURATE_BATTERY ->
                     defaultSummary = R.string.pref_show_accurate_battery_summary;
+            case PREF_STYLE -> prefSetup(pref);
+            case PREF_MAIN_UI_HEIGHT_SCALE -> {
+                SeekBarPreference p = findPreference(key);
+                if (p != null && p.getValue() == 0) p.setValue(10);
+            }
         }
         if (defaultSummary != 0) addWarningToSummary(pref, defaultSummary);
     }
@@ -490,6 +495,10 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
                 bar.setProgress(sp.getInt(key, 3));
             }
+            case PREF_MAIN_UI_HEIGHT_SCALE -> requireActivity().startActivity(
+                    UIHelper.makeIntent(requireActivity(), MainActivity.class)
+                            .putExtra(MainActivity.EXTRA_PREVIEW, true)
+            );
         }
         return false;
     }

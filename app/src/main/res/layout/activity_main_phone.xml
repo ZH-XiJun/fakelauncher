@@ -25,10 +25,8 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         android:theme="@style/Theme.FakeLauncher"
-        android:tag="resizable_height"
-        app:autoSizeMaxTextSize="144dp"
-        app:autoSizeMinTextSize="72dp"
         app:autoSizeTextType="uniform"
+        app:autoSizeMaxTextSize="114514dp"
         app:layout_constraintBottom_toTopOf="@+id/date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -44,7 +42,6 @@
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:tag="resizable_height"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/lunarDate"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,14 +54,13 @@
     <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
         android:id="@+id/lunarDate"
         android:layout_width="0dp"
-        android:layout_height="75dp"
+        android:layout_height="60dp"
         android:text="六月廿七"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:tag="resizable_height"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@+id/statusBar_simCard"
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/date"
@@ -72,12 +68,11 @@
         app:strokeTextWidth="1" />
 
     <LinearLayout
-        android:id="@+id/StatusBar"
+        android:id="@+id/statusBar"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
+        android:layout_height="60dp"
         android:gravity="center"
         android:visibility="invisible"
-        android:tag="resizable_height"
         app:layout_constraintTop_toTopOf="@+id/lunarDate">
 
         <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
@@ -110,77 +105,104 @@
 
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/statusBar_simCard"
+        android:id="@+id/guideline_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <LinearLayout
-        android:id="@+id/cardLogo"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/cardProvider"
-        app:layout_constraintEnd_toStartOf="@id/cardProvider"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/cardProvider">
-
-        <ImageView
-            android:id="@+id/card1_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/ic_sim_card1" />
-
-        <ImageView
-            android:id="@+id/card2_logo"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/ic_sim_card2" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/cardProvider"
-        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/simCard"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        app:layout_constraintTop_toBottomOf="@id/guideline_horizontal"
         app:layout_constraintBottom_toTopOf="@id/main_ActionBar"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/cardLogo"
-        app:layout_constraintTop_toBottomOf="@id/statusBar_simCard">
+        >
 
-        <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
-            android:id="@+id/card1_provider"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="我是你爸"
-            android:textAlignment="viewStart"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:tag="resizable_height"
-            app:autoSizeTextType="uniform"
-            app:strokeTextColor="@color/black"
-            app:strokeTextWidth="3" />
+        <LinearLayout
+            android:id="@+id/cardLogo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintDimensionRatio="11:28"
+            app:layout_constraintBottom_toBottomOf="@id/cardProvider"
+            app:layout_constraintTop_toTopOf="@+id/cardProvider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cardProvider"
+            app:layout_constraintHorizontal_chainStyle="packed">
 
-        <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
-            android:id="@+id/card2_provider"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/sim_removed"
-            android:textAlignment="viewStart"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:tag="resizable_height|stroke"
-            app:autoSizeTextType="uniform"
-            app:strokeTextColor="@color/black"
-            app:strokeTextWidth="3" />
+            <ImageView
+                android:id="@+id/card1_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_sim_card1" />
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/card2_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_sim_card2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardProvider"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cardLogo"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
+                android:id="@+id/card1_provider"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="我是你爸"
+                android:textAlignment="viewStart"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:autoSizeTextType="uniform"
+                app:strokeTextColor="@color/black"
+                app:strokeTextWidth="3" />
+
+            <com.wtbruh.fakelauncher.ui.widget.StrokeTextView
+                android:id="@+id/card2_provider"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/sim_removed"
+                android:textAlignment="viewStart"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:autoSizeTextType="uniform"
+                app:strokeTextColor="@color/black"
+                app:strokeTextWidth="3" />
+        </LinearLayout>
+
+<!--        <ImageView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintStart_toEndOf="@id/cardProvider"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:srcCompat="@drawable/ic_charge" />-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

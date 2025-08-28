@@ -382,7 +382,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 if ((pref = findPreference(PREF_CHECK_PRIVILEGE)) != null)
                     pref.setSummary(R.string.pref_tap_me);
                 Preference p = findPreference(PREF_CHECK_DEVICE_ADMIN);
-                if (p != null) prefSetup(p);
+                if (p != null) p.setSummary(R.string.pref_tap_me);
             }
             case PREF_EXIT_FAKEUI_METHOD -> {
                 EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG_PASSWD);

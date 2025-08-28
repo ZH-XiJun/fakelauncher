@@ -241,17 +241,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     }
 
     /**
-     * Replace the summary of the switch preference in need with warning message<br>
-     * 将某些开关设置（SwitchPreference）的简介设置为警告（该设置为启用状态）
-     * @param pref 该设置的Preference对象
-     * @param defaultSummary 默认的简介
-     */
-    private void addWarningToSummary(Preference pref, int defaultSummary) {
-        boolean prefValue = Objects.requireNonNull(pref.getSharedPreferences()).getBoolean(pref.getKey(), false);
-        pref.setSummary(prefValue? R.string.pref_caution : defaultSummary);
-    }
-
-    /**
      * Preference setup code package<br>
      * Preference设置代码 封装
      * @param pref Preference
@@ -387,7 +376,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
         if (pref == null) return;
 
-        int defaultSummary = 0;
         switch (key) {
             case PREF_PRIVILEGE_PROVIDER -> {
                 prefSetup(pref);
@@ -414,16 +402,11 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case PREF_ENABLE_DHIZUKU -> {
                 if ((pref = findPreference(PREF_CHECK_DEVICE_ADMIN)) != null) prefSetup(pref);
             }
-            case PREF_TIME_SHOW_SECOND -> defaultSummary = R.string.pref_time_show_seconds_summary;
-            case PREF_SHOW_ACCURATE_BATTERY ->
-                    defaultSummary = R.string.pref_show_accurate_battery_summary;
             case PREF_STYLE -> prefSetup(pref);
             case PREF_MAIN_UI_HEIGHT_SCALE -> {
                 SeekBarPreference p = findPreference(key);
                 if (p != null && p.getValue() == 0) p.setValue(10);
             }
-        }
-        if (defaultSummary != 0) addWarningToSummary(pref, defaultSummary);
     }
 
     @Override

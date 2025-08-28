@@ -17,9 +17,17 @@
         android:key="exit_fakeui_method"
         android:title="@string/pref_exit_fakeui_method" />
     <EditTextPreference
-        android:defaultValue=""
-        android:key="exit_fakeui_config"
+        android:defaultValue="1234"
+        android:key="exit_fakeui_config_passwd"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_exit_fakeui_config" />
+    <Preference
+        android:key="exit_fakeui_config_key"
+        android:title="@string/pref_exit_fakeui_config" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="enhanced_touch_blocking"
+        android:title="@string/pref_enhanced_touch_blocking"
+        android:summary="@string/pref_enhanced_touch_blocking_summary" />
 </PreferenceScreen>

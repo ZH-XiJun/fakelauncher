@@ -95,7 +95,7 @@ public class PasswordFragment extends BaseFragment {
             error.setVisibility(View.VISIBLE);
         } else if (UIHelper.checkExitMethod(requireContext(), 2)) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            if (passwd.equals(pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG, ""))) {
+            if (passwd.equals(pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_PASSWD, ""))) {
                 Log.d(TAG,"password correct!!!");
                 UIHelper.doExit(requireActivity());
             } else {

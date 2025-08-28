@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <Preference
-        android:key="fakeui"
+        android:key="fun_fakeui"
         android:title="@string/shortcut_name"/>
     <Preference
-        android:key="permission"
+        android:key="fun_touch"
+        android:title="@string/fun_restore_touch"
+        android:summary="@string/fun_restore_touch_summary"
+        app:isPreferenceVisible="false"/>
+    <Preference
+        android:key="page_permission"
         android:title="@string/pref_page_permissions"
         android:summary="@string/pref_page_permissions_summary"/>
     <Preference
-        android:key="view"
+        android:key="page_view"
         android:title="@string/pref_page_view"
         android:summary="@string/pref_page_view_summary"/>
     <Preference
-        android:key="behaviour"
+        android:key="page_behaviour"
         android:title="@string/pref_page_behaviour"
         android:summary="@string/pref_page_behaviour_summary"/>
     <Preference
-        android:key="about"
+        android:key="page_about"
         android:title="@string/pref_page_about"
         android:summary="@string/pref_page_about_summary"/>
 </PreferenceScreen>

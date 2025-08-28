@@ -49,7 +49,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     private ActivityResultLauncher<Intent> SAFlauncher = null;
 
     public final static String PREF_PRIVILEGE_PROVIDER = "privilege_provider";
-    public final static String PREF_EXIT_FAKEUI_CONFIG = "exit_fakeui_config";
+    public final static String PREF_EXIT_FAKEUI_CONFIG_KEY = "exit_fakeui_config_key";
+    public final static String PREF_EXIT_FAKEUI_CONFIG_PASSWD = "exit_fakeui_config_passwd";
     public final static String PREF_EXIT_FAKEUI_METHOD = "exit_fakeui_method";
     public final static String PREF_CHECK_PRIVILEGE = "check_privilege";
     public final static String PREF_CHECK_DEVICE_ADMIN = "check_device_admin";
@@ -193,8 +194,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 titleResId = R.string.pref_page_view;
                 break;
             case SettingsFragment.PAGE_BEHAVIOUR:
+                clickablePrefs = new String[] {
+                        PREF_EXIT_FAKEUI_CONFIG_KEY
+                };
                 setupPrefs = new String[]{
-                        PREF_EXIT_FAKEUI_METHOD
+                        PREF_EXIT_FAKEUI_CONFIG_KEY,
+                        PREF_EXIT_FAKEUI_CONFIG_PASSWD,
+                        PREF_EXIT_FAKEUI_METHOD,
                 };
                 titleResId = R.string.pref_page_behaviour;
                 break;
@@ -251,7 +257,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
      * @param pref Preference
      */
     private void prefSetup(Preference pref) {
-        SharedPreferences defaultPref = getDefaultSharedPreferences(requireContext());
+        SharedPreferences sp = getDefaultSharedPreferences(requireContext());
         switch (pref.getKey()) {
             case PREF_PRIVILEGE_PROVIDER -> {
                 // Shizuku available on Android 6+
@@ -262,38 +268,45 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     p.setEntries(R.array.pref_privilege_provider_old_string);
                 }
                 setListPrefSummary(
-                        defaultPref.getString(pref.getKey(), getString(R.string.pref_privilege_provider_default)),
+                        sp.getString(pref.getKey(), getString(R.string.pref_privilege_provider_default)),
                         pref,
                         R.array.pref_privilege_provider,
                         R.array.pref_privilege_provider_string
                 );
             }
             case PREF_STYLE -> setListPrefSummary(
-                    defaultPref.getString(pref.getKey(), getString(R.string.pref_style_default)),
+                    sp.getString(pref.getKey(), getString(R.string.pref_style_default)),
                     pref,
                     R.array.pref_style,
                     R.array.pref_style_string
             );
             case PREF_EXIT_FAKEUI_METHOD -> setListPrefSummary(
-                    defaultPref.getString(pref.getKey(), getString(R.string.pref_exit_fakeui_method_default)),
+                    sp.getString(pref.getKey(), getString(R.string.pref_exit_fakeui_method_default)),
                     pref,
                     R.array.pref_exit_fakeui_method,
                     R.array.pref_exit_fakeui_method_string
             );
-            case PREF_EXIT_FAKEUI_CONFIG -> {
-                DialogPreference p = (DialogPreference) pref;
+            case PREF_EXIT_FAKEUI_CONFIG_PASSWD -> {
+                EditTextPreference p = (EditTextPreference) pref;
                 String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
-                String value = defaultPref.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
+                String value = sp.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
                 if (value.equals(valueArray[1])) {
                     p.setDialogTitle(R.string.dialog_title_exit_dialer);
-                    p.setDialogMessage(R.string.dialog_title_exit_dialer_hint);
+                    p.setDialogMessage(R.string.dialog_message_exit_dialer);
                 } else if (value.equals(valueArray[2])) {
                     p.setDialogTitle(R.string.dialog_title_exit_passwd);
                     p.setDialogMessage(null);
                 } else if (value.equals(valueArray[0])) {
-                    p.setDialogTitle(R.string.dialog_title_exit_dpad);
-                    p.setDialogMessage(null);
+                    // Use EXIT_FAKEUI_CONFIG_KEY
+                    p.setVisible(false);
+                    break;
                 }
+                p.setVisible(true);
+            }
+            case PREF_EXIT_FAKEUI_CONFIG_KEY -> {
+                String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
+                String value = sp.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
+                pref.setVisible(value.equals(valueArray[0]));
             }
             case PREF_CHECK_XPOSED -> {
                 if (MainActivity.isXposedModuleActivated()) {
@@ -322,14 +335,14 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     default -> {
                         String provider;
                         boolean isPrivilegeProviderNone =
-                                (provider = defaultPref.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default))).equals("None");
+                                (provider = sp.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default))).equals("None");
                         boolean isDhizukuEnabled =
-                                defaultPref.getBoolean(PREF_ENABLE_DHIZUKU, false);
+                                sp.getBoolean(PREF_ENABLE_DHIZUKU, false);
                         int newSummary = isDhizukuEnabled? R.string.pref_deactivated :
                                 isPrivilegeProviderNone? R.string.pref_command_activate: R.string.pref_click_to_activate;
                         if (!Objects.equals(pref.getSummary(), getString(newSummary)) || isDhizukuEnabled) pref.setSummary(newSummary);
                         else {
-                            String deviceOwnerActiveCmd = "adb shell "+PrivilegeProvider.getDeviceOwnerActiveCmd(requireContext());
+                            String deviceOwnerActiveCmd = "adb shell " + PrivilegeProvider.getDeviceOwnerActiveCmd(requireContext());
                             StringBuilder sb = new StringBuilder();
                             sb.append(getString(R.string.dialog_message_active_device_owner, isPrivilegeProviderNone? "adb shell" : provider));
                             if (isPrivilegeProviderNone) sb.append(": ")
@@ -384,13 +397,18 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 if (p != null) prefSetup(p);
             }
             case PREF_EXIT_FAKEUI_METHOD -> {
-                EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG);
+                EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG_PASSWD);
+                Preference p = findPreference(PREF_EXIT_FAKEUI_CONFIG_KEY);
                 prefSetup(pref);
-                if (exitFakeuiConfig != null) {
+                if (exitFakeuiConfig != null && p != null) {
                     prefSetup(exitFakeuiConfig);
-                    sp.edit().putString(PREF_EXIT_FAKEUI_CONFIG, "")
-                            .apply();
-                    exitFakeuiConfig.setText("");
+                    prefSetup(p);
+                    String currentPasswd = exitFakeuiConfig.getText();
+                    if (currentPasswd == null || currentPasswd.isEmpty()) {
+                        sp.edit().putString(PREF_EXIT_FAKEUI_CONFIG_PASSWD, "1234")
+                                .apply();
+                        exitFakeuiConfig.setText("1234");
+                    }
                 }
             }
             case PREF_ENABLE_DHIZUKU -> {
@@ -499,6 +517,49 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     UIHelper.makeIntent(requireActivity(), MainActivity.class)
                             .putExtra(MainActivity.EXTRA_PREVIEW, true)
             );
+            case PREF_EXIT_FAKEUI_CONFIG_KEY -> {
+                if (UIHelper.checkExitMethod(requireContext(), 0)) {
+                    View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.preference_dialog_edittext, null, false);
+                    dialogView.findViewById(android.R.id.edit).setVisibility(View.GONE);
+                    TextView tv = dialogView.findViewById(android.R.id.message);
+                    tv.setText(R.string.dialog_message_exit_dpad);
+                    androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+                    StringBuilder sb = new StringBuilder();
+                    builder.setTitle(R.string.dialog_title_exit_dpad)
+                            .setView(dialogView)
+                            .setPositiveButton(android.R.string.ok, (dialog, which) -> sp.edit().putString(key, sb.toString()).apply())
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                                final int keyLimit = 10;
+                                int recordedKeys = 0;
+
+                                @Override
+                                public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                                    if (keyEvent.getAction() != KeyEvent.ACTION_UP) return true;
+                                    if (recordedKeys >= keyLimit || keyCode < 19 || keyCode > 22) return false;
+                                    CharSequence tvText = tv.getText().equals(getString(R.string.dialog_message_exit_dpad))? "" : tv.getText();
+                                    StringBuilder textViewSB = new StringBuilder(tvText);
+                                    if (sb.length() > 0) {//Fuck that shit, sb.isEmpty() requires api 35?!?!
+                                        sb.append(",");
+                                        textViewSB.append(", ");
+                                    }
+                                    sb.append(keyCode);
+                                    textViewSB.append(switch (keyCode) {
+                                        case KeyEvent.KEYCODE_DPAD_UP -> getString(R.string.up);
+                                        case KeyEvent.KEYCODE_DPAD_DOWN -> getString(R.string.down);
+                                        case KeyEvent.KEYCODE_DPAD_LEFT -> getString(R.string.left);
+                                        case KeyEvent.KEYCODE_DPAD_RIGHT -> getString(R.string.right);
+                                        default -> "unknown";
+                                    });
+                                    tv.setText(textViewSB.toString());
+                                    if (recordedKeys == 0) tv.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
+                                    recordedKeys++;
+                                    return true;
+                                }
+                            })
+                            .create().show();
+                }
+            }
         }
         return false;
     }

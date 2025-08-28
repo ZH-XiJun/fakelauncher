@@ -65,9 +65,9 @@ public class PrivilegeProvider {
     public final static int DEVICE_ADMIN = 3;
     // Operate method to int
     // 执行操作所需权限
-    public final static int METHOD_NORMAL = 4;
-    public final static int METHOD_ROOT = 5;
-    public final static int METHOD_SHIZUKU = 6;
+    public final static int PRIVILEGE_NORMAL = 4;
+    public final static int PRIVILEGE_ROOT = 5;
+    public final static int PRIVILEGE_SHIZUKU = 6;
     // Command define
     // 固定指令
     public final static String CMD_SU = "su";
@@ -144,7 +144,7 @@ public class PrivilegeProvider {
      * @param method 请求方式（请求所需的特权） | request method (Privilege the operation needs)
      */
     public static void requestAllPermissions(Activity activity, int method) {
-        if (method == METHOD_NORMAL) {
+        if (method == PRIVILEGE_NORMAL) {
             requestPermissions(activity, getAllPermissions(activity), PERMISSION_REQUEST_CODE);
             return;
         }
@@ -192,7 +192,7 @@ public class PrivilegeProvider {
                 Log.d(TAG, "Disconnected from UserService");
             }
         };
-        if (checkPrivilege(METHOD_SHIZUKU)) {
+        if (checkPrivilege(PRIVILEGE_SHIZUKU)) {
             Shizuku.UserServiceArgs args = getShizukuUserServiceArgs(context);
             Shizuku.bindUserService(args, connection);
         }
@@ -244,21 +244,21 @@ public class PrivilegeProvider {
     /**
      * Check privilege | 检查特殊权限
      *
-     * @param method 特殊权限类型 | Privilege type
+     * @param privilege 特殊权限类型 | Privilege type
      * @return 是否已获得授权 | Is permission granted
      */
-    public static boolean checkPrivilege(int method) {
-        switch (method) {
-            case METHOD_ROOT -> {
+    public static boolean checkPrivilege(int privilege) {
+        switch (privilege) {
+            case PRIVILEGE_ROOT -> {
                 try {
                     Log.d(TAG, "Checking root permission");
-                    Bundle bundle = runCommand(METHOD_ROOT, "id");
+                    Bundle bundle = runCommand(PRIVILEGE_ROOT, "id");
                     return bundle.getInt(CMD_RESULT_CODE) == 0;
                 } catch (RuntimeException e) {
                     return false;
                 }
             }
-            case METHOD_SHIZUKU -> {
+            case PRIVILEGE_SHIZUKU -> {
                 // Shizuku requires Android 6+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (Sui.init("com.wtbruh.fakelauncher")) Log.d(TAG, "Sui is available");
@@ -298,9 +298,9 @@ public class PrivilegeProvider {
      */
     public static int privilegeToInt(String str) {
         return switch (str) {
-            case "Root" -> METHOD_ROOT;
-            case "Shizuku" -> METHOD_SHIZUKU;
-            default -> METHOD_NORMAL;
+            case "Root" -> PRIVILEGE_ROOT;
+            case "Shizuku" -> PRIVILEGE_SHIZUKU;
+            default -> PRIVILEGE_NORMAL;
         };
     }
 
@@ -356,7 +356,7 @@ public class PrivilegeProvider {
      * @return 指令运行后的输出数据 | Command output data
      */
     public static Bundle runCommand(Context context, int method, String... cmd) {
-        if (method == METHOD_SHIZUKU && context != null) {
+        if (method == PRIVILEGE_SHIZUKU && context != null) {
             AtomicReference<Bundle> bundle = new AtomicReference<>();
             useShizuku(context, (iBinder, connection) -> {
                 try {
@@ -370,7 +370,7 @@ public class PrivilegeProvider {
         }
 
         String s;
-        if (method == METHOD_ROOT) {
+        if (method == PRIVILEGE_ROOT) {
             s = CMD_SU;
         } else {
             s = CMD_SH;

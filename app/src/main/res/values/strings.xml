@@ -140,8 +140,13 @@
 
     <!-- Dialog -->
     <string name="dialog_title_exit_dpad">D-pad key command setup</string>
+    <string name="dialog_message_exit_dpad">Press the key one by one. If program didn\'t respond, then the key is undetectable</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
     <string name="dialog_title_exit_dialer">Dialer secret code setup</string>
-    <string name="dialog_title_exit_dialer_hint">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
+    <string name="dialog_message_exit_dialer">Need "*#" surround when typing code in dialer: *#YourCode#*</string>
     <string name="dialog_title_exit_passwd">Settings page password setup</string>
     <string name="dialog_title_active_device_owner">Active device owner</string>
     <string name="dialog_message_active_device_owner">Active device owner using %s</string>

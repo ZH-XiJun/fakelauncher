@@ -100,6 +100,16 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     // key count 按键计数
     private int mKeyCount = 0;
+    private int[] mKeyAction = {
+            KeyEvent.KEYCODE_DPAD_UP,
+            KeyEvent.KEYCODE_DPAD_UP,
+            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_DPAD_RIGHT,
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_DPAD_RIGHT
+    };
 
     // Device owner
     private int mDeviceAdminType = PrivilegeProvider.DEACTIVATED;
@@ -159,11 +169,27 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
             setLockApp(MainActivity.this, getTaskId());
+
+            // key action init
+            if (UIHelper.checkExitMethod(this, 0)) {
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+                String keyActionStr = sp.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_KEY, "");
+                if (!keyActionStr.isEmpty()) {
+                    String[] array = keyActionStr.split(",");
+                    mKeyAction = new int[array.length];
+                    int index = 0;
+                    for (String keyCode : array) {
+                        mKeyAction[index] = Integer.parseInt(keyCode);
+                        index++;
+                    }
+                }
+            }
+
         }
         // UI init
         initUI();
         // Disable touch screen
-        UIHelper.touchscreenController(false, this);
+        UIHelper.setTouchscreenState(false, this);
     }
 
     /**
@@ -673,31 +699,15 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      */
     private void counter(int keycode) {
         if (! UIHelper.checkExitMethod(this, 0)) return;
-        if (mKeyCount < 0 || mKeyCount > 7) mKeyCount = 0;
-        switch (keycode) {
-            case KeyEvent.KEYCODE_DPAD_UP:
-                Log.d(TAG, "Pressed key UP");
-                if (mKeyCount <= 1) mKeyCount++; else mKeyCount = 1;
-                break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                Log.d(TAG, "Pressed key DOWN");
-                if (mKeyCount == 2 || mKeyCount == 3) mKeyCount++; else mKeyCount = 0;
-                break;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                Log.d(TAG, "Pressed key LEFT");
-                if (mKeyCount == 4 || mKeyCount == 6) mKeyCount++; else mKeyCount = 0;
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                Log.d(TAG, "Pressed key RIGHT");
-                if (mKeyCount == 5) mKeyCount++; else if (mKeyCount == 7 ) {
-                    mKeyCount = 0;
-                    exit();
-                } else mKeyCount = 0;
-                break;
-            default:
-                mKeyCount = 0;
+        if (mKeyCount < 0 || mKeyCount > mKeyAction.length - 1) mKeyCount = 0;
+
+        if (keycode != mKeyAction[mKeyCount]) mKeyCount = 0;
+        else if (mKeyCount < mKeyAction.length - 1) mKeyCount++;
+        else if (mKeyCount == mKeyAction.length - 1) {
+            mKeyCount = 0;
+            exit();
         }
-        Log.d(TAG,"count="+ mKeyCount);
+        Log.d(TAG,"validKeyCount="+ mKeyCount);
     }
 
     /**

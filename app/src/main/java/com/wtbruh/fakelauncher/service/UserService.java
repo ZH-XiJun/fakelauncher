@@ -22,7 +22,7 @@ public class UserService extends IUserService.Stub {
 
     @Override
     public Bundle runMultiCmd(String[] cmd) {
-        return PrivilegeProvider.runCommand(PrivilegeProvider.METHOD_NORMAL, cmd);
+        return PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_NORMAL, cmd);
     }
 
     @Override

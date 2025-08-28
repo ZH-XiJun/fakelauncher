@@ -11,12 +11,14 @@
         android:defaultValue="false"
         android:key="time_show_second"
         android:title="@string/pref_time_show_seconds"
-        android:summary="@string/pref_time_show_seconds_summary" />
+        android:summaryOff="@string/pref_time_show_seconds_summary"
+        android:summaryOn="@string/pref_caution"/>
     <SwitchPreference
         android:defaultValue="false"
         android:key="show_accurate_battery"
         android:title="@string/pref_show_accurate_battery"
-        android:summary="@string/pref_show_accurate_battery_summary" />
+        android:summaryOff="@string/pref_show_accurate_battery_summary"
+        android:summaryOn="@string/pref_caution"/>
     <Preference
         android:key="text_stroke_width"
         android:title="@string/pref_text_stroke_width"

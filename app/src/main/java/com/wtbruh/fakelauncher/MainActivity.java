@@ -28,7 +28,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
 import com.rosan.dhizuku.api.Dhizuku;
@@ -36,7 +35,7 @@ import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
-import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
+import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 import com.wtbruh.fakelauncher.utils.ApplicationHelper;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.LunarCalender;
@@ -215,7 +214,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             }
 
             TelephonyHelper mTelHelper = new TelephonyHelper(this);
-            StrokeTextView
+            FitTextView
                     card1 = findViewById(R.id.card1_provider),
                     card2 = findViewById(R.id.card2_provider);
             View cardProvider = findViewById(R.id.cardProvider);
@@ -235,7 +234,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         }
         // Common init 通用初始化代码
         // 时间字体大小自适应适配
-        TextView time = findViewById(R.id.time);
+        FitTextView time = findViewById(R.id.time);
         time.post(() -> {
             boolean pref = sp.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
             time.setText(pref? "11:45:14" : "19:19" );
@@ -243,13 +242,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             time.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    TextViewCompat.setAutoSizeTextTypeWithDefaults(time, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
-                    // 获取缩放后的字体大小
-                    float textSize = time.getTextSize(); // 单位：px
-                    Log.d(TAG, "now text size: " + textSize);
                     time.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    time.getLayoutParams().height = (int) (textSize + time.getPaddingTop() + time.getPaddingBottom() + 10);
-                    time.requestLayout();
+                    time.fitHeight();
                 }
             });
             time.requestLayout();

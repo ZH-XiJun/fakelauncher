@@ -57,8 +57,11 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void openSubSettings(String page) {
-        if (page.equals(SettingsFragment.PAGE_OPEN_FAKEUI)) {
-            UIHelper.intentStarter(this, SplashActivity.class);
+        if (page.contains(SettingsFragment.FUN)) {
+            switch (page) {
+                case SettingsFragment.FUN_OPEN_FAKEUI -> UIHelper.intentStarter(this, SplashActivity.class);
+                case SettingsFragment.FUN_TOUCH -> UIHelper.setTouchscreenState(true, this);
+            }
             return;
         }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

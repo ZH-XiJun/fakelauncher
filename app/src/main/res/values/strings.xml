@@ -71,6 +71,7 @@
     <string name="pref_operation_completed">Operation completed</string>
     <string name="pref_operation_failed">Operation failed</string>
     <string name="pref_wait">Please wait…</string>
+    <string name="pref_use_root">Please select "root" as the privilege provider</string>
 
     <string name="pref_page_permissions">Permissions and privileges</string>
     <string name="pref_page_permissions_summary">Program needs them to run normally</string>
@@ -128,10 +129,15 @@
     <string name="pref_exit_dpad">D-pad keys in MainUI</string>
     <string name="pref_exit_dialer">Dialer secret code</string>
     <string name="pref_exit_password">Custom password while entering Settings in menu</string>
+    <string name="pref_enhanced_touch_blocking">Enhanced touch blocking</string>
+    <string name="pref_enhanced_touch_blocking_summary">Fully disable the touchscreen. STILL EXPERIMENTAL!</string>
 
     <string name="pref_page_about">About</string>
     <string name="pref_page_about_summary">Author of the mountain of shit: what_the_bruhhhh</string>
     <string name="pref_jump_to_github">Jump to GitHub</string>
+
+    <string name="fun_restore_touch">Restore touchscreen</string>
+    <string name="fun_restore_touch_summary">It seems that the touchscreen is still disabled outside the fake UI. Click to restore it.</string>
 
     <!-- Toast message -->
     <string name="toast_open_settings_from_launcher">Please open settings from launcher to grant Dhizuku.</string>
@@ -151,4 +157,7 @@
     <string name="dialog_title_active_device_owner">Active device owner</string>
     <string name="dialog_message_active_device_owner">Active device owner using %s</string>
     <string name="dialog_button_copy">Copy</string>
+    <string name="dialog_title_warning">Warning</string>
+    <string name="dialog_message_enhance_touch_blocking">The function is still experimental.\nAfter checking it, do not force stop the program while using fake UI, or touchscreen will not be restored.\nIf the situation happened, open the settings and you will see the restore button, or you might need a reboot to make touchscreen work</string>
+    <string name="dialog_btn_understand">Understand</string>
 </resources>

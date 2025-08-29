@@ -10,6 +10,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -17,18 +18,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
-import androidx.preference.DialogPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
@@ -68,6 +71,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
     public final static String PREF_MAIN_UI_HEIGHT_SCALE = "main_ui_height_scale";
     public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
+    public final static String PREF_ENHANCED_TOUCH_BLOCKING = "enhanced_touch_blocking";
 
     public SubSettingsFragment() {
     }
@@ -201,6 +205,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         PREF_EXIT_FAKEUI_CONFIG_KEY,
                         PREF_EXIT_FAKEUI_CONFIG_PASSWD,
                         PREF_EXIT_FAKEUI_METHOD,
+                        PREF_ENHANCED_TOUCH_BLOCKING
                 };
                 titleResId = R.string.pref_page_behaviour;
                 break;
@@ -364,6 +369,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     }
                 }
             }
+            case PREF_ENHANCED_TOUCH_BLOCKING -> {
+                if (PrivilegeProvider.getCurrentPrivilegeProvider(requireContext()) != PrivilegeProvider.PRIVILEGE_ROOT) {
+                    pref.setEnabled(false);
+                    pref.setSummary(R.string.pref_use_root);
+                    sp.edit().putBoolean(PREF_ENHANCED_TOUCH_BLOCKING, false).apply();
+                }
+            }
         }
     }
 
@@ -407,6 +419,19 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 SeekBarPreference p = findPreference(key);
                 if (p != null && p.getValue() == 0) p.setValue(10);
             }
+            case PREF_ENHANCED_TOUCH_BLOCKING -> {
+                SwitchPreference p = (SwitchPreference) pref;
+                if (sp.getBoolean(PREF_ENHANCED_TOUCH_BLOCKING, false)) {
+
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.dialog_title_warning)
+                            .setMessage(R.string.dialog_message_enhance_touch_blocking)
+                            .setPositiveButton(R.string.dialog_btn_understand, null)
+                            .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> p.setChecked(false))
+                            .show();
+                }
+            }
+        }
     }
 
     @Override

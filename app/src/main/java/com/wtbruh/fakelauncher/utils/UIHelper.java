@@ -211,10 +211,11 @@ public class UIHelper {
     /**
      * Disable touchscreen through moving files in /dev/input<br>
      * 通过变动/dev/input内的文件来实现禁用触控
-     * @param mode true为启用触控，false为禁用触控 | true means enable touch, false means disable touch
+     * @param state true为启用触控，false为禁用触控 | true means enable touch, false means disable touch
      * @param context 上下文对象 | Context object
      */
-    public static void touchscreenController(boolean mode, Context context) {
+    public static void setTouchscreenState(boolean state, Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         File dir = context.getFilesDir().getAbsoluteFile();
         String dirPath = dir.getPath();
         File input = new File(dir, "input");
@@ -227,10 +228,20 @@ public class UIHelper {
                 "cp -pr " + dirPath + "/input /dev",
                 "rm -rf " + dirPath + "/input"
         };
-        if (mode && isInputExists) {
-            PrivilegeProvider.runCommand(PrivilegeProvider.METHOD_ROOT, enable_cmd);
-        } else if (!mode && !isInputExists) {
-            PrivilegeProvider.runCommand(PrivilegeProvider.METHOD_ROOT, disable_cmd);
+        if (state && isInputExists) {
+            PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT, enable_cmd);
+        } else if (!state && !isInputExists && sp.getBoolean(SubSettingsFragment.PREF_ENHANCED_TOUCH_BLOCKING, false)) {
+            PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT, disable_cmd);
         }
+    }
+
+    /**
+     * Get touchscreen state by checking if dir "input" exists in app private dir
+     * 通过检查应用私有目录内是否存在目录"input"来判断触控禁用状态
+     * @param context 上下文 | Context
+     * @return true为工作中，false为已禁用 | true refers to working, false refers to disabled
+     */
+    public static boolean getTouchscreenState(Context context) {
+        return !new File(context.getFilesDir().getAbsoluteFile(), "input").exists();
     }
 }

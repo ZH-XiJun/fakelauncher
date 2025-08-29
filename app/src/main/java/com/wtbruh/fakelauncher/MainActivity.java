@@ -289,7 +289,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         // 停止计时任务 Stop timer
         if (mTimer != null) mTimer.cancel();
         // Enable touch screen
-        UIHelper.touchscreenController(true, this);
+        UIHelper.setTouchscreenState(true, this);
         super.onDestroy();
     }
 

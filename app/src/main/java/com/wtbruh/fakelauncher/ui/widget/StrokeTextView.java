@@ -15,7 +15,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 
-public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class StrokeTextView extends FitTextView implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final int[] STROKE_ATTRS = new int[]{R.attr.strokeTextColor, R.attr.strokeTextWidth};
     private @ColorInt int strokeColor = 0;
     private int strokeWidth = 3;
@@ -55,12 +55,6 @@ public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView 
     public void setStrokeWidth(int width) {
         strokeWidth = width;
         invalidate();
-    }
-
-    public void fitWidth() {
-        TextPaint paint = getLayout().getPaint();
-        getLayoutParams().width = (int) paint.measureText((String) getText());
-        requestLayout();
     }
 
     @Override

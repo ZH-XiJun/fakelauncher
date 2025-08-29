@@ -20,7 +20,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
-import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
+import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 
 import java.io.File;
 
@@ -110,7 +110,7 @@ public class UIHelper {
      * @param view 需要调整的控件 | View that needs resize
      * @param fitWidthViews 需要在该控件完成缩放后适配宽度的TextView | TextViews that need fit its width after the view finished resizing
      */
-    public static void resizeView(float scale, View view, StrokeTextView... fitWidthViews) {
+    public static void resizeView(float scale, View view, FitTextView... fitWidthViews) {
         resizeViewWithCustomListener(scale, view,
                 fitWidthViews.length >0? getFitWidthViewsListener(view, fitWidthViews): null);
     }
@@ -121,12 +121,12 @@ public class UIHelper {
      * @param view 需要调整的控件 | View that needs resize
      * @param fitWidthViews 需要在该控件完成缩放后适配宽度的TextView | TextViews that need fit its width after the view finished resizing
      */
-    public static ViewTreeObserver.OnGlobalLayoutListener getFitWidthViewsListener(View view, StrokeTextView... fitWidthViews) {
+    public static ViewTreeObserver.OnGlobalLayoutListener getFitWidthViewsListener(View view, FitTextView... fitWidthViews) {
         return new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                for (StrokeTextView fitWidthView : fitWidthViews) {
+                for (FitTextView fitWidthView : fitWidthViews) {
                     fitWidthView.fitWidth();
                 }
             }

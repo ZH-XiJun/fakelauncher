@@ -9,7 +9,7 @@
     tools:ignore="HardcodedText"
     tools:context=".MainActivity">
 
-    <TextView
+    <com.wtbruh.fakelauncher.ui.widget.FitTextView
         android:id="@+id/time"
         android:layout_width="match_parent"
         android:layout_height="150dp"

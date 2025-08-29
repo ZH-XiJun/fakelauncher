@@ -12,7 +12,7 @@ import androidx.preference.PreferenceViewHolder;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class SeekBarPreference extends androidx.preference.SeekBarPreference implements SeekBar.OnSeekBarChangeListener{
+public class SeekBarPreference extends androidx.preference.SeekBarPreference implements SeekBar.OnSeekBarChangeListener {
 
     private TextView mSeekBarValueTextView;
     private SeekBar mSeekBar;
@@ -25,9 +25,9 @@ public class SeekBarPreference extends androidx.preference.SeekBarPreference imp
     @Override
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        // Class<?> superClass = super.getClass();
         superClass = SeekBarPreference.class.getSuperclass();
         try {
+            assert superClass != null;
             Field f = superClass.getDeclaredField("mSeekBarValueTextView");
             Field f2 = superClass.getDeclaredField("mSeekBar");
             f.setAccessible(true);

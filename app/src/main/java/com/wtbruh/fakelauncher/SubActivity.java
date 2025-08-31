@@ -19,6 +19,7 @@ import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -135,9 +136,8 @@ public class SubActivity extends BaseAppCompatActivity {
         mCurrentFragment = fragment;
     }
 
-    public void showOptionMenu(int[] resIds, OptionMenuFragment.onKeyUpListener listener) {
-        List<String> data = new ArrayList<>();
-        for (int resId : resIds) data.add(getString(resId));
+    public void showOptionMenu(String[] strings, OptionMenuFragment.onKeyUpListener listener) {
+        List<String> data = new ArrayList<>(Arrays.asList(strings));
         showOptionMenu(data, listener);
     }
 

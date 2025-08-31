@@ -51,8 +51,12 @@
     <string name="dialog_save_fail">保存失败</string>
     <string name="dialog_save_success">保存成功</string>
     <!-- 相机选项菜单 -->
-    <string name="camera_option_record">切换录像</string>
-    <string name="camera_option_shoot">切换拍照</string>
+    <string name="camera_option_mode">切换%s</string>
+    <string name="record">录像</string>
+    <string name="shoot">拍照</string>
+    <string name="camera_option_switch_camera">切换到%s置摄像头</string>
+    <string name="front">前</string>
+    <string name="back">后</string>
     <!-- 相册界面文字提示 -->
     <string name="gallery_no_photo">无照片</string>
     <string name="gallery_loading">加载中</string>

@@ -1,6 +1,7 @@
 package com.wtbruh.fakelauncher.utils;
 
 import static androidx.core.app.ActivityCompat.requestPermissions;
+import static androidx.core.content.ContextCompat.getString;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -10,6 +11,7 @@ import android.app.admin.IDevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -241,6 +243,21 @@ public class PrivilegeProvider {
         return null;
     }
 
+    /**
+     * Get current privilege provider<br>
+     * 获取当前授权器
+     * @param context Context
+     * @return 以int形式的特权类型 | privilege type in int
+     */
+    public static int getCurrentPrivilegeProvider(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        return privilegeToInt(
+                sp.getString(SubSettingsFragment.PREF_PRIVILEGE_PROVIDER,
+                getString(context, R.string.pref_privilege_provider_default))
+        );
+
+    }
+    
     /**
      * Check privilege | 检查特殊权限
      *

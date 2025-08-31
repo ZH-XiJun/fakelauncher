@@ -38,7 +38,6 @@ import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -234,6 +233,12 @@ public class GalleryFragment extends BaseFragment {
         return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
     }
 
+    private void showOptionMenu() {
+        int[] selections = {
+
+        };
+    }
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
 
@@ -305,6 +310,7 @@ public class GalleryFragment extends BaseFragment {
                     return true;
                 }
             }
+            case KeyEvent.KEYCODE_MENU -> showOptionMenu();
         }
         return false;
     }

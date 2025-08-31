@@ -218,8 +218,13 @@ public class CameraFragment extends BaseFragment {
      * 显示选项菜单
      */
     private void showOptionMenu(){
-        int[] selections = {R.string.camera_option_record};
-        if (!mode) selections[0] = R.string.camera_option_shoot;
+        String[] selections = {
+                getString(R.string.camera_option_mode,
+                        mode? getString(R.string.record):getString(R.string.shoot)),
+                getString(R.string.camera_option_switch_camera,
+                        nowCamera == CameraSelector.DEFAULT_FRONT_CAMERA?
+                                getString(R.string.front) : getString(R.string.back))
+        };
 
         ((SubActivity) requireActivity()).showOptionMenu(
                 selections,
@@ -227,16 +232,36 @@ public class CameraFragment extends BaseFragment {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
                             if (tv != null) {
-                                if (requireContext().getString(R.string.camera_option_record).contentEquals(tv.getText())) {
-                                    tv.setText(R.string.camera_option_shoot);
-                                    setFooterBar(C_RECORD);
-                                    mode = false;
-                                } else {
-                                    tv.setText(R.string.camera_option_record);
-                                    setFooterBar(C_SHOOT);
-                                    mode = true;
+                                switch (position) {
+                                    case 0 -> {
+                                        String modeStr;
+                                        if (mode) {
+                                            modeStr = getString(R.string.shoot);
+                                            setFooterBar(C_RECORD);
+                                            mode = false;
+                                        } else {
+                                            modeStr = getString(R.string.record);
+                                            setFooterBar(C_SHOOT);
+                                            mode = true;
+                                        }
+                                        tv.setText(getString(R.string.camera_option_mode, modeStr));
+                                        bindToLifecycle();
+                                    }
+                                    case 1 -> {
+                                        String camera = getString(R.string.front); // fallback
+
+                                        if (nowCamera == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                            nowCamera = CameraSelector.DEFAULT_FRONT_CAMERA;
+                                            camera = getString(R.string.front);
+                                        }
+                                        else if (nowCamera == CameraSelector.DEFAULT_FRONT_CAMERA) {
+                                            nowCamera = CameraSelector.DEFAULT_BACK_CAMERA;
+                                            camera = getString(R.string.back);
+                                        }
+                                        tv.setText(getString(R.string.camera_option_switch_camera, camera));
+                                        startCamera();
+                                    }
                                 }
-                                bindToLifecycle();
                             }
                         }
                     }

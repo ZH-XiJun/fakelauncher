@@ -157,14 +157,12 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         receiverRegister(true);
         // Manually get connection status 手动获取连接状态
         getConnectionStatus();
-        // Start timer 启动计时任务
-        updateInfo();
         if (mStyle.equals(STYLE_PLAYER)) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
             ScreenObserver screenObserver = new ScreenObserver(this);
             screenObserver.startScreenObserver(this);
-
+            // Device owner init
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
             setLockApp(MainActivity.this, getTaskId());
@@ -187,6 +185,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         }
         // UI init
         initUI();
+        // Start timer 启动计时任务
+        updateInfo();
         // Disable touch screen
         UIHelper.setTouchscreenState(false, this);
     }
@@ -237,7 +237,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         FitTextView time = findViewById(R.id.time);
         time.post(() -> {
             boolean pref = sp.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
-            time.setText(pref? "11:45:14" : "19:19" );
+            if (mPreviewMode) time.setText(pref? "11:45:14" : "19:19" );
             time.getLayoutParams().height = (int) (time.getHeight() * scale);
             time.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override

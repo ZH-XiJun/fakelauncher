@@ -76,7 +76,7 @@ public class OptionMenuFragment extends BaseFragment {
         menuView.setItemAnimator(null);
         menuView.setLayoutManager(new LinearLayoutManager(requireContext()));
         menuView.setFocusable(false);
-        adapter.smallerTextViewHeight(2);
+        // adapter.smallerTextViewHeight(2);
     }
 
     private int getCurrentPosition(){

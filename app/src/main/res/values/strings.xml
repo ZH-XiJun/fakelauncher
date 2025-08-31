@@ -53,8 +53,12 @@
     <string name="dialog_save_fail">Failed to save</string>
     <string name="dialog_save_success">Successfully saved</string>
     <!-- Camera option menu -->
-    <string name="camera_option_record">Switch to recording</string>
-    <string name="camera_option_shoot">Switch to capturing</string>
+    <string name="camera_option_mode">Switch to %s</string>
+    <string name="record">recording</string>
+    <string name="shoot">capturing</string>
+    <string name="camera_option_switch_camera">Switch to %s camera</string>
+    <string name="front">front</string>
+    <string name="back">back</string>
     <!-- Gallery UI hint -->
     <string name="gallery_no_photo">No photo</string>
     <string name="gallery_loading">Loading</string>

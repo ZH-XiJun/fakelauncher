@@ -77,6 +77,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             R.drawable.ic_battery_4
     };
     private boolean mCharging = false, mShowAccurateBattery = false;
+    private Timer mBatteryChargingAnimTimer;
 
     // 广播接收器 Broadcast receiver
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
@@ -591,7 +592,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     }
 
     private void setConnectionStatus() {
-
         if (mStyle.equals(STYLE_PLAYER)) {
             View connection_view = findViewById(R.id.connection);
             if (mCharging) {
@@ -605,23 +605,28 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             if (mCharging) {
                 if (mShowAccurateBattery) connection_view.setText(R.string.charging);
                 else {
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
+                    mBatteryChargingAnimTimer = new Timer();
+                    mBatteryChargingAnimTimer.schedule(new TimerTask() {
                         int z = mBatteryLevel;
                         @Override
                         public void run() {
-                            if (!mCharging) cancel();
                             if (z <= batteryIcons.length - 1) {
-                                setBatteryIcons(z);
                                 z += 1;
-                            } else z = mBatteryLevel;
+                            } else {
+                                z = mBatteryLevel;
+                            }
+                            setBatteryIcons(z);
                         }
                     },0,1000);
                 }
 
             } else {
                 if (mShowAccurateBattery) connection_view.setText(R.string.not_charging);
-                else setBatteryIcons(mBatteryLevel);
+                else {
+                    mBatteryChargingAnimTimer.cancel();
+                    mBatteryChargingAnimTimer = null;
+                    setBatteryIcons(mBatteryLevel);
+                }
             }
         }
     }
@@ -629,7 +634,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private void setBatteryIcons(int level) {
         View main = findViewById(R.id.Main);
         main.post( () -> {
-            Drawable overlay = ContextCompat.getDrawable(this, batteryIcons[level]);
+            Drawable overlay = ContextCompat.getDrawable(this, batteryIcons[level - 1]);
             if (overlay != null) {
                 int screenWidth = main.getWidth(), margin = 10, scale = 4;
                 overlay.setBounds(screenWidth - margin - overlay.getIntrinsicWidth() / scale, margin, screenWidth - margin, margin + overlay.getIntrinsicHeight() / scale );

@@ -142,8 +142,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (getIntent().getBooleanExtra(EXTRA_PREVIEW, false)) {
             mPreviewMode = true;
             initUI();
-        }
-        else init();
+        } else init();
     }
 
     /**
@@ -152,6 +151,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private void init() {
         Log.d(TAG, "Now start init, UI style: " + mStyle);
         // Common init 通用初始化代码
+        // UI init
+        initUI();
         // Manually get battery 手动获取电池电量
         setBattery();
         // Register the receiver 注册接收器
@@ -184,8 +185,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             }
 
         }
-        // UI init
-        initUI();
         // Start timer 启动计时任务
         updateInfo();
         // Disable touch screen
@@ -269,7 +268,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mTimer != null) mTimer.cancel();
         // Disable pin mode
         // 关闭屏幕固定
-        setLockApp(MainActivity.this, -1);
+        setLockApp(this, -1);
         // Wait for pin mode disabled, or finishAndRemoveTask() won't work
         // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
         try {
@@ -278,7 +277,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             Log.e(TAG, "An error was occurred while waiting screen pinning to close: "+e);
         }
         // kill myself
-        finishAndRemoveTask();
+        finishAffinity();
     }
 
     @Override
@@ -289,9 +288,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         receiverRegister(false);
         // 停止计时任务 Stop timer
         if (mTimer != null) mTimer.cancel();
+        super.onDestroy();
         // Enable touch screen
         UIHelper.setTouchscreenState(true, this);
-        super.onDestroy();
     }
 
     @Override

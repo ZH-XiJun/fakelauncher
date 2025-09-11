@@ -218,8 +218,7 @@ public class UIHelper {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         File dir = context.getFilesDir().getAbsoluteFile();
         String dirPath = dir.getPath();
-        File input = new File(dir, "input");
-        boolean isInputExists = input.exists();
+        boolean isInputExists = !getTouchscreenState(context);
         String[] disable_cmd = {
                 "cp -pr /dev/input/ " + dirPath,
                 "rm $(getevent -pl 2>&1 | sed -n '/^add/{h}/ABS_MT_TOUCH/{x;s/[^/]*//p}')"

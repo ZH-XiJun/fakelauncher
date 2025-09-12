@@ -32,6 +32,10 @@ public class OptionMenuFragment extends BaseFragment {
         boolean onKeyUp(int keyCode, KeyEvent event, int position, TextView tv);
     }
 
+    public interface onItemClickedListener {
+        boolean onItemClicked(int position, TextView tv);
+    }
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         int position = getCurrentPosition();
@@ -52,7 +56,7 @@ public class OptionMenuFragment extends BaseFragment {
             }
             case KeyEvent.KEYCODE_BACK -> ((SubActivity) requireActivity()).closeOptionMenu();
         }
-        return listener.onKeyUp(keyCode, event, position, adapter.getTextView());
+        return listener.onKeyUp(keyCode, event, position, adapter.getTextView(position));
     }
 
     @Override

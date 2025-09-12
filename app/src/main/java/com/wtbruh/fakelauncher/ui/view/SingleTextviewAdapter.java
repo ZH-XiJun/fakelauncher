@@ -11,14 +11,16 @@ import androidx.annotation.Nullable;
 
 import com.wtbruh.fakelauncher.R;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class SingleTextviewAdapter extends BaseAdapter{
     private final List<String> data;
-    public TextView tv;
+    public HashMap<Integer, TextView> tvSet;
     private int scale = 1;
     public SingleTextviewAdapter(List<String> data) {
         this.data = data;
+        tvSet = new HashMap<>();
     }
 
     @NonNull
@@ -32,7 +34,8 @@ public class SingleTextviewAdapter extends BaseAdapter{
     @Override
     public void onBindViewHolder(@NonNull BaseAdapter.ViewHolder holder, int position) {
         if (holder instanceof ViewHolder) {
-            tv = ((ViewHolder) holder).tv;
+            tvSet.put(position, ((ViewHolder) holder).tv);
+            TextView tv = ((ViewHolder) holder).tv;
             tv.setText(data.get(position));
             tv.getLayoutParams().height /= scale;
         }
@@ -45,8 +48,8 @@ public class SingleTextviewAdapter extends BaseAdapter{
     }
 
     @Nullable
-    public TextView getTextView() {
-        return tv;
+    public TextView getTextView(int position) {
+        return tvSet.get(position);
     }
 
     /**

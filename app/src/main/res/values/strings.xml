@@ -63,6 +63,9 @@
     <string name="gallery_no_photo">No photo</string>
     <string name="gallery_loading">Loading</string>
     <string name="gallery_load_failed">Load failed</string>
+    <!-- Gallery option menu -->
+    <string name="gallery_option_delete">Delete</string>
+    <string name="gallery_option_detail">Detail</string>
     <!-- Message UI hint -->
     <string name="message_empty">No message</string>
     <!-- Contacts UI hint -->

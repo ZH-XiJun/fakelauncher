@@ -61,6 +61,9 @@
     <string name="gallery_no_photo">无照片</string>
     <string name="gallery_loading">加载中</string>
     <string name="gallery_load_failed">加载失败</string>
+    <!-- 相册选项菜单 -->
+    <string name="gallery_option_delete">删除</string>
+    <string name="gallery_option_detail">详情</string>
     <!-- 短信界面文字提示 -->
     <string name="message_empty">无信息</string>
     <!-- 联系人界面文字提示 -->

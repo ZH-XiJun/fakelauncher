@@ -34,6 +34,7 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
@@ -234,9 +235,24 @@ public class GalleryFragment extends BaseFragment {
     }
 
     private void showOptionMenu() {
-        int[] selections = {
+        // 各个选项的位置
+        // Define positions of each option
+        final int OPTION_DELETE = 0,
+                OPTION_DETAIL = 1;
 
+        String[] selections = {
+                getString(R.string.gallery_option_delete),
+                getString(R.string.gallery_option_detail),
         };
+        ((SubActivity) requireActivity()).showOptionMenu(selections,
+                (keyCode, event, position, tv) -> {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+
+                        }
+                    }
+                    return true;
+                });
     }
 
     @Override

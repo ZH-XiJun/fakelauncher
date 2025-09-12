@@ -218,6 +218,11 @@ public class CameraFragment extends BaseFragment {
      * 显示选项菜单
      */
     private void showOptionMenu(){
+        // 各个选项的位置
+        // Define positions of each option
+        final int OPTION_CAPTURE_MODE = 0,
+                OPTION_SWITCH_CAMERA = 1;
+
         String[] selections = {
                 getString(R.string.camera_option_mode,
                         mode? getString(R.string.record):getString(R.string.shoot)),
@@ -233,7 +238,7 @@ public class CameraFragment extends BaseFragment {
                         case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
                             if (tv != null) {
                                 switch (position) {
-                                    case 0 -> {
+                                    case OPTION_CAPTURE_MODE -> {
                                         String modeStr;
                                         if (mode) {
                                             modeStr = getString(R.string.shoot);
@@ -247,7 +252,7 @@ public class CameraFragment extends BaseFragment {
                                         tv.setText(getString(R.string.camera_option_mode, modeStr));
                                         bindToLifecycle();
                                     }
-                                    case 1 -> {
+                                    case OPTION_SWITCH_CAMERA -> {
                                         String camera = getString(R.string.front); // fallback
 
                                         if (nowCamera == CameraSelector.DEFAULT_BACK_CAMERA) {

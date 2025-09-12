@@ -187,8 +187,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         }
         // Start timer 启动计时任务
         updateInfo();
-        // Disable touch screen
-        UIHelper.setTouchscreenState(false, this);
     }
 
     /**

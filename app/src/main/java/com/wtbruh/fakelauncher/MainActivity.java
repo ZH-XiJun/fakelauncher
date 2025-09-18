@@ -620,7 +620,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             } else {
                 if (mShowAccurateBattery) connection_view.setText(R.string.not_charging);
                 else {
-                    mBatteryChargingAnimTimer.cancel();
+                    if (mBatteryChargingAnimTimer != null) mBatteryChargingAnimTimer.cancel();
                     mBatteryChargingAnimTimer = null;
                     setBatteryIcons(mBatteryLevel);
                 }

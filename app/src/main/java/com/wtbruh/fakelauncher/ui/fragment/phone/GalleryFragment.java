@@ -248,7 +248,14 @@ public class GalleryFragment extends BaseFragment {
                 (keyCode, event, position, tv) -> {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                            switch (position) {
+                                case OPTION_DELETE -> {
 
+                                }
+                                case OPTION_DETAIL -> {
+
+                                }
+                            }
                         }
                     }
                     return true;

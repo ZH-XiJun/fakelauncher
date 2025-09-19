@@ -25,7 +25,8 @@ import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 import java.io.File;
 
 public class UIHelper {
-    private static long lastTriggerTime = 0;
+    private static long activityLaunchLastTriggerTime = 0,
+            dialogLastTriggerTime = 0;
     private static final long DEBOUNCE_TIME = 300;
 
     /**
@@ -159,14 +160,27 @@ public class UIHelper {
      * @param cls 要启动的Activity的class | the class object of the activity you wanna launch
      * @return true为调用过于频繁，false为调用频率正常 | true means too frequently, false means normal
      */
-    public static boolean intentStarterDebounce(Class<?> cls){
+    public static boolean intentStarterDebounce(Class<?> cls) {
         // Only trigger intent starter at regularly intervals
         // 只在一定间隔时间内触发代码执行
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastTriggerTime <= DEBOUNCE_TIME) return true;
-        lastTriggerTime = currentTime;
+        if (currentTime - activityLaunchLastTriggerTime <= DEBOUNCE_TIME) return true;
+        activityLaunchLastTriggerTime = currentTime;
         // If the activity is already on top, do not launch
         return ApplicationHelper.topActivity.contains(cls.getSimpleName());
+    }
+
+    /**
+     * <h3>Dialog Shower Debounce<br>
+     * 弹窗展示 防抖机制</h3>
+     * <p>Prevent calling showDialog too frequently<br>
+     * 防止过于频繁地调用showDialog</p>
+     *
+     * @return true为调用过于频繁，false为调用频率正常 | true means too frequently, false means normal
+     */
+    public static boolean showDialogDebounce() {
+        long currentTime = System.currentTimeMillis();
+        return currentTime - dialogLastTriggerTime <= DEBOUNCE_TIME;
     }
 
     /**

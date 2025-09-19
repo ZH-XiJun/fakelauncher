@@ -69,7 +69,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private final static int TIME = 0, DATE = 1, WEEK = 2;
 
     // battery
-    private int mBatteryLevel;
+    private int mBatteryLevel = 4;
     private final static int[] batteryIcons = {
             R.drawable.ic_battery_1,
             R.drawable.ic_battery_2,
@@ -525,7 +525,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 else if (battery >= 50) mBatteryLevel = 2;
                 else if (battery >= 25) mBatteryLevel = 1;
                 else mBatteryLevel = 0;
-
                 setBatteryIcons(mBatteryLevel);
             }
         }
@@ -553,6 +552,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         }
 
         float batteryPct = level * 100 / (float) scale;
+        Log.d(TAG, "batteryIcon: " + mBatteryLevel);
         return (int) batteryPct;
     }
 
@@ -604,15 +604,15 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 else {
                     mBatteryChargingAnimTimer = new Timer();
                     mBatteryChargingAnimTimer.schedule(new TimerTask() {
-                        int z = mBatteryLevel;
+                        int i = mBatteryLevel;
                         @Override
                         public void run() {
-                            if (z <= batteryIcons.length - 1) {
-                                z += 1;
+                            if (i < batteryIcons.length - 1) {
+                                i += 1;
                             } else {
-                                z = mBatteryLevel;
+                                i = mBatteryLevel;
                             }
-                            setBatteryIcons(z);
+                            setBatteryIcons(i);
                         }
                     },0,1000);
                 }
@@ -631,10 +631,15 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private void setBatteryIcons(int level) {
         View main = findViewById(R.id.Main);
         main.post( () -> {
-            Drawable overlay = ContextCompat.getDrawable(this, batteryIcons[level - 1]);
+            Drawable overlay;
+            try {
+                overlay = ContextCompat.getDrawable(this, batteryIcons[level]);
+            } catch (IndexOutOfBoundsException e) {
+                overlay = null;
+            }
             if (overlay != null) {
                 int screenWidth = main.getWidth(), margin = 10, scale = 4;
-                overlay.setBounds(screenWidth - margin - overlay.getIntrinsicWidth() / scale, margin, screenWidth - margin, margin + overlay.getIntrinsicHeight() / scale );
+                overlay.setBounds(screenWidth - margin - overlay.getIntrinsicWidth() / scale, margin, screenWidth - margin, margin + overlay.getIntrinsicHeight() / scale);
                 main.getOverlay().clear();
                 main.getOverlay().add(overlay);
             }

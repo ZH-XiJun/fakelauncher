@@ -16,6 +16,7 @@ import com.wtbruh.fakelauncher.ui.fragment.phone.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,9 +32,12 @@ import java.util.List;
 
 public class SubActivity extends BaseAppCompatActivity {
 
-    public final static int LEFT_BUTTON = R.id.leftButton;
-    public final static int CENTER_BUTTON = R.id.centerButton;
-    public final static int RIGHT_BUTTON = R.id.rightButton;
+    public final static int
+            LEFT_BUTTON = R.id.leftButton,
+            CENTER_BUTTON = R.id.centerButton,
+            RIGHT_BUTTON = R.id.rightButton;
+
+    private long lastTriggerTime = 0;
 
     private final static String TAG = SubActivity.class.getSimpleName();
 
@@ -104,6 +108,8 @@ public class SubActivity extends BaseAppCompatActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (UIHelper.debounce(lastTriggerTime, 50)) return true;
+        lastTriggerTime = System.currentTimeMillis();
         if (((BaseFragment) mCurrentFragment).onKeyUp(keyCode, event)) return true;
         return super.onKeyUp(keyCode, event);
     }

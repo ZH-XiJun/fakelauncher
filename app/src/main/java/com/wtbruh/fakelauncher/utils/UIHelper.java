@@ -25,8 +25,7 @@ import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 import java.io.File;
 
 public class UIHelper {
-    private static long activityLaunchLastTriggerTime = 0,
-            dialogLastTriggerTime = 0;
+    private static long activityLaunchLastTriggerTime = 0;
     private static final long DEBOUNCE_TIME = 300;
 
     /**
@@ -171,16 +170,16 @@ public class UIHelper {
     }
 
     /**
-     * <h3>Dialog Shower Debounce<br>
-     * 弹窗展示 防抖机制</h3>
-     * <p>Prevent calling showDialog too frequently<br>
+     * <h3>Method Call Debounce<br>
+     * 防抖机制</h3>
+     * <p>Prevent calling method too frequently<br>
      * 防止过于频繁地调用showDialog</p>
      *
      * @return true为调用过于频繁，false为调用频率正常 | true means too frequently, false means normal
      */
-    public static boolean showDialogDebounce() {
+    public static boolean debounce(long lastTriggerTime, long expectedGap) {
         long currentTime = System.currentTimeMillis();
-        return currentTime - dialogLastTriggerTime <= DEBOUNCE_TIME;
+        return currentTime - lastTriggerTime <= expectedGap;
     }
 
     /**
@@ -257,4 +256,5 @@ public class UIHelper {
     public static boolean getTouchscreenState(Context context) {
         return !new File(context.getFilesDir().getAbsoluteFile(), "input").exists();
     }
+
 }

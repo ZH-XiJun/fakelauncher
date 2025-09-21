@@ -552,7 +552,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         }
 
         float batteryPct = level * 100 / (float) scale;
-        Log.d(TAG, "batteryIcon: " + mBatteryLevel);
         return (int) batteryPct;
     }
 

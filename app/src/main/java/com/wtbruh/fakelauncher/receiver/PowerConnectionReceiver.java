@@ -22,7 +22,6 @@ public class PowerConnectionReceiver extends BroadcastReceiver {
         if (TextUtils.isEmpty(action)) {
             return;
         }
-        MainActivity a = new MainActivity();
         stat.getConnectionStatus(action);
     }
 

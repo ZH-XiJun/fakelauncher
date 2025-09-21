@@ -64,6 +64,7 @@
     <string name="gallery_success">操作成功</string>
     <string name="gallery_fail">操作失败</string>
     <string name="gallery_detail">%s\n日期：%s\n宽度：%d\n高度：%d</string>
+
     <!-- 相册选项菜单 -->
     <string name="gallery_option_delete">删除</string>
     <string name="gallery_option_detail">详情</string>

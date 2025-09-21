@@ -256,5 +256,4 @@ public class UIHelper {
     public static boolean getTouchscreenState(Context context) {
         return !new File(context.getFilesDir().getAbsoluteFile(), "input").exists();
     }
-
 }

@@ -3,19 +3,23 @@ package com.wtbruh.fakelauncher;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.ui.fragment.phone.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
+import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.lang.reflect.Method;
@@ -60,6 +64,13 @@ public class SubActivity extends BaseAppCompatActivity {
      * SubActivity 初始化
      */
     private void init() {
+        // 自动调整大小
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        float scale = (float) sp.getInt(SubSettingsFragment.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
+        if (scale > 0 && scale != 1.0) {
+            View view = findViewById(R.id.actionBar);
+            UIHelper.resizeView(scale, view);
+        }
         // 设置状态栏颜色为黑色
         getWindow().setStatusBarColor(Color.BLACK);
         // 设置底部状态栏为默认状态

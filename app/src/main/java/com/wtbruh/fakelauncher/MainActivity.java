@@ -203,6 +203,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     R.id.date,
                     R.id.lunarDate,
                     R.id.simCard,
+                    R.id.main_ActionBar
             };
             if (scale > 0 && scale != 1.0) {
                 for (int resId : simpleResizableView) {

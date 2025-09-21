@@ -38,47 +38,43 @@
     <LinearLayout
         android:id="@+id/actionBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="72dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/container">
+        app:layout_constraintTop_toBottomOf="@id/container"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/leftButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:text="@string/common_leftButton"
             android:textColor="@color/white"
-            android:textSize="48sp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            app:autoSizeTextType="uniform"/>
 
         <TextView
             android:id="@+id/centerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/common_leftButton"
-            android:textColor="@color/white"
-            android:textSize="48sp" />
-
-        <Space
             android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:text="@string/common_leftButton"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform" />
+
 
         <TextView
             android:id="@+id/rightButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:text="@string/common_rightButton"
             android:textAlignment="textEnd"
             android:textColor="@color/white"
-            android:textSize="48sp" />
+            app:autoSizeTextType="uniform" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

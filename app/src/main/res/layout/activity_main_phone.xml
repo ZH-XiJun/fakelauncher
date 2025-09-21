@@ -193,15 +193,6 @@
                 app:strokeTextColor="@color/black"
                 app:strokeTextWidth="3" />
         </LinearLayout>
-
-<!--        <ImageView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintStart_toEndOf="@id/cardProvider"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:srcCompat="@drawable/ic_charge" />-->
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -209,7 +200,7 @@
     <LinearLayout
         android:id="@+id/main_ActionBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="72dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -218,10 +209,10 @@
             app:strokeTextColor="@color/black"
             app:strokeTextWidth="3"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/main_leftButton"
             android:textColor="@color/white"
-            android:textSize="48sp" />
+            app:autoSizeTextType="uniform" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

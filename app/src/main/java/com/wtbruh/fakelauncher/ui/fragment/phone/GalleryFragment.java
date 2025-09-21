@@ -6,6 +6,8 @@ import static android.view.View.VISIBLE;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import androidx.exifinterface.media.ExifInterface;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -38,7 +41,9 @@ import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
+import java.io.FileDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,9 +147,52 @@ public class GalleryFragment extends BaseFragment {
         textHint.setText(R.string.gallery_no_photo);
     }
 
-    private void loadFailed() {
+    private void videoLoadFailed() {
         textHint.setVisibility(VISIBLE);
         textHint.setText(R.string.gallery_load_failed);
+    }
+
+    private void showDetail(HashMap<String, Uri> uriHashMap) {
+        try {
+            setFooterBar();
+            Uri photoUri = uriHashMap.get(MIME_IMAGE);
+            Uri videoUri = uriHashMap.get(MIME_VIDEO);
+            Uri uri = photoUri != null? photoUri : videoUri;
+            if (uri == null) throw new NullPointerException("Failed to get file uri from the given hashmap! None of the key match MIME_IMAGE or MIME_VIDEO. Hashmap: " + uriHashMap);
+            // Use FileDescriptor to open the file
+            ParcelFileDescriptor pfd = requireContext().getContentResolver().openFileDescriptor(uri, "r");
+            FileDescriptor fd = Objects.requireNonNull(pfd).getFileDescriptor();
+            // Get filename 获取文件名
+            DocumentFile documentFile = DocumentFile.fromSingleUri(requireContext(), uri);
+            String filename = Objects.requireNonNull(documentFile).getName();
+            // Other attributes 其他属性
+            String datetime;
+            int width;
+            int height;
+
+            if (photoUri != null) {
+                ExifInterface exifInterface = new ExifInterface(fd);
+
+                datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0);
+                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0);
+            } else {
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(fd);
+                String widthStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+                String heightStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+                datetime = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
+                width = widthStr == null ? 0 : Integer.parseInt(widthStr);
+                height = heightStr == null ? 0 : Integer.parseInt(heightStr);
+                retriever.close();
+            }
+            TextView detail = rootView.findViewById(R.id.detail);
+            detail.setVisibility(VISIBLE);
+            detail.setText(getString(R.string.gallery_detail, filename, datetime, width, height));
+            pfd.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error while checking media file detail: ", e);
+        }
     }
 
     /**
@@ -173,7 +221,7 @@ public class GalleryFragment extends BaseFragment {
 
             } catch (Exception e) {
                 Log.e(TAG, "Error during preparing mediaPlayer", e);
-                loadFailed();
+                videoLoadFailed();
                 return;
             }
             mediaPlayer.setOnPreparedListener(mediaPlayer -> {
@@ -192,7 +240,7 @@ public class GalleryFragment extends BaseFragment {
         }
     }
 
-    private void closeVideoWindow() {
+    private void closeVideoInterface() {
         if (mediaPlayer.isPlaying()) mediaPlayer.stop();
         mediaPlayer.reset();
         mediaPlayer.release();
@@ -234,6 +282,23 @@ public class GalleryFragment extends BaseFragment {
         return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
     }
 
+    private boolean backToGalleryInterface() {
+        View detail;
+        if (fullscreenView.getVisibility() == VISIBLE |
+                (detail = rootView.findViewById(R.id.detail)).getVisibility() == VISIBLE) {
+            fullscreenView.setVisibility(GONE);
+            detail.setVisibility(GONE);
+            galleryView.setVisibility(VISIBLE);
+            return true;
+        } else if (videoLayout.getVisibility() == VISIBLE ||
+                (textHint.getVisibility() == VISIBLE && textHint.getText().equals(getString(R.string.gallery_load_failed)))) {
+            closeVideoInterface();
+            setFooterBar();
+            return true;
+        }
+        return false;
+    }
+
     private void showOptionMenu() {
         // 各个选项的位置
         // Define positions of each option
@@ -248,14 +313,25 @@ public class GalleryFragment extends BaseFragment {
                 (keyCode, event, position, tv) -> {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                            int selectedPosition = adapter.getSelectedPosition();
+                            HashMap<String, Uri> uriHashMap = mPhotoUriList.get(selectedPosition);
+                            DocumentFile file;
+                            Uri selectedFileUri = uriHashMap.get(MIME_IMAGE);
+                            if (selectedFileUri == null) selectedFileUri = uriHashMap.get(MIME_VIDEO);
+                            if (selectedFileUri == null || (file = DocumentFile.fromSingleUri(requireContext(), selectedFileUri)) == null || !file.exists()) break;
+
                             switch (position) {
                                 case OPTION_DELETE -> {
+                                    file.delete();
+                                    mPhotoUriList.remove(uriHashMap);
+                                    adapter.notifyItemRemoved(selectedPosition);
+                                    backToGalleryInterface();
+                                    UIHelper.showCustomDialog(requireContext(), R.string.gallery_success, null);
 
                                 }
-                                case OPTION_DETAIL -> {
-
-                                }
+                                case OPTION_DETAIL -> showDetail(uriHashMap);
                             }
+                            ((SubActivity) requireActivity()).closeOptionMenu();
                         }
                     }
                     return true;
@@ -264,7 +340,6 @@ public class GalleryFragment extends BaseFragment {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (galleryView.getVisibility() == VISIBLE) {
@@ -323,15 +398,8 @@ public class GalleryFragment extends BaseFragment {
                 }
             }
             case KeyEvent.KEYCODE_BACK -> {
-                if (fullscreenView.getVisibility() == VISIBLE) {
-                    fullscreenView.setVisibility(GONE);
-                    galleryView.setVisibility(VISIBLE);
-                    return true;
-                } else if (videoLayout.getVisibility() == VISIBLE || (textHint.getVisibility() == VISIBLE && textHint.getText().equals(getString(R.string.gallery_load_failed)))) {
-                    closeVideoWindow();
-                    setFooterBar();
-                    return true;
-                }
+                return backToGalleryInterface();
+
             }
             case KeyEvent.KEYCODE_MENU -> showOptionMenu();
         }
@@ -339,8 +407,8 @@ public class GalleryFragment extends BaseFragment {
     }
 
     /**
-     * Read all photos in the selected directory and use Glide Engine to load photos<br>
-     * 在被授权的目录下读取所有照片，并使用Glide引擎加载照片
+     * Read all photos in the selected directory and use Glide Engine to load gallery<br>
+     * 在被授权的目录下读取所有照片，并使用Glide引擎加载相册
      * @param uri 文件夹的uri（由SAF提供）
      */
     private void readAllPhotos(Uri uri) {

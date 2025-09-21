@@ -61,6 +61,9 @@
     <string name="gallery_no_photo">无照片</string>
     <string name="gallery_loading">加载中</string>
     <string name="gallery_load_failed">加载失败</string>
+    <string name="gallery_success">操作成功</string>
+    <string name="gallery_fail">操作失败</string>
+    <string name="gallery_detail">%s\n日期：%s\n宽度：%d\n高度：%d</string>
     <!-- 相册选项菜单 -->
     <string name="gallery_option_delete">删除</string>
     <string name="gallery_option_detail">详情</string>

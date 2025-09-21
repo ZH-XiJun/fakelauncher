@@ -228,7 +228,7 @@ public class CameraFragment extends BaseFragment {
                         mode? getString(R.string.record):getString(R.string.shoot)),
                 getString(R.string.camera_option_switch_camera,
                         nowCamera == CameraSelector.DEFAULT_FRONT_CAMERA?
-                                getString(R.string.front) : getString(R.string.back))
+                                getString(R.string.back) : getString(R.string.front))
         };
 
         ((SubActivity) requireActivity()).showOptionMenu(
@@ -257,11 +257,11 @@ public class CameraFragment extends BaseFragment {
 
                                         if (nowCamera == CameraSelector.DEFAULT_BACK_CAMERA) {
                                             nowCamera = CameraSelector.DEFAULT_FRONT_CAMERA;
-                                            camera = getString(R.string.front);
+                                            camera = getString(R.string.back);
                                         }
                                         else if (nowCamera == CameraSelector.DEFAULT_FRONT_CAMERA) {
                                             nowCamera = CameraSelector.DEFAULT_BACK_CAMERA;
-                                            camera = getString(R.string.back);
+                                            camera = getString(R.string.front);
                                         }
                                         tv.setText(getString(R.string.camera_option_switch_camera, camera));
                                         startCamera();
@@ -368,10 +368,15 @@ public class CameraFragment extends BaseFragment {
 
                 // Output Options
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+                    // For old android: save video to private dir first, then copy to the destination
+                    // 老版本安卓：先保存视频到私有目录，再复制到最终保存目录
+                    // TODO: try not to rely on SAF on old Android
                     tempFile = new File(requireContext().getCacheDir(), "temp.mp4");
                     FileOutputOptions options = new FileOutputOptions.Builder(tempFile).build();
                     pr = recorder.prepareRecording(requireContext(), options);
                 } else {
+                    // Newer android: use FileDescriptor to save the file directly
+                    // 新版本安卓：直接用FileDescriptor写到最终保存目录
                     ParcelFileDescriptor pfd = requireContext().getContentResolver().openFileDescriptor(destFile.getUri(), "w");
                     if (pfd == null) throw new IOException("Failed to get file descriptor for created file. File Uri: "+destFile.getUri());
                     FileDescriptorOutputOptions options = new FileDescriptorOutputOptions.Builder(pfd).build();

@@ -373,6 +373,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         // Clear dialog on screen off
         if (dialog != null && dialog.isShowing()) dialog.dismiss();
         dialog = null;
+        mKeyLongPressed = false;
     }
     @Override
     public void onUserPresent() {}

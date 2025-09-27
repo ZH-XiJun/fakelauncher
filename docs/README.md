@@ -78,17 +78,19 @@ CI build version: [![GitHub Actions Workflow Status](https://img.shields.io/gith
 
 ## TO-DO
 
-- [x] Release v0.2
+- [ ] Release v0.3
 - [x] Support for old Android (Tested on Android 5.1, Android 13)
 - [x] Disable touch at system level (Software level at present, preventing touchable elements from appearing) (thx maidang2233)
 - [ ] Add Media Player (MP3) UI style
 - [x] ~~Add stroke text~~ Resizable text stroke width
-- [ ] Resizable elements of main UI
+- [x] Resizable elements of main UI
 - [ ] Complete Contacts page
 - [ ] Add Message page
-- [ ] ~~Video progress bar~~, select file in fullscreen photo view, option menu (Gallery)
-- [ ] Dpad action can be customized (Exit method)
-- [ ] Dialer can make a phone call (Custom calling UI may not impossible)
+- [ ] ~~Video progress bar~~, select file in fullscreen photo view, ~~option menu~~ (Gallery)
+- [ ] Open fake ui on boot
+- [ ] Block power menu and shutdown directly while long pressing power key
+- [x] Dpad action can be customized (Exit method)
+- [ ] Dialer can make a phone call
 
 ## Thanks
 - [Android](https://source.android.com/)

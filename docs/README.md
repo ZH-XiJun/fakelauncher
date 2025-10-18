@@ -91,6 +91,7 @@ CI build version: [![GitHub Actions Workflow Status](https://img.shields.io/gith
 - [ ] Block power menu and shutdown directly while long pressing power key
 - [x] Dpad action can be customized (Exit method)
 - [ ] Dialer can make a phone call
+- [ ] Hide navigation bar
 
 ## Thanks
 - [Android](https://source.android.com/)

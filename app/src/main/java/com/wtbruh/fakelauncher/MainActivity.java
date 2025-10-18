@@ -437,11 +437,18 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         setFooterBar(R.string.unlock_leftButton);
     }
     private void onUnlocked() {
+        /*
         // New dialog should be opened before closing the old one.
         Dialog dialog2;
         dialog2 = UIHelper.showCustomDialog(MainActivity.this, R.string.dialog_unlocked, null);
         if (dialog != null && dialog.isShowing()) dialog.dismiss();
         dialog = dialog2;
+        setFooterBar(R.string.main_leftButton);
+        mLocked = false;
+         */
+
+        if (dialog != null && dialog.isShowing()) dialog.dismiss();
+        dialog = UIHelper.showCustomDialog(MainActivity.this, R.string.dialog_unlocked, null);
         setFooterBar(R.string.main_leftButton);
         mLocked = false;
     }

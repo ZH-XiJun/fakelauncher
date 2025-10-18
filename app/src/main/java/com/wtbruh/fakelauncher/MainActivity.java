@@ -64,6 +64,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             STYLE_PLAYER = "player";
     private String mStyle;
 
+    // UI scale
+    private float mScale = 1;
+    // Custom dialog
     private Dialog dialog;
     // date
     private final static int TIME = 0, DATE = 1, WEEK = 2;
@@ -194,7 +197,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      */
     private void initUI() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        float scale = (float) sp.getInt(SubSettingsFragment.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
+        mScale = (float) sp.getInt(SubSettingsFragment.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
         batteryAccurate();
         if (mStyle.equals(STYLE_PLAYER)) {
             // todo: mp3 ui init
@@ -205,10 +208,10 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     R.id.simCard,
                     R.id.main_ActionBar
             };
-            if (scale > 0 && scale != 1.0) {
+            if (mScale > 0 && mScale != 1.0) {
                 for (int resId : simpleResizableView) {
                     View view = findViewById(resId);
-                    UIHelper.resizeView(scale, view);
+                    UIHelper.resizeView(mScale, view);
                 }
             }
 
@@ -226,7 +229,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 cardProvider.requestLayout();
             });
 
-            UIHelper.resizeView(scale,
+            UIHelper.resizeView(mScale,
                     findViewById(R.id.statusBar),
                     findViewById(R.id.connection),
                     findViewById(R.id.battery));
@@ -237,7 +240,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         time.post(() -> {
             boolean pref = sp.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
             if (mPreviewMode) time.setText(pref? "11:45:14" : "19:19" );
-            time.getLayoutParams().height = (int) (time.getHeight() * scale);
+            time.getLayoutParams().height = (int) (time.getHeight() * mScale);
             time.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
@@ -645,7 +648,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 overlay = null;
             }
             if (overlay != null) {
-                int screenWidth = main.getWidth(), margin = 10, scale = 4;
+                int screenWidth = main.getWidth(), margin = 10, scale = (int) (4 / mScale);
                 overlay.setBounds(screenWidth - margin - overlay.getIntrinsicWidth() / scale, margin, screenWidth - margin, margin + overlay.getIntrinsicHeight() / scale);
                 main.getOverlay().clear();
                 main.getOverlay().add(overlay);

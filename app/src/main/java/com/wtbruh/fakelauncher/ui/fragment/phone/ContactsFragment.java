@@ -30,7 +30,7 @@ import java.util.List;
  * Use the {@link ContactsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContactsFragment extends BaseFragment{
+public class ContactsFragment extends BaseFragment {
 
     private final static String TAG = ContactsFragment.class.getSimpleName();
 
@@ -78,6 +78,7 @@ public class ContactsFragment extends BaseFragment{
                         return true;
                     }
                 }
+                case KeyEvent.KEYCODE_MENU -> showOptionMenu();
             }
         }
         return false;
@@ -99,6 +100,37 @@ public class ContactsFragment extends BaseFragment{
 
         adapter = new SingleTextviewAdapter(data);
         contactsView.setAdapter(adapter);
+        setFooterBar(L_OPTION);
+    }
+
+    private void showOptionMenu() {
+        // 各个选项的位置
+        // Define positions of each option
+        final int OPTION_CALL = 0,
+                OPTION_DETAIL = 1,
+                OPTION_DELETE = 2;
+
+        final String[] selections = {
+                getString(R.string.option_call),
+                getString(R.string.option_detail),
+                getString(R.string.option_delete)
+        };
+
+        requireSubActivity().showOptionMenu(selections, (keyCode, event, position, tv) -> {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                    switch (position) {
+                        case OPTION_DELETE -> {
+                        }
+                        case OPTION_DETAIL -> requireSubActivity().fragmentStarter(ContactDetailFragment.newInstance());
+                        case OPTION_CALL -> {
+                        }
+                    }
+                    requireSubActivity().closeOptionMenu();
+                }
+            }
+            return true;
+        });
     }
 
     private void noContact() {
@@ -114,7 +146,7 @@ public class ContactsFragment extends BaseFragment{
                 null,
                 null,
                 null,
-                null    );
+                null);
         if (cursor == null) return null;
         List<String> list = new ArrayList<>();
 

@@ -268,8 +268,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         // Disable pin mode
         // 关闭屏幕固定
         setLockApp(this, -1);
-        // Wait for pin mode disabled, or finishAndRemoveTask() won't work
-        // 等待屏幕固定被关闭，不然finishAndRemoveTask()没用
+        // Wait for pin mode disabled, or finishAffinity() won't work
+        // 等待屏幕固定被关闭，不然finishAffinity()没用
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -355,7 +355,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 }
                 // Open menu UI
                 // 打开菜单界面
-                Log.d(TAG, "Pressed menu key");
                 UIHelper.intentStarter(MainActivity.this, SubActivity.class);
 
             } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
@@ -460,8 +459,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         switch (target) {
             case TIME: {
                 // Check if showing seconds
-                boolean pref = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
-                String pattern = pref ? "HH:mm:ss" : "HH:mm";
+                boolean showSecond = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
+                String pattern = showSecond ? "HH:mm:ss" : "HH:mm";
                 format = new SimpleDateFormat(pattern, Locale.getDefault());
                 break;
             }
@@ -682,13 +681,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 mReceiver.setStat(this);
                 mReceiverRegistered = true;
                 Log.d(TAG, "Receiver registered!");
-            } else Log.w(TAG, "Receiver already registered!");
+            } else Log.w(TAG, "Receiver has already registered!");
         } else {
             if (mReceiverRegistered) {
                 unregisterReceiver(mReceiver);
                 mReceiverRegistered = false;
                 Log.d(TAG, "Receiver unregistered!");
-            } else Log.w(TAG, "Receiver not registered!");
+            } else Log.w(TAG, "Receiver was not registered yet!");
         }
     }
 
@@ -709,7 +708,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             mKeyCount = 0;
             exit();
         }
-        Log.d(TAG,"validKeyCount="+ mKeyCount);
+        Log.d(TAG,"counter(): validKeyCount="+ mKeyCount);
     }
 
     /**

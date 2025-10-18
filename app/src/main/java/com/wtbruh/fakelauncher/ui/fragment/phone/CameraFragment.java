@@ -217,9 +217,9 @@ public class CameraFragment extends BaseFragment {
                 OPTION_SWITCH_CAMERA = 1;
 
         String[] selections = {
-                getString(R.string.camera_option_mode,
+                getString(R.string.option_mode,
                         mode? getString(R.string.record):getString(R.string.shoot)),
-                getString(R.string.camera_option_switch_camera,
+                getString(R.string.option_switch_camera,
                         nowCamera == CameraSelector.DEFAULT_FRONT_CAMERA?
                                 getString(R.string.back) : getString(R.string.front))
         };
@@ -242,7 +242,7 @@ public class CameraFragment extends BaseFragment {
                                             setFooterBar(C_SHOOT);
                                             mode = true;
                                         }
-                                        tv.setText(getString(R.string.camera_option_mode, modeStr));
+                                        tv.setText(getString(R.string.option_mode, modeStr));
                                         bindToLifecycle();
                                     }
                                     case OPTION_SWITCH_CAMERA -> {
@@ -256,7 +256,7 @@ public class CameraFragment extends BaseFragment {
                                             nowCamera = CameraSelector.DEFAULT_BACK_CAMERA;
                                             camera = getString(R.string.front);
                                         }
-                                        tv.setText(getString(R.string.camera_option_switch_camera, camera));
+                                        tv.setText(getString(R.string.option_switch_camera, camera));
                                         startCamera();
                                     }
                                 }

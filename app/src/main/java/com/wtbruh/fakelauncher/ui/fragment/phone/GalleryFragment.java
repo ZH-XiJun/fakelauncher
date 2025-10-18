@@ -304,9 +304,9 @@ public class GalleryFragment extends BaseFragment {
         final int OPTION_DELETE = 0,
                 OPTION_DETAIL = 1;
 
-        String[] selections = {
-                getString(R.string.gallery_option_delete),
-                getString(R.string.gallery_option_detail),
+        final String[] selections = {
+                getString(R.string.option_delete),
+                getString(R.string.option_detail),
         };
         requireSubActivity().showOptionMenu(selections,
                 (keyCode, event, position, tv) -> {

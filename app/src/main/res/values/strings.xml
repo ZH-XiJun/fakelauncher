@@ -53,12 +53,7 @@
     <string name="dialog_save_fail">Failed to save</string>
     <string name="dialog_save_success">Successfully saved</string>
     <!-- Camera option menu -->
-    <string name="camera_option_mode">Switch to %s</string>
-    <string name="record">recording</string>
-    <string name="shoot">capturing</string>
-    <string name="camera_option_switch_camera">Switch to %s camera</string>
-    <string name="front">front</string>
-    <string name="back">back</string>
+
     <!-- Gallery UI hint -->
     <string name="gallery_no_photo">No photo</string>
     <string name="gallery_loading">Loading</string>
@@ -66,15 +61,22 @@
     <string name="gallery_success">Success</string>
     <string name="gallery_fail">Failed</string>
     <string name="gallery_detail">%s\nDate: %s\nWidth: %d\nHeight: %d</string>
-    <!-- Gallery option menu -->
-    <string name="gallery_option_delete">Delete</string>
-    <string name="gallery_option_detail">Detail</string>
     <!-- Message UI hint -->
     <string name="message_empty">No message</string>
     <!-- Contacts UI hint -->
     <string name="contacts_empty">No contact</string>
     <!-- Volume UI hint -->
     <string name="volume_adjust">Volume adjust</string>
+    <!-- Option menu -->
+    <string name="option_delete">Delete</string>
+    <string name="option_detail">Detail</string>
+    <string name="option_call">Call</string>
+    <string name="option_mode">Switch to %s</string>
+    <string name="record">recording</string>
+    <string name="shoot">capturing</string>
+    <string name="option_switch_camera">Switch to %s camera</string>
+    <string name="front">front</string>
+    <string name="back">back</string>
     <!-- Preferences -->
     <string name="pref_tap_me">Tap me!</string>
     <string name="pref_caution">Be careful as the feature you\'ve enabled is not common in real feature phones</string>

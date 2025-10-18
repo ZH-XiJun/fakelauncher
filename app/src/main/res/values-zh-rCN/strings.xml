@@ -50,13 +50,6 @@
     <string name="dialog_record_fail">无法开始录制</string>
     <string name="dialog_save_fail">保存失败</string>
     <string name="dialog_save_success">保存成功</string>
-    <!-- 相机选项菜单 -->
-    <string name="camera_option_mode">切换%s</string>
-    <string name="record">录像</string>
-    <string name="shoot">拍照</string>
-    <string name="camera_option_switch_camera">切换到%s置摄像头</string>
-    <string name="front">前</string>
-    <string name="back">后</string>
     <!-- 相册界面文字提示 -->
     <string name="gallery_no_photo">无照片</string>
     <string name="gallery_loading">加载中</string>
@@ -64,15 +57,22 @@
     <string name="gallery_success">操作成功</string>
     <string name="gallery_fail">操作失败</string>
     <string name="gallery_detail">%s\n日期：%s\n宽度：%d\n高度：%d</string>
-    <!-- 相册选项菜单 -->
-    <string name="gallery_option_delete">删除</string>
-    <string name="gallery_option_detail">详情</string>
     <!-- 短信界面文字提示 -->
     <string name="message_empty">无信息</string>
     <!-- 联系人界面文字提示 -->
     <string name="contacts_empty">无联系人</string>
     <!-- 音量调节文字 -->
     <string name="volume_adjust">音量调节</string>
+    <!-- 选项菜单 -->
+    <string name="option_delete">删除</string>
+    <string name="option_detail">详情</string>
+    <string name="option_call">拨号</string>
+    <string name="option_mode">切换%s</string>
+    <string name="record">录像</string>
+    <string name="shoot">拍照</string>
+    <string name="option_switch_camera">切换到%s置摄像头</string>
+    <string name="front">前</string>
+    <string name="back">后</string>
     <!-- 软件设置文字提示 -->
     <string name="pref_tap_me">戳我！</string>
     <string name="pref_caution">慎用，该功能在真老人机中并不常见</string>

@@ -273,7 +273,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            Log.e(TAG, "An error was occurred while waiting screen pinning to close: "+e);
+            Log.e(TAG, "An error was occurred while waiting screen pinning to close: ", e);
         }
         // kill myself
         finishAffinity();

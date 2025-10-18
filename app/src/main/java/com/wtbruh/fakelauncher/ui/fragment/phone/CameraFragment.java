@@ -175,7 +175,7 @@ public class CameraFragment extends BaseFragment {
                         nowCamera,
                         preview);
             } catch (Exception e) {
-                Log.e(TAG, "An error occurred when opening camera: " + e);
+                Log.e(TAG, "An error occurred when opening camera: ", e);
                 unableToStartCamera();
             }
 
@@ -409,7 +409,7 @@ public class CameraFragment extends BaseFragment {
         } catch (Exception e) {
             isCapturing = false;
             showSaveResultDialog(false);
-            Log.e(TAG, "Error on saving photo/video: "+e);
+            Log.e(TAG, "Error on saving photo/video: ", e);
         }
     }
 
@@ -434,7 +434,7 @@ public class CameraFragment extends BaseFragment {
                 if (i != null) i.close();
                 if (o != null) o.close();
             } catch (IOException e) {
-                Log.e(TAG, "Error on closing IO stream: " + e);
+                Log.e(TAG, "Error on closing IO stream: ", e);
             }
         }
     }

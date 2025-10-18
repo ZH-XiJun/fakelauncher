@@ -25,6 +25,11 @@ import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 import java.io.File;
 
 public class UIHelper {
+    public final static int
+            EXIT_METHOD_DPAD = 0,
+            EXIT_METHOD_DIALER = 1,
+            EXIT_METHOD_SETTINGS = 2;
+
     private static long activityLaunchLastTriggerTime = 0;
     private static final long DEBOUNCE_TIME = 300;
 

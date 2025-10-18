@@ -526,7 +526,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                             .putExtra(MainActivity.EXTRA_PREVIEW, true)
             );
             case PREF_EXIT_FAKEUI_CONFIG_KEY -> {
-                if (UIHelper.checkExitMethod(requireContext(), 0)) {
+                if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_DPAD)) {
                     View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.preference_dialog_edittext, null, false);
                     dialogView.findViewById(android.R.id.edit).setVisibility(View.GONE);
                     TextView tv = dialogView.findViewById(android.R.id.message);

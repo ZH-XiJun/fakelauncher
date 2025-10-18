@@ -86,7 +86,7 @@ public class DialerFragment extends BaseFragment {
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
-            if (UIHelper.checkExitMethod(requireContext(), 1)) {
+            if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_DIALER)) {
                 Log.d(TAG,"User set dialer for exit method");
                 String secretCode = mPrefs.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "");
                 if (!secretCode.isEmpty()){

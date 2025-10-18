@@ -170,7 +170,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             setLockApp(MainActivity.this, getTaskId());
 
             // key action init
-            if (UIHelper.checkExitMethod(this, 0)) {
+            if (UIHelper.checkExitMethod(this, UIHelper.EXIT_METHOD_DPAD)) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
                 String keyActionStr = sp.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_KEY, "");
                 if (!keyActionStr.isEmpty()) {
@@ -700,7 +700,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * @param keycode 键值
      */
     private void counter(int keycode) {
-        if (! UIHelper.checkExitMethod(this, 0)) return;
+        if (! UIHelper.checkExitMethod(this, UIHelper.EXIT_METHOD_DPAD)) return;
         if (mKeyCount < 0 || mKeyCount > mKeyAction.length - 1) mKeyCount = 0;
 
         if (keycode != mKeyAction[mKeyCount]) mKeyCount = 0;

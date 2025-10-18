@@ -93,7 +93,7 @@ public class PasswordFragment extends BaseFragment {
         } else if (passwd.isEmpty()) {
             error.setText(R.string.password_empty);
             error.setVisibility(View.VISIBLE);
-        } else if (UIHelper.checkExitMethod(requireContext(), 2)) {
+        } else if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_SETTINGS)) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(requireContext());
             if (passwd.equals(pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_PASSWD, ""))) {
                 Log.d(TAG,"password correct!!!");

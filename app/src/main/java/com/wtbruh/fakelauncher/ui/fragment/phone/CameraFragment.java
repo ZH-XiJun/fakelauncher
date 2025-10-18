@@ -29,7 +29,6 @@ import androidx.camera.video.VideoRecordEvent;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import android.os.ParcelFileDescriptor;
@@ -45,7 +44,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -60,11 +58,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CameraFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CameraFragment extends BaseFragment {
     private final static String TAG = CameraFragment.class.getSimpleName();
     private CameraSelector nowCamera = CameraSelector.DEFAULT_BACK_CAMERA;
@@ -231,7 +224,7 @@ public class CameraFragment extends BaseFragment {
                                 getString(R.string.back) : getString(R.string.front))
         };
 
-        ((SubActivity) requireActivity()).showOptionMenu(
+        requireSubActivity().showOptionMenu(
                 selections,
                 (keyCode, event, position, tv) -> {
                     switch (keyCode) {

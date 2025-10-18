@@ -54,7 +54,7 @@ public class OptionMenuFragment extends BaseFragment {
                     return true;
                 }
             }
-            case KeyEvent.KEYCODE_BACK -> ((SubActivity) requireActivity()).closeOptionMenu();
+            case KeyEvent.KEYCODE_BACK -> requireSubActivity().closeOptionMenu();
         }
         return listener.onKeyUp(keyCode, event, position, adapter.getTextView(position));
     }

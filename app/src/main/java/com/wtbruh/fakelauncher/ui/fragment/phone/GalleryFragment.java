@@ -37,7 +37,6 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
@@ -309,7 +308,7 @@ public class GalleryFragment extends BaseFragment {
                 getString(R.string.gallery_option_delete),
                 getString(R.string.gallery_option_detail),
         };
-        ((SubActivity) requireActivity()).showOptionMenu(selections,
+        requireSubActivity().showOptionMenu(selections,
                 (keyCode, event, position, tv) -> {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
@@ -331,7 +330,7 @@ public class GalleryFragment extends BaseFragment {
                                 }
                                 case OPTION_DETAIL -> showDetail(uriHashMap);
                             }
-                            ((SubActivity) requireActivity()).closeOptionMenu();
+                            requireSubActivity().closeOptionMenu();
                         }
                     }
                     return true;

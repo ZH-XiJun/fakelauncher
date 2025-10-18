@@ -32,7 +32,11 @@ public abstract class BaseFragment extends Fragment {
     public abstract boolean onKeyUp(int keyCode, KeyEvent event);
 
     public void setFooterBar(String[]... texts) {
-        ((SubActivity) requireActivity()).setFooterBar(texts);
+        requireSubActivity().setFooterBar(texts);
+    }
+
+    public SubActivity requireSubActivity() {
+        return ((SubActivity) requireActivity());
     }
 
 }

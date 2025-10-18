@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:background="@color/black"
     tools:context=".ui.fragment.phone.DialerFragment">
 
     <TextView

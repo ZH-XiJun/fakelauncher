@@ -31,7 +31,6 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FakeLauncher"
         tools:targetApi="31">
         <activity
             android:name=".SplashActivity"
@@ -50,12 +49,14 @@
         </activity>
         <activity
             android:name=".ui.VolumeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.FakeLauncher"/>
         <activity
             android:name=".SettingsActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_settings_name">
+            android:label="@string/app_settings_name"
+            android:theme="@style/Theme.FakeLauncher.Settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -72,10 +73,12 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.FakeLauncher"/>
         <activity
             android:name=".SubActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.FakeLauncher"/>
 
         <receiver
             android:name=".receiver.PowerConnectionReceiver"

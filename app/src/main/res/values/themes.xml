@@ -2,10 +2,15 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.FakeLauncher" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
+        <item name="fontFamily">sans-serif</item>
     </style>
 
     <style name="Theme.FakeLauncher" parent="Base.Theme.FakeLauncher">
-        <item name="fontFamily">sans-serif</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+
+    <style name="Theme.FakeLauncher.Settings" parent="Base.Theme.FakeLauncher">
+        <item name="android:windowBackground">@color/white</item>
     </style>
 
     <style name="Theme.FakeLauncher.Dialog" parent="Theme.Material3.DayNight.Dialog">

@@ -148,7 +148,7 @@ public class PinningHook extends HookHelper {
                                     boolean interactive = (displayState == Display.STATE_ON);
 
                                     if (interactive && !beganFromNonInteractive) {
-                                        Object activityManager = XposedHelpers.getObjectField(param.thisObject, "mActivityManager");
+                                        Object activityManager = getObjectField(param.thisObject, "mActivityManager");
                                         List<?> runningTasks = (List<?>) XposedHelpers.callMethod(activityManager, "getRunningTasks", 1);
                                         ActivityManager.RunningTaskInfo runningTaskInfo = (ActivityManager.RunningTaskInfo) runningTasks.get(0);
                                         String TopClass = (String) XposedHelpers.callMethod(runningTaskInfo.topActivity, "getClassName");
@@ -179,119 +179,22 @@ public class PinningHook extends HookHelper {
 
             }
             case MODEL_BIHEE_A89 -> // BIHEE A89 Power key hook
-                    findAndHookMethod("com.android.server.policy.PhoneWindowManager", "interceptKeyBeforeQueueing", KeyEvent.class, int.class, new HookAction() {
+                    findAndHookMethod("com.android.server.policy.PhoneWindowManager", "getRunningActivityName", new HookAction() {
                         @Override
                         protected void before(MethodHookParam param) {
                             super.before(param);
-                            // Args
-                            KeyEvent event = (KeyEvent) param.args[0];
-                            int i = (int) param.args[1];
-                            int keyCode = event.getKeyCode();
-                            logI(TAG, "test1");
-                            if (keyCode == KeyEvent.KEYCODE_POWER) {
-                                logI(TAG, "test2");
-                                boolean mSystemBooted = XposedHelpers.getBooleanField(param.thisObject, "mSystemBooted");
-                                if (mSystemBooted) {
-                                    // Decompiled code from JadX
-                                    int mPendingWakeKey = -1;
-                                    int displayId = (int) XposedHelpers.callMethod(event, "getDisplayId");
-
-                                    int i2;
-                                    boolean z;
-                                    boolean z5 = event.getAction() == 0;
-                                    boolean z6 = (i & 1) != 0 || (boolean) XposedHelpers.callMethod(event, "isWakeKey");
-                                    boolean z8 = (536870912 & i) != 0;
-                                    boolean z9 = (16777216 & i) != 0;
-
-                                    Method shouldDispatchInputWhenNonInteractive = XposedHelpers.findMethodExact(
-                                            PhoneWindowManager,
-                                            "shouldDispatchInputWhenNonInteractive",
-                                            int.class,
-                                            int.class
-                                    );
-                                    shouldDispatchInputWhenNonInteractive.setAccessible(true);
-
-                                    Method isWakeKeyWhenScreenOff = XposedHelpers.findMethodExact(
-                                            PhoneWindowManager,
-                                            "isWakeKeyWhenScreenOff",
-                                            int.class
-                                    );
-                                    isWakeKeyWhenScreenOff.setAccessible(true);
-
-                                    boolean shouldDispatchInputWhenNonInteractive1;
-                                    boolean isWakeKeyWhenScreenOff1;
-                                    try {
-                                        shouldDispatchInputWhenNonInteractive1 = (boolean) shouldDispatchInputWhenNonInteractive.invoke(param.thisObject, displayId, keyCode);
-                                        isWakeKeyWhenScreenOff1 = (boolean) isWakeKeyWhenScreenOff.invoke(param.thisObject, keyCode);
-                                    } catch (Exception e) {
-                                        throw new RuntimeException(e);
-                                    }
-
-                                    if (z8 || (z9 && !z6)) {
-                                        int i3 = 1;
-                                        if (z8) {
-                                            if (keyCode == mPendingWakeKey && !z5) {
-                                                i3 = 0;
-                                            }
-                                            mPendingWakeKey = -1;
-                                            i2 = i3;
-                                        } else {
-                                            i2 = 1;
-                                        }
-                                    } else if (shouldDispatchInputWhenNonInteractive1) {
-                                        mPendingWakeKey = -1;
-                                        i2 = 1;
-                                    } else {
-                                        if (z6 && (!z5 || !isWakeKeyWhenScreenOff1)) {
-                                            z6 = false;
-                                        }
-                                        if (z6 && z5) {
-                                            mPendingWakeKey = keyCode;
-                                        }
-                                        i2 = 0;
-                                    }
-
-                                    // 替代 Display.isOnState 的判断
-                                    Object mDefaultDisplay = XposedHelpers.getObjectField(param.thisObject, "mDefaultDisplay");
-                                    int displayState = (int) XposedHelpers.callMethod(mDefaultDisplay, "getState");
-
-                                    // 直接判断 state 是否为 STATE_ON
-                                    boolean isOnState = (displayState == Display.STATE_ON);
-                                    boolean z11 = z8 && isOnState;
-
-                                    Method getRunningActivityName = XposedHelpers.findMethodExact(
-                                            PhoneWindowManager,
-                                            "getRunningActivityName"
-                                    );
-                                    getRunningActivityName.setAccessible(true);
-
-                                    // Typo in "Telecomm" must be the manufacture's fault
-                                    Method getTelecommService = XposedHelpers.findMethodExact(
-                                            PhoneWindowManager,
-                                            "getTelecommService"
-                                    );
-                                    getTelecommService.setAccessible(true);
-
-                                    String runningActivityName;
-                                    TelecomManager telecommService4;
-
-                                    try {
-                                        runningActivityName = (String) getRunningActivityName.invoke(param.thisObject);
-                                        telecommService4 = (TelecomManager) getTelecommService.invoke(param.thisObject);
-                                    } catch (Exception e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    Object mDefaultDisplayPolicy = XposedHelpers.getObjectField(param.thisObject, "mDefaultDisplayPolicy");
-                                    boolean isScreenOnFully = (boolean) XposedHelpers.callMethod(mDefaultDisplayPolicy, "isScreenOnFully");
-                                    boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(param.thisObject, "isKeyguardShowing");
-                                    if (!isScreenOnFully || !isKeyguardShowing || telecommService4 == null || telecommService4.isInCall()) {
-                                    }
-                                    logI(TAG, "BIHEE A89 test finish");
-
+                            Context mContext = (Context) getObjectField(param.thisObject, "mContext");
+                            ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+                            List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(1);
+                            if ((!runningTasks.isEmpty()) && runningTasks.get(0).topActivity != null) {
+                                String runningActivity = runningTasks.get(0).topActivity.getClassName();
+                                if (runningActivity.contains("com.wtbruh.fakelauncher") && !runningActivity.equals("com.wtbruh.fakelauncher.SettingsActivity")) {
+                                    param.setResult("com.sprd.simple.launcher.Launcher");
                                 }
                             }
                         }
                     });
+
             case MODEL_CP23NV3 -> {
                 logI(TAG, MODEL_CP23NV3);
                 findAndHookMethod("com.android.server.policy.PhoneWindowManager", "isHomeActivity", new HookAction() {

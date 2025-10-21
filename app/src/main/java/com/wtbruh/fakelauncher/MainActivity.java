@@ -101,7 +101,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private int mPreviousBattery;
     private Timer mTimer;
 
-    // key count 按键计数
+    // key detection 按键检测相关
     private int mKeyCount = 0;
     private int[] mKeyAction = {
             KeyEvent.KEYCODE_DPAD_UP,
@@ -282,6 +282,11 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         finishAffinity();
     }
 
+    private void setDialog(Dialog dialog) {
+        if (this.dialog != null && this.dialog.isShowing()) this.dialog.dismiss();
+        this.dialog = dialog;
+    }
+
     @Override
     protected void onDestroy() {
         if (getLockApp(MainActivity.this) != -1) setLockApp(MainActivity.this, -1);
@@ -322,23 +327,23 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mStyle.equals(STYLE_PHONE)) {
             if (mLocked) { // 需要解锁的情况 Need star key unlock
                 if (keyCode == KeyEvent.KEYCODE_MENU) {
-                    dialog = UIHelper.showCustomDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
+                    setDialog(UIHelper.showCustomDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
                         if (keyCode1 == KeyEvent.KEYCODE_STAR) {
                             onUnlocked();
                         }
-                        return false;
-                    });
+                        return true;
+                    }));
                 } else {
                     if (!mKeyLongPressed)
-                        dialog = UIHelper.showCustomDialog(this, R.string.dialog_long_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
+                        setDialog(UIHelper.showCustomDialog(this, R.string.dialog_long_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
                             if (keyCode1 != KeyEvent.KEYCODE_BACK) {
                                 if (keyEvent.getRepeatCount() >= 2) {
                                     mKeyLongPressed = true;
                                     onUnlocked();
                                 }
                             }
-                            return false;
-                        });
+                            return true;
+                        }));
                 }
                 // 展示提示弹窗后不会执行下面的代码
                 // The codes below will not be executed. Only show dialog
@@ -449,9 +454,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         setFooterBar(R.string.main_leftButton);
         mLocked = false;
          */
-
-        if (dialog != null && dialog.isShowing()) dialog.dismiss();
-        dialog = UIHelper.showCustomDialog(MainActivity.this, R.string.dialog_unlocked, null);
+        setDialog(UIHelper.showCustomDialog(MainActivity.this, R.string.dialog_unlocked, null));
         setFooterBar(R.string.main_leftButton);
         mLocked = false;
     }

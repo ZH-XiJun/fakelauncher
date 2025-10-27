@@ -180,7 +180,7 @@ public class PinningHook extends HookHelper {
                         });
 
             }
-            case MODEL_BIHEE_A89， MODEL_VIPME_M8 -> // BIHEE A89 & VIPME M8 Power key hook
+            case MODEL_BIHEE_A89, MODEL_VIPME_M8 -> // BIHEE A89 & VIPME M8 Power key hook
                     findAndHookMethod("com.android.server.policy.PhoneWindowManager", "getRunningActivityName", new HookAction() {
                         @Override
                         protected void before(MethodHookParam param) {

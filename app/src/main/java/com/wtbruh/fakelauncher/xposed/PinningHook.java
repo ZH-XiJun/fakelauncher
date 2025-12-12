@@ -38,6 +38,8 @@ public class PinningHook extends HookHelper {
     public final static String MODEL_CP23NV3 = "CP23NV3";
     // BIHEE A89 | 百合A89
     public final static String MODEL_BIHEE_A89 = "BIHEE A89";
+    // VIPME M8 | 誉国威 M8
+    public final static String MODEL_VIPME_M8 = "VIPME M8";
 
     // public static Context CONTEXT;
     private static int mTaskId;
@@ -178,7 +180,7 @@ public class PinningHook extends HookHelper {
                         });
 
             }
-            case MODEL_BIHEE_A89 -> // BIHEE A89 Power key hook
+            case MODEL_BIHEE_A89, MODEL_VIPME_M8 -> // BIHEE A89 & VIPME M8 Power key hook
                     findAndHookMethod("com.android.server.policy.PhoneWindowManager", "getRunningActivityName", new HookAction() {
                         @Override
                         protected void before(MethodHookParam param) {

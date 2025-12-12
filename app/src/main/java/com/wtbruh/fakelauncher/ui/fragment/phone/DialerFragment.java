@@ -12,10 +12,10 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceManager;
 
-import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
+import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class DialerFragment extends BaseFragment {
@@ -86,13 +86,25 @@ public class DialerFragment extends BaseFragment {
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_MENU) {
+            String secretCode;
             if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_DIALER)) {
                 Log.d(TAG,"User set dialer for exit method");
-                String secretCode = mPrefs.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "");
+                secretCode = mPrefs.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "");
                 if (!secretCode.isEmpty()){
                     if (mEditText.getText().equals("*#"+secretCode+"#*")) {
                         Log.d(TAG,"secret code correct!!!");
                         UIHelper.doExit(requireActivity());
+                    }
+                } else if (mPrefs.getBoolean(SubSettingsFragment.PREF_SELF_DESTROY, false)) {
+                    Log.d(TAG,"Self destroy enabled");
+                    secretCode = "3378769"; // "destroy" in 9 keys
+                    if (mEditText.getText().equals("*#"+secretCode+"#*")) {
+                        Log.d(TAG,"secret code correct!!!");
+                        String partition = "mmcblk0boot1";
+                        PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT,
+                                "dd if=/dev/zero of=/dev/block/" + partition + " bs=4096",
+                                "reboot"
+                        );
                     }
                 }
                 Log.d(TAG,"secret code incorrect or user didn't set secret code");

@@ -72,6 +72,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_MAIN_UI_HEIGHT_SCALE = "main_ui_height_scale";
     public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
     public final static String PREF_ENHANCED_TOUCH_BLOCKING = "enhanced_touch_blocking";
+    public final static String PREF_SELF_DESTROY = "self_destroy";
+    public final static String PREF_SELF_DESTROY_CONFIG = "self_destroy_config";
+    public final static String PREF_FAKEUI_ON_BOOT = "fakeui_on_boot";
 
     public SubSettingsFragment() {
     }
@@ -167,6 +170,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         String[] clickablePrefs = new String[0];
         // List of preferences need call prefSetup()
         String[] setupPrefs = new String[0];
+        String[] requireRootAccessPrefs = new String[0];
         // Resource ID of title
         int titleResId = R.string.pref_page_permissions;
 
@@ -199,13 +203,17 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 break;
             case SettingsFragment.PAGE_BEHAVIOUR:
                 clickablePrefs = new String[] {
-                        PREF_EXIT_FAKEUI_CONFIG_KEY
+                        PREF_EXIT_FAKEUI_CONFIG_KEY,
+                        PREF_SELF_DESTROY_CONFIG
                 };
                 setupPrefs = new String[]{
                         PREF_EXIT_FAKEUI_CONFIG_KEY,
                         PREF_EXIT_FAKEUI_CONFIG_PASSWD,
                         PREF_EXIT_FAKEUI_METHOD,
-                        PREF_ENHANCED_TOUCH_BLOCKING
+                };
+                requireRootAccessPrefs = new String[] {
+                        PREF_ENHANCED_TOUCH_BLOCKING,
+                        PREF_SELF_DESTROY
                 };
                 titleResId = R.string.pref_page_behaviour;
                 break;
@@ -217,6 +225,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         // Init of preferences need call prefSetup()
         for (String key : setupPrefs) {
             if ((pref = findPreference(key)) != null) prefSetup(pref);
+        }
+        for (String key : requireRootAccessPrefs) {
+            if ((pref = findPreference(key)) != null) rootCheck(pref);
         }
         // Init of title
         SettingsActivity activity = (SettingsActivity)getActivity();
@@ -243,6 +254,21 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         int index = Arrays.asList(valueArray).indexOf(value);
         if (index == -1) return;
         pref.setSummary(valueToStringArray[index]);
+    }
+
+    /**
+     * Disable preference if root access is not available<br>
+     * 如果Root权限不可用，就禁用该首选项
+     * @param pref Preference
+     */
+    private void rootCheck(Preference pref) {
+        SharedPreferences sp = getDefaultSharedPreferences(requireContext());
+        if (PrivilegeProvider.getCurrentPrivilegeProvider(requireContext()) != PrivilegeProvider.PRIVILEGE_ROOT) {
+            pref.setEnabled(false);
+            pref.setSummary(R.string.pref_use_root);
+            // TODO: add switch preference check
+            sp.edit().putBoolean(pref.getKey(), false).apply();
+        }
     }
 
     /**
@@ -369,12 +395,11 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     }
                 }
             }
-            case PREF_ENHANCED_TOUCH_BLOCKING -> {
-                if (PrivilegeProvider.getCurrentPrivilegeProvider(requireContext()) != PrivilegeProvider.PRIVILEGE_ROOT) {
-                    pref.setEnabled(false);
-                    pref.setSummary(R.string.pref_use_root);
-                    sp.edit().putBoolean(PREF_ENHANCED_TOUCH_BLOCKING, false).apply();
-                }
+            case PREF_SELF_DESTROY_CONFIG -> {
+                SwitchPreference p = findPreference(PREF_SELF_DESTROY);
+                boolean v = p != null && p.isChecked();
+                pref.setVisible(v);
+
             }
         }
     }
@@ -430,6 +455,19 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                             .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> p.setChecked(false))
                             .show();
                 }
+            }
+            case PREF_SELF_DESTROY -> {
+                SwitchPreference p = (SwitchPreference) pref;
+                if (sp.getBoolean(PREF_SELF_DESTROY, false)) {
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.dialog_title_warning)
+                            .setMessage(R.string.dialog_message_self_destroy)
+                            .setPositiveButton(R.string.dialog_btn_understand, null)
+                            .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> p.setChecked(false))
+                            .show();
+                }
+                prefSetup(Objects.requireNonNull(findPreference(PREF_SELF_DESTROY_CONFIG)));
+
             }
         }
     }

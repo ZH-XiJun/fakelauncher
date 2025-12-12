@@ -137,6 +137,9 @@
     <string name="pref_exit_password">在“输入安全密码”界面自定义密码</string>
     <string name="pref_enhanced_touch_blocking">增强型禁用触摸</string>
     <string name="pref_enhanced_touch_blocking_summary">完全禁用触控。仍在实验中！</string>
+    <string name="pref_self_destroy">自毁</string>
+    <string name="pref_self_destroy_summary">在极端情况下毁掉你的手机。仅在极端情况下使用！！</string>
+    <string name="pref_self_destroy_config">自毁功能配置</string>
 
     <string name="pref_page_about">关于</string>
     <string name="pref_page_about_summary">屎山代码作者：what_the_bruhhhh</string>
@@ -165,5 +168,6 @@
     <string name="dialog_button_copy">复制</string>
     <string name="dialog_title_warning">警告</string>
     <string name="dialog_message_enhance_touch_blocking">这个功能仍处于实验阶段。\n打开它之后，不要在使用伪装界面时强制停止程序，否则触控将不会恢复。\n如果这种情况发生了，打开设置你就能看到恢复按钮了，否则你需要重启手机才能恢复</string>
+    <string name="dialog_message_self_destroy">这个功能会使你的手机变砖！！！\n在此启用该功能后，你可以使用短信（远程控制）或拨号盘代码（本地控制）来激活此功能。激活后，软件会擦除mmcblk0boot1，这样你的手机重启就会自动进入深度刷机模式，无法正常开机\n激活该功能之前，请确保你有救砖的能力，且备份好所有的分区\n该功能仅在极端情况下激活，请不要把它当儿戏！</string>
     <string name="dialog_btn_understand">了解</string>
 </resources>

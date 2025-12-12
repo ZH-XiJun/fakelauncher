@@ -143,6 +143,9 @@
     <string name="pref_exit_password">Custom password while entering Settings in menu</string>
     <string name="pref_enhanced_touch_blocking">Enhanced touch blocking</string>
     <string name="pref_enhanced_touch_blocking_summary">Fully disable the touchscreen. STILL EXPERIMENTAL!</string>
+    <string name="pref_self_destroy">Self destroy</string>
+    <string name="pref_self_destroy_summary">Destroy your phone in extreme situation. ONLY EXTREME SITUATION!</string>
+    <string name="pref_self_destroy_config">Self destroy configuration</string>
 
     <string name="pref_page_about">About</string>
     <string name="pref_page_about_summary">Author of the mountain of shit: what_the_bruhhhh</string>
@@ -171,5 +174,6 @@
     <string name="dialog_button_copy">Copy</string>
     <string name="dialog_title_warning">Warning</string>
     <string name="dialog_message_enhance_touch_blocking">The function is still experimental.\nAfter checking it, do not force stop the program while using fake UI, or touchscreen will not be restored.\nIf the situation happened, open the settings and you will see the restore button, or you might need a reboot to make touchscreen work</string>
+    <string name="dialog_message_self_destroy">THIS FUNCTION WILL BRICK YOUR DEVICE!\nAfter enabling the function, you have 2 methods to activate it: dialer code and SMS.\nOnce activated, it will erase mmcblk0boot1, making your phone unable to boot and entering emergency download mode\nMake sure you have the ability of rescuing brick devices and have all partitions backup before activating this function!\nThe function is designed for extreme situations only. Do NOT activate it casually!</string>
     <string name="dialog_btn_understand">Understand</string>
 </resources>

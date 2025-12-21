@@ -2,6 +2,7 @@ package com.wtbruh.fakelauncher.ui.fragment.settings;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -57,5 +58,10 @@ public class AboutFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPO_URL));
             startActivity(intent);
         });
+        TextView debugVariant = rootView.findViewById(R.id.debugVariant);
+        if ((requireContext().getApplicationInfo().flags &
+                ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            debugVariant.setVisibility(View.VISIBLE);
+        }
     }
 }

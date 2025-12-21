@@ -117,7 +117,7 @@
     <string name="pref_command_activate">Deactivated, click to check activate command</string>
 
     <string name="pref_page_view">View</string>
-    <string name="pref_page_view_summary">Configurations about UI</string>
+    <string name="pref_page_view_summary">Configurations for UI</string>
     <string name="pref_style">UI style</string>
     <string name="pref_style_phone">Feature phone</string>
     <string name="pref_style_player">Media player</string>
@@ -150,6 +150,7 @@
     <string name="pref_page_about">About</string>
     <string name="pref_page_about_summary">Author of the mountain of shit: what_the_bruhhhh</string>
     <string name="pref_jump_to_github">Jump to GitHub</string>
+    <string name="pref_debug_variant">Debug version. Developer features have been enabled.</string>
 
     <string name="fun_restore_touch">Restore touchscreen</string>
     <string name="fun_restore_touch_summary">It seems that the touchscreen is still disabled outside the fake UI. Click to restore it.</string>

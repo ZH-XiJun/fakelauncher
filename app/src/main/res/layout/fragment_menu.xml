@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,27 +7,37 @@
     android:orientation="vertical"
     tools:context=".ui.fragment.phone.MenuFragment">
 
-    <Space
+    <LinearLayout
+        android:id="@+id/appIconLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_height="0dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="50dp"
+        android:gravity="bottom"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/appName">
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:srcCompat="@drawable/ic_menu_call" />
+    </LinearLayout>
 
-    <ImageView
-        android:id="@+id/appIcon"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        app:srcCompat="@drawable/ic_menu_call" />
 
-    <TextView
+    <com.wtbruh.fakelauncher.ui.widget.FitTextView
         android:id="@+id/appName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_height="144dp"
+        android:layout_marginBottom="50dp"
         android:gravity="center"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="60sp" />
+        app:autoSizeTextType="uniform"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appIconLayout"
+        tools:ignore="HardcodedText" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

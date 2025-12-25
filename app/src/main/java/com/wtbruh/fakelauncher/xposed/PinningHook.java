@@ -10,10 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
-import android.telecom.TelecomManager;
 import android.view.Display;
-import android.view.KeyEvent;
 
 
 import androidx.annotation.NonNull;
@@ -36,13 +33,16 @@ public class PinningHook extends HookHelper {
     public final static String MODEL_T508N = "T508N";
     // coolpad Golden Century Y60 | 酷派金世纪Y60
     public final static String MODEL_CP23NV3 = "CP23NV3";
-    // BIHEE A89 | 百合A89
-    public final static String MODEL_BIHEE_A89 = "BIHEE A89";
-    // VIPME M8 | 誉国威 M8
-    public final static String MODEL_VIPME_M8 = "VIPME M8";
+    // These models seems share the same set of source codes
+    // 这些手机似乎用的是同一套源码
+    public final static String[] MODEL_UNIVERSAL = {
+            "BIHEE A89",
+            "VIPME M8",
+            "angelcare K1"
+    };
 
     // public static Context CONTEXT;
-    private static int mTaskId;
+    private static int mTaskId = -1;
     private boolean mObserver = false;
     private boolean mLock = false;
     public static Handler mHandler = new LockAppHandler();
@@ -85,7 +85,7 @@ public class PinningHook extends HookHelper {
                                     mTaskId = cursor.getInt(0);
                                     cursor.close();
                                 }
-                                logI(TAG, "Get task id: " + mTaskId);
+                                logI(TAG, "Got task id: " + mTaskId);
                                 mLock = mTaskId != -1;
                                 if (mLock) {
                                     callMethod(param.thisObject, "startSystemLockTaskMode", mTaskId);
@@ -104,98 +104,113 @@ public class PinningHook extends HookHelper {
                 }
             }
         });
-
-
-
     }
     @SuppressLint("MissingPermission")
     private void hook(String model) {
         // 获取真实class
         Class<?> PhoneWindowManager = findClassIfExists("com.android.server.policy.PhoneWindowManager");
+
+        // Hook power long press behaviour, make it shut down directly instead of showing power menu
+        // 修改电源键长按逻辑，长按不显示电源菜单而是直接关机
+        findAndHookMethod("com.android.server.policy.PhoneWindowManager", "powerLongPress", long.class, new HookAction() {
+            @Override
+            protected void before(MethodHookParam param) {
+                super.before(param);
+                if (mLock) {
+                    XposedHelpers.setBooleanField(param.thisObject, "mPowerKeyHandled", true);
+                    XposedHelpers.callMethod(param.thisObject, "sendCloseSystemWindows");
+                    Object mWindowManagerFuncs = XposedHelpers.getObjectField(param.thisObject, "mWindowManagerFuncs");
+                    XposedHelpers.callMethod(mWindowManagerFuncs, "shutdown", false);
+                    param.setResult(null);
+                }
+            }
+        });
+
+
+        for (String s : MODEL_UNIVERSAL) {
+            if (s.equals(model)) {
+                findAndHookMethod("com.android.server.policy.PhoneWindowManager", "getRunningActivityName", new HookAction() {
+                    @Override
+                    protected void before(MethodHookParam param) {
+                        super.before(param);
+                        Context mContext = (Context) getObjectField(param.thisObject, "mContext");
+                        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+                        List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(1);
+                        if ((!runningTasks.isEmpty()) && runningTasks.get(0).topActivity != null) {
+                            String runningActivity = runningTasks.get(0).topActivity.getClassName();
+                            if (runningActivity.contains("com.wtbruh.fakelauncher") && !runningActivity.equals("com.wtbruh.fakelauncher.SettingsActivity")) {
+                                param.setResult("com.sprd.simple.launcher.Launcher");
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+        }
         switch (model) {
-            case MODEL_T508N -> {
-                /*
+            case MODEL_T508N -> /*
                 TCL T508N: 如果检测到我不是系统桌面，短按电源键不会熄屏，而是先返回桌面
                 反编译framework后发现相关逻辑在com.android.server.policy.PhoneWindowManager里的powerPress方法里
                 检测方法是获取最上层Activity然后跟字符串LAUNCHER_ACTIVITY_NAME对比。这玩意加了final修饰符所以不能用xposed改。
                 在此hook该方法，然后增加判断：如果最上层Activity是我自己，也执行熄屏操作
-                 */
-                findAndHookMethod("com.android.server.policy.PhoneWindowManager", "powerPress",
-                        long.class, int.class, boolean.class, new HookAction() {
-                            @Override
-                            protected void before(MethodHookParam param) {
-                                super.before(param);
-                                // 获取参数
-                                long eventTime = 0;
-                                eventTime = (long) param.args[0];
+                 */ findAndHookMethod("com.android.server.policy.PhoneWindowManager", "powerPress",
+                         long.class, int.class, boolean.class, new HookAction() {
+                             @Override
+                             protected void before(MethodHookParam param) {
+                                 super.before(param);
+                                 // 获取参数
+                                 long eventTime = 0;
+                                 eventTime = (long) param.args[0];
 
-                                // 检查 mShortPressOnPowerBehavior 是否为 1
-                                int behavior = XposedHelpers.getIntField(param.thisObject, "mShortPressOnPowerBehavior");
-                                if (behavior != 1) {
-                                    logI(TAG, "Power button behavior is not 1!");
-                                    return; // 如果不是 1，不干预
-                                }
+                                 // 检查 mShortPressOnPowerBehavior 是否为 1
+                                 int behavior = XposedHelpers.getIntField(param.thisObject, "mShortPressOnPowerBehavior");
+                                 if (behavior != 1) {
+                                     logI(TAG, "Power button behavior is not 1!");
+                                     return; // 如果不是 1，不干预
+                                 }
 
-                                // 获取参数
-                                int count = (int) param.args[1];
-                                boolean beganFromNonInteractive = (boolean) param.args[2];
+                                 // 获取参数
+                                 int count = (int) param.args[1];
+                                 boolean beganFromNonInteractive = (boolean) param.args[2];
 
-                                // 检查 count 是否为 1 且满足其他条件
-                                if (count == 1) {
-                                    // 替代 Display.isOnState 的判断
-                                    Object mDefaultDisplay = XposedHelpers.getObjectField(param.thisObject, "mDefaultDisplay");
-                                    int displayState = (int) XposedHelpers.callMethod(mDefaultDisplay, "getState");
+                                 // 检查 count 是否为 1 且满足其他条件
+                                 if (count == 1) {
+                                     // 替代 Display.isOnState 的判断
+                                     Object mDefaultDisplay = XposedHelpers.getObjectField(param.thisObject, "mDefaultDisplay");
+                                     int displayState = (int) XposedHelpers.callMethod(mDefaultDisplay, "getState");
 
-                                    // 直接判断 state 是否为 STATE_ON
-                                    boolean interactive = (displayState == Display.STATE_ON);
+                                     // 直接判断 state 是否为 STATE_ON
+                                     boolean interactive = (displayState == Display.STATE_ON);
 
-                                    if (interactive && !beganFromNonInteractive) {
-                                        Object activityManager = getObjectField(param.thisObject, "mActivityManager");
-                                        List<?> runningTasks = (List<?>) XposedHelpers.callMethod(activityManager, "getRunningTasks", 1);
-                                        ActivityManager.RunningTaskInfo runningTaskInfo = (ActivityManager.RunningTaskInfo) runningTasks.get(0);
-                                        String TopClass = (String) XposedHelpers.callMethod(runningTaskInfo.topActivity, "getClassName");
-                                        boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(
-                                                param.thisObject, "isKeyguardShowing"
-                                        );
+                                     if (interactive && !beganFromNonInteractive) {
+                                         Object activityManager = getObjectField(param.thisObject, "mActivityManager");
+                                         List<?> runningTasks = (List<?>) XposedHelpers.callMethod(activityManager, "getRunningTasks", 1);
+                                         ActivityManager.RunningTaskInfo runningTaskInfo = (ActivityManager.RunningTaskInfo) runningTasks.get(0);
+                                         String TopClass = (String) XposedHelpers.callMethod(runningTaskInfo.topActivity, "getClassName");
+                                         boolean isKeyguardShowing = (boolean) XposedHelpers.callMethod(
+                                                 param.thisObject, "isKeyguardShowing"
+                                         );
 
-                                        // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
-                                        if (TopClass.equals("com.wtbruh.fakelauncher.MainActivity") && !isKeyguardShowing) {
-                                            Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
-                                                    PhoneWindowManager,
-                                                    "sleepDefaultDisplayFromPowerButton",
-                                                    long.class,
-                                                    int.class);
-                                            sleepDefaultDisplayFromPowerButton.setAccessible(true);
-                                            try {
-                                                sleepDefaultDisplayFromPowerButton.invoke(param.thisObject, eventTime, 0);
-                                            } catch (Throwable e) {
-                                                throw new RuntimeException(e);
-                                            }
-                                            // 阻止原方法继续执行
-                                            param.setResult(null);
-                                        }
-                                    }
-                                }
-                            }
-                        });
-
-            }
-            case MODEL_BIHEE_A89, MODEL_VIPME_M8 -> // BIHEE A89 & VIPME M8 Power key hook
-                    findAndHookMethod("com.android.server.policy.PhoneWindowManager", "getRunningActivityName", new HookAction() {
-                        @Override
-                        protected void before(MethodHookParam param) {
-                            super.before(param);
-                            Context mContext = (Context) getObjectField(param.thisObject, "mContext");
-                            ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-                            List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(1);
-                            if ((!runningTasks.isEmpty()) && runningTasks.get(0).topActivity != null) {
-                                String runningActivity = runningTasks.get(0).topActivity.getClassName();
-                                if (runningActivity.contains("com.wtbruh.fakelauncher") && !runningActivity.equals("com.wtbruh.fakelauncher.SettingsActivity")) {
-                                    param.setResult("com.sprd.simple.launcher.Launcher");
-                                }
-                            }
-                        }
-                    });
+                                         // 检查条件，如果读到了com.wtbruh.fakelauncher.MainActivity也一样调用熄屏方法，原代码是调用了sleepDefaultDisplayFromPowerButton
+                                         if (TopClass.equals("com.wtbruh.fakelauncher.MainActivity") && !isKeyguardShowing) {
+                                             Method sleepDefaultDisplayFromPowerButton = XposedHelpers.findMethodExact(
+                                                     PhoneWindowManager,
+                                                     "sleepDefaultDisplayFromPowerButton",
+                                                     long.class,
+                                                     int.class);
+                                             sleepDefaultDisplayFromPowerButton.setAccessible(true);
+                                             try {
+                                                 sleepDefaultDisplayFromPowerButton.invoke(param.thisObject, eventTime, 0);
+                                             } catch (Throwable e) {
+                                                 throw new RuntimeException(e);
+                                             }
+                                             // 阻止原方法继续执行
+                                             param.setResult(null);
+                                         }
+                                     }
+                                 }
+                             }
+                         });
 
             case MODEL_CP23NV3 -> {
                 logI(TAG, MODEL_CP23NV3);
@@ -229,19 +244,14 @@ public class PinningHook extends HookHelper {
         }
     }
 
-    public int getLockApp(Context context) {
-        try {
-            return Settings.Global.getInt(context.getContentResolver(), "fakelauncher_pinmode");
-        } catch (Settings.SettingNotFoundException e) {
-            logE("LockApp", "getInt fakelauncher_pinmode will set -1 E: " + e);
-            setLockApp(context, -1);
-        }
-        return -1;
+    public static int getLockApp() {
+        return mTaskId;
     }
-
+    /*
     public static void setLockApp(Context context, int id) {
         Settings.Global.putInt(context.getContentResolver(), "fakelauncher_pinmode", id);
     }
+     */
 
     private static Context currentApplication() {
         return (Application) XposedHelpers.callStaticMethod(XposedHelpers.findClass(
@@ -274,10 +284,10 @@ public class PinningHook extends HookHelper {
             logI(TAG, "Message content: " + msg.what);
             switch (msg.what) {
                 case LOCK_APP:
-                    setLockApp(context, (int) msg.obj);
+                    //setLockApp(context, (int) msg.obj);
                     break;
                 case UNLOCK_APP:
-                    setLockApp(context, -1);
+                    //setLockApp(context, -1);
                     break;
             }
         }

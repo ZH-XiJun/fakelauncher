@@ -4,4 +4,7 @@
     <attr name="strokeTextColor" format="reference|color" />
     <!-- 文本描边粗细 -->
     <attr name="strokeTextWidth" format="reference|integer" />
+    <!-- FitTextView: 自动调整布局大小 -->
+    <attr name="fitWidth" format="reference|boolean" />
+    <attr name="fitHeight" format="reference|boolean" />
 </resources>

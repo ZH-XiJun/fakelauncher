@@ -144,6 +144,7 @@
     <string name="pref_page_about">关于</string>
     <string name="pref_page_about_summary">屎山代码作者：what_the_bruhhhh</string>
     <string name="pref_jump_to_github">跳转至GitHub</string>
+    <string name="pref_debug_variant">正在运行Debug版，开发人员功能已启用</string>
 
     <string name="fun_restore_touch">恢复触控</string>
     <string name="fun_restore_touch_summary">似乎触控在伪装界面外仍处于禁用状态，点击以恢复</string>

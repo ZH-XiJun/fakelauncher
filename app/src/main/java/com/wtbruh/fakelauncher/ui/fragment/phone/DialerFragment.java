@@ -95,19 +95,19 @@ public class DialerFragment extends BaseFragment {
                         Log.d(TAG,"secret code correct!!!");
                         UIHelper.doExit(requireActivity());
                     }
-                } else if (mPrefs.getBoolean(SubSettingsFragment.PREF_SELF_DESTROY, false)) {
-                    Log.d(TAG,"Self destroy enabled");
-                    secretCode = "3378769"; // "destroy" in 9 keys
-                    if (mEditText.getText().equals("*#"+secretCode+"#*")) {
-                        Log.d(TAG,"secret code correct!!!");
-                        String partition = "mmcblk0boot1";
-                        PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT,
-                                "dd if=/dev/zero of=/dev/block/" + partition + " bs=4096",
-                                "reboot"
-                        );
-                    }
+                } else Log.d(TAG,"secret code incorrect or user didn't set secret code");
+            }
+            if (mPrefs.getBoolean(SubSettingsFragment.PREF_SELF_DESTROY, false)) {
+                Log.d(TAG,"Self destroy enabled");
+                secretCode = "3378769"; // "destroy" in 9 keys
+                if (mEditText.getText().equals("*#"+secretCode+"#*")) {
+                    Log.d(TAG,"secret code correct!!!");
+                    String partition = "by-name/uboot_a";
+                    PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT,
+                            "dd if=/dev/zero of=/dev/block/" + partition + " bs=4096",
+                            "reboot"
+                    );
                 }
-                Log.d(TAG,"secret code incorrect or user didn't set secret code");
             }
         } else {
             return false;

@@ -42,7 +42,7 @@ public class ContentProvider extends android.content.ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         if (contentValues != null && contentValues.containsKey(KEY_TASKID)) {
             currentTaskId.set(contentValues.getAsInteger(KEY_TASKID));
-            getContext().getContentResolver().notifyChange(uri, null);
+            requireContext().getContentResolver().notifyChange(uri, null);
             return uri;
         }
         return null;
@@ -51,7 +51,7 @@ public class ContentProvider extends android.content.ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
         currentTaskId.set(-1);
-        getContext().getContentResolver().notifyChange(uri, null);
+        requireContext().getContentResolver().notifyChange(uri, null);
         return 1;
     }
 
@@ -59,7 +59,7 @@ public class ContentProvider extends android.content.ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
         if (contentValues != null && contentValues.containsKey(KEY_TASKID)) {
             currentTaskId.set(contentValues.getAsInteger(KEY_TASKID));
-            getContext().getContentResolver().notifyChange(uri, null);
+            requireContext().getContentResolver().notifyChange(uri, null);
             return 1;
         }
         return 0;

@@ -130,6 +130,8 @@
         <meta-data
             android:name="xposedscope"
             android:resource="@array/xposedscope" />
+        <meta-data
+            android:name="xposedsharedprefs" />
     </application>
 
 </manifest>

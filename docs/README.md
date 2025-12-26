@@ -88,7 +88,7 @@ CI build version: [![GitHub Actions Workflow Status](https://img.shields.io/gith
 - [ ] Add Message page
 - [ ] ~~Video progress bar~~, select file in fullscreen photo view, ~~option menu~~ (Gallery)
 - [ ] Open fake ui on boot
-- [ ] Block power menu and shutdown directly while long pressing power key
+- [x] Block power menu and shutdown directly while long pressing power key
 - [x] Dpad action can be customized (Exit method)
 - [ ] Dialer can make a phone call
 - [ ] Hide navigation bar

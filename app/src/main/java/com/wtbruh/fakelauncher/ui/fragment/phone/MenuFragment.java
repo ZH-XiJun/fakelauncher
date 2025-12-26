@@ -17,14 +17,22 @@ import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 
 public class MenuFragment extends BaseFragment {
 
-    private int mNumber = 0;
+    private int mNumber = 1;
 
-    public final static int CALL = 0; // The first app
-    public final static int CONTACT = 1;
-    public final static int SMS = 2;
-    public final static int CAMERA = 3;
-    public final static int GALLERY = 4;
-    public final static int SETTINGS = 5; // The last app
+    public final static int CALL = 1; // The first app
+    public final static int CONTACT = 2;
+    public final static int SMS = 3;
+    public final static int CAMERA = 4;
+    public final static int GALLERY = 5;
+    public final static int SETTINGS = 0; // The last app
+
+    public final static int[] ALL_APPS = {
+            CALL,
+            CONTACT,
+            SMS,
+            CAMERA,
+            GALLERY,
+    };
 
     public MenuFragment() {
         // Required empty public constructor
@@ -58,8 +66,8 @@ public class MenuFragment extends BaseFragment {
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_LEFT:
-                if (mNumber == CALL) {
-                    mNumber = SETTINGS;
+                if (mNumber == SETTINGS) {
+                    mNumber = ALL_APPS.length - 1;
                 } else {
                     mNumber--;
                 }
@@ -67,8 +75,8 @@ public class MenuFragment extends BaseFragment {
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (mNumber == SETTINGS) {
-                    mNumber = CALL;
+                if (mNumber == ALL_APPS.length - 1) {
+                    mNumber = SETTINGS;
                 } else {
                     mNumber++;
                 }

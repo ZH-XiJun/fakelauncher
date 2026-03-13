@@ -53,4 +53,15 @@
 
     <string name="pref_exit_fakeui_method_default" translatable="false">dpad</string>
 
+    <string-array name="pref_music_access_type">
+        <item>auto_search</item>
+        <item>custom_dir</item>
+    </string-array>
+
+    <string-array name="pref_music_access_type_string">
+        <item>@string/pref_music_access_type_auto_search</item>
+        <item>@string/pref_music_access_type_custom_dir</item>
+    </string-array>
+
+    <string name="pref_music_access_type_default" translatable="false">custom_dir</string>
 </resources>

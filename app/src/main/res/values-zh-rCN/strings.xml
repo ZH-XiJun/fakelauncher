@@ -87,8 +87,14 @@
     <string name="pref_grant_all_permissions">使用授权器授权所有权限</string>
     <string name="pref_grant_all_permissions_summary">记得先选择一个授权器</string>
     <string name="pref_permission_grant_status">权限授权状态</string>
+
+    <string name="pref_category_storage_access">文件访问</string>
     <string name="pref_gallery_access">选择一个路径以提供给图库访问</string>
-    <string name="pref_gallery_access_summary">使用存储访问框架 (SAF) 授权访问权限</string>
+    <string name="pref_saf_access_summary">使用存储访问框架 (SAF) 授权访问权限</string>
+    <string name="pref_music_access_type">搜索音乐的方式</string>
+    <string name="pref_music_access_type_auto_search">自动搜索</string>
+    <string name="pref_music_access_type_custom_dir">手动选择路径</string>
+    <string name="pref_music_access_saf">选择一个路径以提供音乐访问</string>
 
     <string name="pref_category_privileges">特殊权限</string>
     <string name="pref_check_xposed">Xposed模块激活状态</string>
@@ -169,6 +175,6 @@
     <string name="dialog_button_copy">复制</string>
     <string name="dialog_title_warning">警告</string>
     <string name="dialog_message_enhance_touch_blocking">这个功能仍处于实验阶段。\n打开它之后，不要在使用伪装界面时强制停止程序，否则触控将不会恢复。\n如果这种情况发生了，打开设置你就能看到恢复按钮了，否则你需要重启手机才能恢复</string>
-    <string name="dialog_message_self_destroy">这个功能会使你的手机变砖！！！\n在此启用该功能后，你可以使用短信（远程控制）或拨号盘代码（本地控制）来激活此功能。激活后，软件会擦除mmcblk0boot1，这样你的手机重启就会自动进入深度刷机模式，无法正常开机\n激活该功能之前，请确保你有救砖的能力，且备份好所有的分区\n该功能仅在极端情况下激活，请不要把它当儿戏！</string>
+    <string name="dialog_message_self_destroy">这个功能会使你的手机变砖！！！\n打开这里的开关后，你可以使用短信（远程控制）或拨号盘代码（本地控制）来激活自毁程序。激活后，软件会擦除一个分区（默认是boot），这样你的手机重启就会变砖，无法正常开机\n激活该功能之前，请确保你有救砖的能力，且备份好所有的分区\n该功能仅在极端情况下激活，请不要把它当儿戏！</string>
     <string name="dialog_btn_understand">了解</string>
 </resources>

@@ -91,8 +91,14 @@
     <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
     <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
     <string name="pref_permission_grant_status">Permissions granting status</string>
+
+    <string name="pref_category_storage_access">Storage access</string>
     <string name="pref_gallery_access">Choose a path to access pictures for gallery</string>
-    <string name="pref_gallery_access_summary">Use Storage Access Framework (SAF) to grant permission</string>
+    <string name="pref_saf_access_summary">Use Storage Access Framework (SAF) to grant permission</string>
+    <string name="pref_music_access_type">Type to find music files.</string>
+    <string name="pref_music_access_type_auto_search">Automatically search</string>
+    <string name="pref_music_access_type_custom_dir">Manually pick a music folder</string>
+    <string name="pref_music_access_saf">Choose a path to access musics for music player</string>
 
     <string name="pref_category_privileges">Privileges</string>
     <string name="pref_check_xposed">Xposed module activation status</string>
@@ -175,6 +181,8 @@
     <string name="dialog_button_copy">Copy</string>
     <string name="dialog_title_warning">Warning</string>
     <string name="dialog_message_enhance_touch_blocking">The function is still experimental.\nAfter checking it, do not force stop the program while using fake UI, or touchscreen will not be restored.\nIf the situation happened, open the settings and you will see the restore button, or you might need a reboot to make touchscreen work</string>
-    <string name="dialog_message_self_destroy">THIS FUNCTION WILL BRICK YOUR DEVICE!\nAfter enabling the function, you have 2 methods to activate it: dialer code and SMS.\nOnce activated, it will erase mmcblk0boot1, making your phone unable to boot and entering emergency download mode\nMake sure you have the ability of rescuing brick devices and have all partitions backup before activating this function!\nThe function is designed for extreme situations only. Do NOT activate it casually!</string>
+    <string name="dialog_message_self_destroy">THIS FUNCTION WILL BRICK YOUR DEVICE!\nAfter enabling the function, you have 2 methods to activate it: dialer code and SMS.\nOnce activated, it will erase a partition (default is "boot"), making your phone unable to boot.\nMake sure you have the ability of rescuing brick devices and have all partitions backup before activating this function!\nThe function is designed for extreme situations only. Do NOT activate it casually!</string>
     <string name="dialog_btn_understand">Understand</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

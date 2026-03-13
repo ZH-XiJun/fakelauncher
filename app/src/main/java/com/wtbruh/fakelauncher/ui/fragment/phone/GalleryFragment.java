@@ -126,7 +126,7 @@ public class GalleryFragment extends BaseFragment {
         });
         // 从SharedPreferences拿到用户给我们授权访问的目录的Uri
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        String uriStr = sp.getString(SubSettingsFragment.PREF_GALLERY_ACCESS_URI, "");
+        String uriStr = sp.getString(SubSettingsFragment.PREF_GALLERY_ACCESS, "");
         if (!uriStr.isEmpty()) {
             // 有东西，那就尝试读下照片
             // If URI is not empty, try to load the photos

@@ -8,17 +8,29 @@
         <Preference
             android:key="permission_grant_status"
             android:title="@string/pref_permission_grant_status" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_category_storage_access">
         <Preference
             android:key="gallery_access"
             android:title="@string/pref_gallery_access"
-            android:summary="@string/pref_gallery_access_summary" />
+            android:summary="@string/pref_saf_access_summary" />
+        <ListPreference
+            android:defaultValue="@string/pref_music_access_type_default"
+            android:key="music_access_type"
+            android:title="@string/pref_music_access_type"
+            android:entries="@array/pref_music_access_type_string"
+            android:entryValues="@array/pref_music_access_type"/>
+        <Preference
+            android:key="music_access_saf"
+            android:title="@string/pref_music_access_saf"
+            android:summary="@string/pref_saf_access_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_privileges">
         <Preference
             android:key="check_xposed"
             android:title="@string/pref_check_xposed" />
         <ListPreference
-            android:defaultValue="None"
+            android:defaultValue="@string/pref_privilege_provider_default"
             android:entries="@array/pref_privilege_provider_string"
             android:entryValues="@array/pref_privilege_provider"
             android:key="privilege_provider"

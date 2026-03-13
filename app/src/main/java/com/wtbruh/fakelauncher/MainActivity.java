@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ import androidx.preference.PreferenceManager;
 import com.rosan.dhizuku.api.Dhizuku;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
+import com.wtbruh.fakelauncher.ui.fragment.mp3.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.widget.FitTextView;
@@ -51,7 +53,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends BaseAppCompatActivity implements PowerConnectionReceiver.getStat, ScreenObserver.ScreenStateListener {
+public class MainActivity extends BaseAppCompatActivity implements PowerConnectionReceiver.getStat, ScreenObserver.ScreenStateListener, View.OnTouchListener {
 
     // extra args 额外参数
     public final static String
@@ -163,7 +165,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         // Manually get connection status 手动获取连接状态
         getConnectionStatus();
         if (mStyle.equals(STYLE_PLAYER)) {
-            // todo: mp3 ui init
+            findViewById(R.id.Main).setOnTouchListener(this);
         } else { // Default/Fallback: feature phone UI
             ScreenObserver screenObserver = new ScreenObserver(this);
             screenObserver.startScreenObserver(this);
@@ -307,6 +309,24 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     }
 
     @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Log.d(TAG,"onTouch");
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (!UIHelper.intentStarterDebounce(SubActivity.class)) {
+                startActivity(
+                        new Intent().setClass(MainActivity.this, SubActivity.class)
+                                .putExtra(SubActivity.TARGET_FRAGMENT, MusicPlayerFragment.class.getName())
+                                .putExtra(SubActivity.HIDE_ACTION_BAR, true)
+                );
+                // Disable transition anim
+                // 去掉过渡动画
+                overridePendingTransition(0, 0);
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (mStyle.equals(STYLE_PHONE)) {
             // Star key long press detection
@@ -375,11 +395,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                         // Key 0~9 0到9键
                             String.valueOf(keyCode - KeyEvent.KEYCODE_0);
                 };
-                String[] extra = {DialerFragment.class.getName(), key};
+                Bundle extra = new Bundle();
+                extra.putString(DialerFragment.ARG_INPUT, key);
                 if (!UIHelper.intentStarterDebounce(SubActivity.class)) {
                     startActivity(
                             new Intent().setClass(MainActivity.this, SubActivity.class)
-                                    .putExtra("args", extra)
+                                    .putExtra(SubActivity.TARGET_FRAGMENT, DialerFragment.class.getName())
+                                    .putExtra(SubActivity.FRAGMENT_ARGS, extra)
                     );
                     // Disable transition anim
                     // 去掉过渡动画

@@ -20,7 +20,7 @@ import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class DialerFragment extends BaseFragment {
     private final static String TAG = DialerFragment.class.getSimpleName();
-    private static final String ARG_INPUT = "input";
+    public static final String ARG_INPUT = "input";
     private SharedPreferences mPrefs;
     private TextView mEditText;
 
@@ -33,15 +33,12 @@ public class DialerFragment extends BaseFragment {
 
     /**
      * 启动该fragment时传入参数<br>
-     * 仅接受字符串数组的第二个数据
      *
-     * @param params 字符串数组组成的参数
+     * @param args Bundle打包成的参数
      * @return 带参数的Fragment
      */
-    public static DialerFragment newInstance(String[] params) {
+    public static DialerFragment newInstance(Bundle args) {
         DialerFragment fragment = new DialerFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_INPUT, params[1]);
         fragment.setArguments(args);
         return fragment;
     }

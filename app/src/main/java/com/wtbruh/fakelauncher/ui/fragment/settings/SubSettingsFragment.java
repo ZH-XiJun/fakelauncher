@@ -49,7 +49,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     private final static String TAG = SubSettingsFragment.class.getSimpleName();
     private final static String ARG_PAGE = "page";
 
-    private ActivityResultLauncher<Intent> SAFlauncher = null;
+    private ActivityResultLauncher<Intent> gallery_saf = null;
+    private ActivityResultLauncher<Intent> music_saf = null;
 
     public final static String PREF_PRIVILEGE_PROVIDER = "privilege_provider";
     public final static String PREF_EXIT_FAKEUI_CONFIG_KEY = "exit_fakeui_config_key";
@@ -66,6 +67,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_GALLERY_ACCESS = "gallery_access";
     public final static String PREF_VIBRATE_ON_START = "vibrate_on_start";
     public final static String PREF_GALLERY_ACCESS_URI = "gallery_access_uri";
+    public final static String PREF_MUSIC_ACCESS_URI = "music_access_uri";
     public final static String PREF_STYLE = "style";
     public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
     public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
@@ -75,6 +77,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_SELF_DESTROY = "self_destroy";
     public final static String PREF_SELF_DESTROY_CONFIG = "self_destroy_config";
     public final static String PREF_FAKEUI_ON_BOOT = "fakeui_on_boot";
+    public final static String PREF_MUSIC_ACCESS_TYPE = "music_access_type";
+    public final static String PREF_MUSIC_ACCESS_SAF = "music_access_saf";
 
     public SubSettingsFragment() {
     }
@@ -87,6 +91,33 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         return fragment;
     }
 
+    private ActivityResultLauncher<Intent> getSAFLauncher(String targetKeyToSave) {
+        return registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
+                        final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        Uri uri = result.getData().getData();
+                        SharedPreferences sp = getDefaultSharedPreferences(requireContext());
+                        if (uri != null) {
+                            String oldUri = sp.getString(targetKeyToSave, "");
+                            if (!oldUri.isEmpty() && !oldUri.equals(String.valueOf(uri))) {
+                                Log.d(TAG, "User has granted another directory's access permission, revoking the old one...");
+                                requireActivity().revokeUriPermission(Uri.parse(oldUri), takeFlags);
+                            }
+                            // 获取权限
+                            requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                            // 存入SharedPreferences
+                            sp.edit()
+                                    .putString(targetKeyToSave, String.valueOf(uri))
+                                    .apply();
+                        }
+                    }
+                }
+        );
+    }
+
     /**
      * Early init
      *
@@ -96,31 +127,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SAFlauncher =
-                registerForActivityResult(
-                        new ActivityResultContracts.StartActivityForResult(),
-                        result -> {
-                            if (result.getData() != null && result.getResultCode() == Activity.RESULT_OK) {
-                                final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                                Uri uri = result.getData().getData();
-                                SharedPreferences sp = getDefaultSharedPreferences(requireContext());
-                                if (uri != null) {
-                                    String oldUri = sp.getString(PREF_GALLERY_ACCESS_URI, "");
-                                    if (!oldUri.isEmpty() && !oldUri.equals(String.valueOf(uri))) {
-                                        Log.d(TAG, "User has granted another directory's access permission, revoking the old one...");
-                                        requireActivity().revokeUriPermission(Uri.parse(oldUri), takeFlags);
-                                    }
-                                    // 获取权限
-                                    requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                                    // 存入SharedPreferences
-                                    sp.edit()
-                                            .putString(PREF_GALLERY_ACCESS_URI, String.valueOf(uri))
-                                            .apply();
-                                }
-                            }
-                        }
-                );
+        gallery_saf = getSAFLauncher(PREF_GALLERY_ACCESS);
+        music_saf =  getSAFLauncher(PREF_MUSIC_ACCESS_SAF);
     }
 
     @Override
@@ -170,6 +178,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         String[] clickablePrefs = new String[0];
         // List of preferences need call prefSetup()
         String[] setupPrefs = new String[0];
+        // List of ListPreferences
+        String[] listPrefs = new String[0];
+        // List of preferences require root access
         String[] requireRootAccessPrefs = new String[0];
         // Resource ID of title
         int titleResId = R.string.pref_page_permissions;
@@ -182,12 +193,18 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         PREF_GRANT_ALL_PERMISSIONS,
                         PREF_PERMISSION_GRANT_STATUS,
                         PREF_DEACTIVATE_DEVICE_OWNER,
-                        PREF_GALLERY_ACCESS
+                        PREF_GALLERY_ACCESS,
+                        PREF_MUSIC_ACCESS_SAF
                 };
                 setupPrefs = new String[]{
-                        PREF_PRIVILEGE_PROVIDER,
                         PREF_CHECK_XPOSED,
-                        PREF_CHECK_DEVICE_ADMIN
+                        PREF_CHECK_DEVICE_ADMIN,
+                        PREF_GALLERY_ACCESS,
+                        PREF_MUSIC_ACCESS_SAF
+                };
+                listPrefs = new String[] {
+                        PREF_PRIVILEGE_PROVIDER,
+                        PREF_MUSIC_ACCESS_TYPE
                 };
                 // titleResId = R.string.pref_page_permissions;
                 break;
@@ -196,7 +213,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         PREF_TEXT_STROKE_WIDTH,
                         PREF_MAIN_UI_HEIGHT_SCALE
                 };
-                setupPrefs = new String[]{
+                listPrefs = new String[]{
                         PREF_STYLE
                 };
                 titleResId = R.string.pref_page_view;
@@ -209,6 +226,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 setupPrefs = new String[]{
                         PREF_EXIT_FAKEUI_CONFIG_KEY,
                         PREF_EXIT_FAKEUI_CONFIG_PASSWD,
+                };
+                listPrefs = new String[]{
                         PREF_EXIT_FAKEUI_METHOD,
                 };
                 requireRootAccessPrefs = new String[] {
@@ -229,6 +248,16 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         for (String key : requireRootAccessPrefs) {
             if ((pref = findPreference(key)) != null) rootCheck(pref);
         }
+        ListPreference lpref;
+        for (String key : listPrefs) {
+            if ((lpref = findPreference(key)) != null) {
+                setListPrefSummary(lpref);
+                lpref.setOnPreferenceChangeListener((preference, newValue) -> {
+                    setListPrefSummary((ListPreference) preference, (String) newValue);
+                    return true;
+                });
+            }
+        }
         // Init of title
         SettingsActivity activity = (SettingsActivity)getActivity();
         if (activity != null) activity.setToolbarTitle(titleResId);
@@ -243,14 +272,15 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
      * 然后将文字介绍设置成该ListPreference的小字简介
      *
      *
-     * @param value ListPreference目前的值
      * @param pref 这个ListPreference的对象
-     * @param valueArrayResId 该ListPreference的原始值，对应字符串数组的资源ID
-     * @param valueToStringArrayResId 该ListPreference的值转换为文字介绍后，对应的字符串数组的资源ID
      */
-    private void setListPrefSummary(String value, Preference pref, int valueArrayResId, int valueToStringArrayResId){
-        String[] valueArray = getResources().getStringArray(valueArrayResId);
-        String[] valueToStringArray = getResources().getStringArray(valueToStringArrayResId);
+    private void setListPrefSummary(ListPreference pref){
+        setListPrefSummary(pref, pref.getValue());
+    }
+
+    private void setListPrefSummary(ListPreference pref, String value){
+        CharSequence[] valueArray = pref.getEntryValues();
+        CharSequence[] valueToStringArray = pref.getEntries();
         int index = Arrays.asList(valueArray).indexOf(value);
         if (index == -1) return;
         pref.setSummary(valueToStringArray[index]);
@@ -278,7 +308,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
      */
     private void prefSetup(Preference pref) {
         SharedPreferences sp = getDefaultSharedPreferences(requireContext());
-        switch (pref.getKey()) {
+        String key = pref.getKey();
+        switch (key) {
             case PREF_PRIVILEGE_PROVIDER -> {
                 // Shizuku available on Android 6+
                 boolean shizuku = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
@@ -287,25 +318,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     p.setEntryValues(R.array.pref_privilege_provider_old);
                     p.setEntries(R.array.pref_privilege_provider_old_string);
                 }
-                setListPrefSummary(
-                        sp.getString(pref.getKey(), getString(R.string.pref_privilege_provider_default)),
-                        pref,
-                        R.array.pref_privilege_provider,
-                        R.array.pref_privilege_provider_string
-                );
             }
-            case PREF_STYLE -> setListPrefSummary(
-                    sp.getString(pref.getKey(), getString(R.string.pref_style_default)),
-                    pref,
-                    R.array.pref_style,
-                    R.array.pref_style_string
-            );
-            case PREF_EXIT_FAKEUI_METHOD -> setListPrefSummary(
-                    sp.getString(pref.getKey(), getString(R.string.pref_exit_fakeui_method_default)),
-                    pref,
-                    R.array.pref_exit_fakeui_method,
-                    R.array.pref_exit_fakeui_method_string
-            );
             case PREF_EXIT_FAKEUI_CONFIG_PASSWD -> {
                 EditTextPreference p = (EditTextPreference) pref;
                 String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
@@ -401,6 +414,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 pref.setVisible(v);
 
             }
+
+            case PREF_GALLERY_ACCESS, PREF_MUSIC_ACCESS_SAF -> onSharedPreferenceChanged(sp, key);
+
         }
     }
 
@@ -439,7 +455,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case PREF_ENABLE_DHIZUKU -> {
                 if ((pref = findPreference(PREF_CHECK_DEVICE_ADMIN)) != null) prefSetup(pref);
             }
-            case PREF_STYLE -> prefSetup(pref);
             case PREF_MAIN_UI_HEIGHT_SCALE -> {
                 SeekBarPreference p = findPreference(key);
                 if (p != null && p.getValue() == 0) p.setValue(10);
@@ -469,6 +484,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 prefSetup(Objects.requireNonNull(findPreference(PREF_SELF_DESTROY_CONFIG)));
 
             }
+
+            case PREF_GALLERY_ACCESS, PREF_MUSIC_ACCESS_SAF -> pref.setSummary(sp.getString(key, getString(R.string.pref_saf_access_summary)));
+
         }
     }
 
@@ -533,7 +551,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 }, 1000);
             }
             case PREF_GALLERY_ACCESS ->
-                    SAFlauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+                    gallery_saf.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+            case PREF_MUSIC_ACCESS_SAF ->
+                    music_saf.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
             case PREF_TEXT_STROKE_WIDTH -> {
                 View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_stroke_text, null);
                 StrokeTextView preview = view.findViewById(R.id.strokeTextPreview);

@@ -36,6 +36,14 @@ import java.util.List;
 
 public class SubActivity extends BaseAppCompatActivity {
 
+    // Args definition 参数定义
+    // Extra args for the fragment 给Fragment传的参数
+    public final static String FRAGMENT_ARGS = "fragment_args";
+    // Fragment to be launched. 要启动的Fragment
+    public final static String TARGET_FRAGMENT = "target_fragment";
+    // Is action bar going to hide 操作栏是否要被隐藏（MP3UI需要隐藏）
+    public final static String HIDE_ACTION_BAR = "actionbar";
+
     public final static int
             LEFT_BUTTON = R.id.leftButton,
             CENTER_BUTTON = R.id.centerButton,
@@ -77,18 +85,20 @@ public class SubActivity extends BaseAppCompatActivity {
         setFooterBar(BaseFragment.L_DEFAULT, BaseFragment.R_DEFAULT);
         // 获取附加数据
         Intent intent = getIntent();
-        String[] args = intent.getStringArrayExtra("args");
+        Bundle args = intent.getBundleExtra(FRAGMENT_ARGS);
+        if (intent.getBooleanExtra(HIDE_ACTION_BAR, false)) findViewById(R.id.actionBar).setVisibility(View.INVISIBLE);
+
         // 通过反射找到对应Fragment
-        String fragmentName;
+        String fragmentName = intent.getStringExtra(TARGET_FRAGMENT);
         Class<?> fragmentClass = null;
-        if (args != null && ! (fragmentName = args[0]).isEmpty()) {
-            // Get newInstance(String[] args) method
+        if (args != null && fragmentName != null &&! fragmentName.isEmpty()) {
+            // Get newInstance(Bundle args) method
             try {
                 fragmentClass = Class.forName(fragmentName);
                 if (Fragment.class.isAssignableFrom(fragmentClass)) {
-                    Method newInstance = fragmentClass.getMethod("newInstance", String[].class);
+                    Method newInstance = fragmentClass.getMethod("newInstance", Bundle.class);
                     newInstance.setAccessible(true);
-                    mCurrentFragment = (Fragment) newInstance.invoke(fragmentClass, (Object) args);
+                    mCurrentFragment = (Fragment) newInstance.invoke(fragmentClass, args);
                     return;
                 }
             } catch (ClassNotFoundException e) {

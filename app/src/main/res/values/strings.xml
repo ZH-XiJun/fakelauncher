@@ -165,6 +165,7 @@
     <string name="toast_open_settings_from_launcher">Please open settings from launcher to grant Dhizuku.</string>
     <string name="toast_reopen_to_refresh">Please reopen this page to refresh grant status.</string>
     <string name="toast_tap_to_refresh">Click me again for latest result</string>
+    <string name="toast_find_me">Find me, and enable me! </string>
 
     <!-- Dialog -->
     <string name="dialog_title_exit_dpad">D-pad key command setup</string>

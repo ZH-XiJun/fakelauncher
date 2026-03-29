@@ -19,10 +19,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.wtbruh.fakelauncher.ui.fragment.settings.AboutFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.ui.view.DualTextviewAdapter;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -84,15 +87,16 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class PermissionStatus extends AppCompatActivity {
 
-        ListView listView;
-        SimpleAdapter adapter;
-        ArrayList<HashMap<String, String>> data;
+        RecyclerView recyclerView;
+        DualTextviewAdapter adapter;
+        ArrayList<Bundle> data;
+        int[] clickedPosition;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             EdgeToEdge.enable(this);
-            setContentView(R.layout.activity_listview);
+            setContentView(R.layout.activity_permission_status);
             ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
                 Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
                 v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -108,51 +112,47 @@ public class SettingsActivity extends AppCompatActivity {
             if (requestCode == PERMISSION_REQUEST_CODE) {// If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    data = permissionGrantStatus(PrivilegeProvider.getAllPermissions(this));
-                    adapter.notifyDataSetInvalidated();
+                    data.set(clickedPosition[0], permissionGrantStatus(permissions[0]));
+                    adapter.notifyItemChanged(clickedPosition[0]);
                 }
             }
         }
         private void init() {
-            listView = findViewById(R.id.permissions_list);
+            recyclerView = findViewById(R.id.permissions_list);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
             data = permissionGrantStatus(PrivilegeProvider.getAllPermissions(this));
-            adapter = new SimpleAdapter(this,
-                    data,
-                    R.layout.listview_item,
-                    new String[] {"Item", "subItem"},
-                    new int[] {R.id.Item, R.id.subItem});
-            listView.setAdapter(adapter);
-            itemClick(listView);
+            adapter = new DualTextviewAdapter(data);
+            recyclerView.setAdapter(adapter);
+            adapter.setOnItemClickListener((position, itemTv, subItemTv) -> {
+                String permission = itemTv.getText().toString();
+                Log.d(TAG, "Clicked: "+permission);
+                clickedPosition = new int[]{position};
+                if (! PrivilegeProvider.checkPermission(PermissionStatus.this, permission)) {
+                    PrivilegeProvider.requestPermission(PermissionStatus.this, permission);
+                }
+            });
 
         }
 
-        private ArrayList<HashMap<String, String>> permissionGrantStatus(String[] permissions) {
-            ArrayList<HashMap<String, String>> list = new ArrayList<>();
+        private ArrayList<Bundle> permissionGrantStatus(String[] permissions) {
+            ArrayList<Bundle> list = new ArrayList<>();
 
             for(String permission : permissions)
             {
-                HashMap<String, String> map = new HashMap<>();
-                map.put("Item", permission);
-                if (PrivilegeProvider.checkPermission(PermissionStatus.this, permission)) {
-                    map.put("subItem", getResources().getString(R.string.pref_check_privilege_granted));
-                } else {
-                    map.put("subItem", getResources().getString(R.string.pref_check_privilege_denied));
-                }
-                list.add(map);
+                list.add(permissionGrantStatus(permission));
             }
             return list;
         }
 
-        private void itemClick(ListView listView) {
-            listView.setOnItemClickListener((parent, view, position, id) -> {
-                TextView textView = view.findViewById(R.id.Item);
-                String permission = textView.getText().toString();
-                Log.d(TAG, "Clicked: "+permission);
-                if (! PrivilegeProvider.checkPermission(PermissionStatus.this, permission)) {
-                    PrivilegeProvider.requestPermission(PermissionStatus.this, permission);
-                    Toast.makeText(PermissionStatus.this, R.string.toast_reopen_to_refresh, Toast.LENGTH_SHORT).show();
-                }
-            });
+        private Bundle permissionGrantStatus(String permission) {
+            Bundle b = new Bundle();
+            b.putString(DualTextviewAdapter.ITEM, permission);
+            if (PrivilegeProvider.checkPermission(PermissionStatus.this, permission)) {
+                b.putString(DualTextviewAdapter.SUB_ITEM, getResources().getString(R.string.pref_check_privilege_granted));
+            } else {
+                b.putString(DualTextviewAdapter.SUB_ITEM, getResources().getString(R.string.pref_check_privilege_denied));
+            }
+            return b;
         }
     }
 }

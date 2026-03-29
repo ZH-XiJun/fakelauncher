@@ -66,8 +66,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     public final static String PREF_DPAD_CENTER_OPEN_MENU = "dpad_center_open_menu";
     public final static String PREF_GALLERY_ACCESS = "gallery_access";
     public final static String PREF_VIBRATE_ON_START = "vibrate_on_start";
-    public final static String PREF_GALLERY_ACCESS_URI = "gallery_access_uri";
-    public final static String PREF_MUSIC_ACCESS_URI = "music_access_uri";
     public final static String PREF_STYLE = "style";
     public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
     public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
@@ -112,6 +110,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                             sp.edit()
                                     .putString(targetKeyToSave, String.valueOf(uri))
                                     .apply();
+                            Preference pref = findPreference(targetKeyToSave);
+                            if (pref != null) pref.setSummary(sp.getString(targetKeyToSave, getString(R.string.pref_saf_access_summary)));
                         }
                     }
                 }
@@ -415,8 +415,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
             }
 
-            case PREF_GALLERY_ACCESS, PREF_MUSIC_ACCESS_SAF -> onSharedPreferenceChanged(sp, key);
-
+            case PREF_GALLERY_ACCESS, PREF_MUSIC_ACCESS_SAF -> pref.setSummary(sp.getString(key, getString(R.string.pref_saf_access_summary)));
         }
     }
 
@@ -484,9 +483,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 prefSetup(Objects.requireNonNull(findPreference(PREF_SELF_DESTROY_CONFIG)));
 
             }
-
-            case PREF_GALLERY_ACCESS, PREF_MUSIC_ACCESS_SAF -> pref.setSummary(sp.getString(key, getString(R.string.pref_saf_access_summary)));
-
         }
     }
 

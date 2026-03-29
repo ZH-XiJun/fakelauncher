@@ -159,6 +159,7 @@
     <string name="toast_open_settings_from_launcher">请从启动器打开设置，才能授权Dhizuku</string>
     <string name="toast_reopen_to_refresh">请重新打开本页面，以刷新授权情况</string>
     <string name="toast_tap_to_refresh">再点我一遍以得到最新结果</string>
+    <string name="toast_find_me">找到我，然后启用我！</string>
 
     <!-- 弹窗 -->
     <string name="dialog_title_exit_dpad">方向键按键指令退出设置</string>

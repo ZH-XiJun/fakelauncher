@@ -2,22 +2,27 @@
 agp = "8.9.0"
 hiddenapibypass = "6.1"
 shizukuApi = "13.1.5"
+streamsupport = "1.7.4"
 xposedApi = "82"
 cameraCore = "1.4.2"
 cameraCamera2 = "1.4.2"
 cameraLifecycle = "1.4.2"
-dhizukuApi = "2.5.3"
-glide = "4.16.0"
+glide = "5.0.5"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 material = "1.10.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 preferenceVersion = "1.2.1"
 navigationFragment = "2.6.0"
 navigationUi = "2.6.0"
+kotlin = "2.3.20"
+coreKtx = "1.13.1"
+# Do not upgrade them. They are set to the maximum version supported by Android 5.
+dhizukuApi = "2.5.3"
+media3Session = "1.8.0"
 
 [libraries]
 androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCore" }
@@ -26,6 +31,7 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
 androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
+androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "media3Session" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizukuApi" }
 dhizuku-api = { module = "io.github.iamr0s:Dhizuku-API", version.ref = "dhizukuApi" }
@@ -38,11 +44,14 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizukuApi" }
+streamsupport = { module = "net.sourceforge.streamsupport:streamsupport", version.ref = "streamsupport" }
 xposed-api = { module = "de.robv.android.xposed:api", version.ref = "xposedApi" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preferenceVersion" }
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 

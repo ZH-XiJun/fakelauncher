@@ -91,30 +91,30 @@ public class SubActivity extends BaseAppCompatActivity {
         // 通过反射找到对应Fragment
         String fragmentName = intent.getStringExtra(TARGET_FRAGMENT);
         Class<?> fragmentClass = null;
-        if (args != null && fragmentName != null &&! fragmentName.isEmpty()) {
+        if (fragmentName != null &&! fragmentName.isEmpty()) {
             // Get newInstance(Bundle args) method
             try {
                 fragmentClass = Class.forName(fragmentName);
-                if (Fragment.class.isAssignableFrom(fragmentClass)) {
+                if (args != null && Fragment.class.isAssignableFrom(fragmentClass)) {
                     Method newInstance = fragmentClass.getMethod("newInstance", Bundle.class);
                     newInstance.setAccessible(true);
                     mCurrentFragment = (Fragment) newInstance.invoke(fragmentClass, args);
                     return;
                 }
             } catch (ClassNotFoundException e) {
-                Log.e(TAG, "Got a non-existent class: "+e);
+                Log.e(TAG, "Got a non-existent class", e);
                 return;
             } catch (NoSuchMethodException e) {
-                Log.e(TAG, "Class doesn't have newInstance() accepts parameters: " + e);
+                Log.e(TAG, "Args were given, but the class doesn't have newInstance() accepts parameters. Falling back to default newInstance()", e);
             } catch (Exception e) {
-                Log.e(TAG, "Got error: "+e);
+                Log.e(TAG, "Got unexpected error", e);
                 return;
             }
             // Get newInstance() method
             try {
                 mCurrentFragment = (Fragment) fragmentClass.newInstance();
             } catch (Exception e) {
-                Log.e(TAG, "Got error: "+e);
+                Log.e(TAG, "Got unexpected error", e);
             }
         }
     }

@@ -10,6 +10,7 @@ import android.app.admin.DevicePolicyManager;
 import android.app.admin.IDevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -22,6 +23,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
 
 import com.rosan.dhizuku.api.Dhizuku;
@@ -92,6 +94,9 @@ public class PrivilegeProvider {
     public static boolean checkPermission(Context context, String item) {
         if (item.equals(Manifest.permission.WRITE_SETTINGS) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.System.canWrite(context);
+        } else if (item.equals("android.permission.BIND_NOTIFICATION_LISTENER_SERVICE")) {
+            return NotificationManagerCompat.getEnabledListenerPackages(context)
+                    .contains("com.wtbruh.fakelauncher");
         }
         PackageManager pm = context.getPackageManager();
         int result = pm.checkPermission(item, context.getPackageName());
@@ -106,6 +111,13 @@ public class PrivilegeProvider {
      * @param item 要请求的权限，可以多个 | Permissions to request. Allow multiple
      */
     public static void requestPermission(Activity activity, String... item) {
+        for (String permission: item) {
+            if (permission.equals("android.permission.BIND_NOTIFICATION_LISTENER_SERVICE")) {
+                Toast.makeText(activity, R.string.toast_find_me, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                activity.startActivity(intent);
+            }
+        }
         requestPermissions(activity, item, PERMISSION_REQUEST_CODE);
     }
 

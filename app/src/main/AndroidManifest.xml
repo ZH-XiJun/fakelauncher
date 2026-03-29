@@ -20,9 +20,12 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
-        android:name=".utils.ApplicationHelper"
+        android:name=".ApplicationHelper"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -69,6 +72,7 @@
         </activity>
         <activity
             android:name=".SettingsActivity$PermissionStatus"
+            android:theme="@style/Theme.FakeLauncher.Settings"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -79,6 +83,15 @@
             android:name=".SubActivity"
             android:exported="false"
             android:theme="@style/Theme.FakeLauncher"/>
+
+        <service
+            android:name=".service.NotificationListenerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".receiver.PowerConnectionReceiver"

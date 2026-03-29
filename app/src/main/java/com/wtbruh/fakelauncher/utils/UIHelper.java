@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
+import com.wtbruh.fakelauncher.ApplicationHelper;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;

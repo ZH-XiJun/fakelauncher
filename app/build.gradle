@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -49,6 +50,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 }
 
 dependencies {
@@ -60,6 +64,7 @@ dependencies {
     implementation libs.androidx.preference
     implementation libs.androidx.navigation.fragment
     implementation libs.androidx.navigation.ui
+    implementation libs.androidx.core.ktx
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -73,6 +78,7 @@ dependencies {
     implementation libs.androidx.camera.view
     implementation libs.androidx.camera.extensions
 
+    // Hidden API Bypass
     implementation libs.hiddenapibypass
     // Shizuku API
     implementation libs.shizuku.api
@@ -83,4 +89,8 @@ dependencies {
     compileOnly libs.xposed.api
     // Glide Engine
     implementation libs.glide
+    // Media3
+    implementation libs.androidx.media3.session
+    // Java8 Stream API Support
+    implementation libs.streamsupport
 }

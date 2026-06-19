@@ -33,7 +33,7 @@ import com.wtbruh.fakelauncher.IUserService;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.service.UserService;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
@@ -264,7 +264,7 @@ public class PrivilegeProvider {
     public static int getCurrentPrivilegeProvider(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         return privilegeToInt(
-                sp.getString(SubSettingsFragment.PREF_PRIVILEGE_PROVIDER,
+                sp.getString(SettingsConstants.PREF_PRIVILEGE_PROVIDER,
                 getString(context, R.string.pref_privilege_provider_default))
         );
 
@@ -340,7 +340,7 @@ public class PrivilegeProvider {
      */
     public static int checkDeviceAdmin(Context context) {
         boolean dhizuku = PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(SubSettingsFragment.PREF_ENABLE_DHIZUKU, false);
+                .getBoolean(SettingsConstants.PREF_ENABLE_DHIZUKU, false);
 
         if (dhizuku) {
             Log.d(TAG, "Requesting dhizuku");

@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 
 public class StrokeTextView extends FitTextView implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final int[] STROKE_ATTRS = new int[]{R.attr.strokeTextColor, R.attr.strokeTextWidth};
@@ -35,14 +35,14 @@ public class StrokeTextView extends FitTextView implements SharedPreferences.OnS
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, STROKE_ATTRS, defStyleAttr, 0);
         strokeColor = typedArray.getColor(0, 0);
-        strokeWidth = sp.getInt(SubSettingsFragment.PREF_TEXT_STROKE_WIDTH, typedArray.getInt(1, 3));
+        strokeWidth = sp.getInt(SettingsConstants.PREF_TEXT_STROKE_WIDTH, typedArray.getInt(1, 3));
 
         typedArray.recycle();
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, @Nullable String key) {
-        if (key != null && key.equals(SubSettingsFragment.PREF_TEXT_STROKE_WIDTH)) {
+        if (key != null && key.equals(SettingsConstants.PREF_TEXT_STROKE_WIDTH)) {
             setStrokeWidth(sp.getInt(key, strokeWidth));
         }
     }

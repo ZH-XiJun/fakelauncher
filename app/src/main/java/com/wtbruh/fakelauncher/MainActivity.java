@@ -36,7 +36,7 @@ import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
 import com.wtbruh.fakelauncher.ui.fragment.player.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.LunarCalender;
@@ -129,7 +129,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         // Switch UI style
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String mDefaultStyle = getResources().getString(R.string.pref_style_default);
-        mStyle = pref.getString(SubSettingsFragment.PREF_STYLE, mDefaultStyle);
+        mStyle = pref.getString(SettingsConstants.PREF_STYLE, mDefaultStyle);
         if (mStyle.equals(STYLE_PLAYER)) {
             setContentView(R.layout.activity_main_player);
         } else {
@@ -176,7 +176,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             // key action init
             if (UIHelper.checkExitMethod(this, UIHelper.EXIT_METHOD_DPAD)) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-                String keyActionStr = sp.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_KEY, "");
+                String keyActionStr = sp.getString(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY, "");
                 if (!keyActionStr.isEmpty()) {
                     String[] array = keyActionStr.split(",");
                     mKeyAction = new int[array.length];
@@ -198,7 +198,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      */
     private void initUI() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        mScale = (float) sp.getInt(SubSettingsFragment.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
+        mScale = (float) sp.getInt(SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
         batteryAccurate();
         if (mStyle.equals(STYLE_PLAYER)) {
             // todo: mp3 ui init
@@ -239,7 +239,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         // 时间字体大小自适应适配
         FitTextView time = findViewById(R.id.time);
         time.post(() -> {
-            boolean pref = sp.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
+            boolean pref = sp.getBoolean(SettingsConstants.PREF_TIME_SHOW_SECOND, false);
             if (mPreviewMode) time.setText(pref? "11:45:14" : "19:19" );
             time.getLayoutParams().height = (int) (time.getHeight() * mScale);
             time.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -377,7 +377,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
                     if (!PreferenceManager.getDefaultSharedPreferences(this)
-                            .getBoolean(SubSettingsFragment.PREF_DPAD_CENTER_OPEN_MENU, false)
+                            .getBoolean(SettingsConstants.PREF_DPAD_CENTER_OPEN_MENU, false)
                     ) return super.onKeyUp(keyCode, event);
                 }
                 // Open menu UI
@@ -493,7 +493,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         switch (target) {
             case TIME: {
                 // Check if showing seconds
-                boolean showSecond = defaultPref.getBoolean(SubSettingsFragment.PREF_TIME_SHOW_SECOND, false);
+                boolean showSecond = defaultPref.getBoolean(SettingsConstants.PREF_TIME_SHOW_SECOND, false);
                 String pattern = showSecond ? "HH:mm:ss" : "HH:mm";
                 format = new SimpleDateFormat(pattern, Locale.getDefault());
                 break;
@@ -693,7 +693,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     default -> findViewById(R.id.lunarDate); // case STYLE_PHONE
                 };
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mShowAccurateBattery = sharedPrefs.getBoolean(SubSettingsFragment.PREF_SHOW_ACCURATE_BATTERY, false);
+        mShowAccurateBattery = sharedPrefs.getBoolean(SettingsConstants.PREF_SHOW_ACCURATE_BATTERY, false);
         statusBarView.setVisibility(mShowAccurateBattery? View.VISIBLE : View.INVISIBLE);
         if (mStyle.equals(STYLE_PHONE)) dateView.setVisibility(mShowAccurateBattery? View.INVISIBLE : View.VISIBLE);
 

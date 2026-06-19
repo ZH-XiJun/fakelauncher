@@ -36,6 +36,7 @@ import androidx.preference.SwitchPreference;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.preference.SeekBarPreference;
 import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -51,32 +52,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
     private ActivityResultLauncher<Intent> gallery_saf = null;
     private ActivityResultLauncher<Intent> music_saf = null;
-
-    public final static String PREF_PRIVILEGE_PROVIDER = "privilege_provider";
-    public final static String PREF_EXIT_FAKEUI_CONFIG_KEY = "exit_fakeui_config_key";
-    public final static String PREF_EXIT_FAKEUI_CONFIG_PASSWD = "exit_fakeui_config_passwd";
-    public final static String PREF_EXIT_FAKEUI_METHOD = "exit_fakeui_method";
-    public final static String PREF_CHECK_PRIVILEGE = "check_privilege";
-    public final static String PREF_CHECK_DEVICE_ADMIN = "check_device_admin";
-    public final static String PREF_ENABLE_DHIZUKU = "enable_dhizuku";
-    public final static String PREF_PERMISSION_GRANT_STATUS = "permission_grant_status";
-    public final static String PREF_CHECK_XPOSED = "check_xposed";
-    public final static String PREF_GRANT_ALL_PERMISSIONS = "grant_all_permissions";
-    public final static String PREF_DEACTIVATE_DEVICE_OWNER = "deactivate_device_owner";
-    public final static String PREF_DPAD_CENTER_OPEN_MENU = "dpad_center_open_menu";
-    public final static String PREF_GALLERY_ACCESS = "gallery_access";
-    public final static String PREF_VIBRATE_ON_START = "vibrate_on_start";
-    public final static String PREF_STYLE = "style";
-    public final static String PREF_TIME_SHOW_SECOND = "time_show_second";
-    public final static String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
-    public final static String PREF_MAIN_UI_HEIGHT_SCALE = "main_ui_height_scale";
-    public final static String PREF_TEXT_STROKE_WIDTH = "text_stroke_width";
-    public final static String PREF_ENHANCED_TOUCH_BLOCKING = "enhanced_touch_blocking";
-    public final static String PREF_SELF_DESTROY = "self_destroy";
-    public final static String PREF_SELF_DESTROY_CONFIG = "self_destroy_config";
-    public final static String PREF_FAKEUI_ON_BOOT = "fakeui_on_boot";
-    public final static String PREF_MUSIC_ACCESS_TYPE = "music_access_type";
-    public final static String PREF_MUSIC_ACCESS_SAF = "music_access_saf";
 
     public SubSettingsFragment() {
     }
@@ -127,8 +102,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gallery_saf = getSAFLauncher(PREF_GALLERY_ACCESS);
-        music_saf =  getSAFLauncher(PREF_MUSIC_ACCESS_SAF);
+        gallery_saf = getSAFLauncher(SettingsConstants.PREF_GALLERY_ACCESS);
+        music_saf =  getSAFLauncher(SettingsConstants.PREF_MUSIC_ACCESS_SAF);
     }
 
     @Override
@@ -188,51 +163,51 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         switch (page) {
             case SettingsFragment.PAGE_PERMISSION:
                 clickablePrefs = new String[]{
-                        PREF_CHECK_PRIVILEGE,
-                        PREF_CHECK_DEVICE_ADMIN,
-                        PREF_GRANT_ALL_PERMISSIONS,
-                        PREF_PERMISSION_GRANT_STATUS,
-                        PREF_DEACTIVATE_DEVICE_OWNER,
-                        PREF_GALLERY_ACCESS,
-                        PREF_MUSIC_ACCESS_SAF
+                        SettingsConstants.PREF_CHECK_PRIVILEGE,
+                        SettingsConstants.PREF_CHECK_DEVICE_ADMIN,
+                        SettingsConstants.PREF_GRANT_ALL_PERMISSIONS,
+                        SettingsConstants.PREF_PERMISSION_GRANT_STATUS,
+                        SettingsConstants.PREF_DEACTIVATE_DEVICE_OWNER,
+                        SettingsConstants.PREF_GALLERY_ACCESS,
+                        SettingsConstants.PREF_MUSIC_ACCESS_SAF
                 };
                 setupPrefs = new String[]{
-                        PREF_CHECK_XPOSED,
-                        PREF_CHECK_DEVICE_ADMIN,
-                        PREF_GALLERY_ACCESS,
-                        PREF_MUSIC_ACCESS_SAF
+                        SettingsConstants.PREF_CHECK_XPOSED,
+                        SettingsConstants.PREF_CHECK_DEVICE_ADMIN,
+                        SettingsConstants.PREF_GALLERY_ACCESS,
+                        SettingsConstants.PREF_MUSIC_ACCESS_SAF
                 };
                 listPrefs = new String[] {
-                        PREF_PRIVILEGE_PROVIDER,
-                        PREF_MUSIC_ACCESS_TYPE
+                        SettingsConstants.PREF_PRIVILEGE_PROVIDER,
+                        SettingsConstants.PREF_MUSIC_ACCESS_TYPE
                 };
                 // titleResId = R.string.pref_page_permissions;
                 break;
             case SettingsFragment.PAGE_VIEW:
                 clickablePrefs = new String[]{
-                        PREF_TEXT_STROKE_WIDTH,
-                        PREF_MAIN_UI_HEIGHT_SCALE
+                        SettingsConstants.PREF_TEXT_STROKE_WIDTH,
+                        SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE
                 };
                 listPrefs = new String[]{
-                        PREF_STYLE
+                        SettingsConstants.PREF_STYLE
                 };
                 titleResId = R.string.pref_page_view;
                 break;
             case SettingsFragment.PAGE_BEHAVIOUR:
                 clickablePrefs = new String[] {
-                        PREF_EXIT_FAKEUI_CONFIG_KEY,
-                        PREF_SELF_DESTROY_CONFIG
+                        SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY,
+                        SettingsConstants.PREF_SELF_DESTROY_CONFIG
                 };
                 setupPrefs = new String[]{
-                        PREF_EXIT_FAKEUI_CONFIG_KEY,
-                        PREF_EXIT_FAKEUI_CONFIG_PASSWD,
+                        SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY,
+                        SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD,
                 };
                 listPrefs = new String[]{
-                        PREF_EXIT_FAKEUI_METHOD,
+                        SettingsConstants.PREF_EXIT_FAKEUI_METHOD,
                 };
                 requireRootAccessPrefs = new String[] {
-                        PREF_ENHANCED_TOUCH_BLOCKING,
-                        PREF_SELF_DESTROY
+                        SettingsConstants.PREF_ENHANCED_TOUCH_BLOCKING,
+                        SettingsConstants.PREF_SELF_DESTROY
                 };
                 titleResId = R.string.pref_page_behaviour;
                 break;
@@ -310,7 +285,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         SharedPreferences sp = getDefaultSharedPreferences(requireContext());
         String key = pref.getKey();
         switch (key) {
-            case PREF_PRIVILEGE_PROVIDER -> {
+            case SettingsConstants.PREF_PRIVILEGE_PROVIDER -> {
                 // Shizuku available on Android 6+
                 boolean shizuku = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
                 if (!shizuku) {
@@ -319,10 +294,10 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     p.setEntries(R.array.pref_privilege_provider_old_string);
                 }
             }
-            case PREF_EXIT_FAKEUI_CONFIG_PASSWD -> {
+            case SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD -> {
                 EditTextPreference p = (EditTextPreference) pref;
                 String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
-                String value = sp.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
+                String value = sp.getString(SettingsConstants.PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
                 if (value.equals(valueArray[1])) {
                     p.setDialogTitle(R.string.dialog_title_exit_dialer);
                     p.setDialogMessage(R.string.dialog_message_exit_dialer);
@@ -336,21 +311,21 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 }
                 p.setVisible(true);
             }
-            case PREF_EXIT_FAKEUI_CONFIG_KEY -> {
+            case SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY -> {
                 String[] valueArray = getResources().getStringArray(R.array.pref_exit_fakeui_method);
-                String value = sp.getString(PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
+                String value = sp.getString(SettingsConstants.PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
                 pref.setVisible(value.equals(valueArray[0]));
             }
-            case PREF_CHECK_XPOSED -> {
+            case SettingsConstants.PREF_CHECK_XPOSED -> {
                 if (MainActivity.isXposedModuleActivated()) {
                     pref.setSummary(R.string.pref_xposed_activated);
                 } else {
                     pref.setSummary(R.string.pref_xposed_not_activated);
                 }
             }
-            case PREF_CHECK_DEVICE_ADMIN -> {
+            case SettingsConstants.PREF_CHECK_DEVICE_ADMIN -> {
                 pref.setEnabled(true);
-                Preference p = findPreference(PREF_DEACTIVATE_DEVICE_OWNER);
+                Preference p = findPreference(SettingsConstants.PREF_DEACTIVATE_DEVICE_OWNER);
                 if (p == null) break;
                 switch (PrivilegeProvider.checkDeviceAdmin(requireContext())) {
                     case PrivilegeProvider.DHIZUKU -> {
@@ -368,9 +343,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     default -> {
                         String provider;
                         boolean isPrivilegeProviderNone =
-                                (provider = sp.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default))).equals("None");
+                                (provider = sp.getString(SettingsConstants.PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default))).equals("None");
                         boolean isDhizukuEnabled =
-                                sp.getBoolean(PREF_ENABLE_DHIZUKU, false);
+                                sp.getBoolean(SettingsConstants.PREF_ENABLE_DHIZUKU, false);
                         int newSummary = isDhizukuEnabled? R.string.pref_deactivated :
                                 isPrivilegeProviderNone? R.string.pref_command_activate: R.string.pref_click_to_activate;
                         if (!Objects.equals(pref.getSummary(), getString(newSummary)) || isDhizukuEnabled) pref.setSummary(newSummary);
@@ -390,7 +365,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                                             clipboardManager.setPrimaryClip(clipData);
                                         } else {
                                             PrivilegeProvider.requestDeviceOwner(requireContext(), PrivilegeProvider.privilegeToInt(provider));
-                                            Preference p2 = findPreference(PREF_ENABLE_DHIZUKU);
+                                            Preference p2 = findPreference(SettingsConstants.PREF_ENABLE_DHIZUKU);
                                             if (p2 == null) return;
                                             p2.setEnabled(false);
                                             pref.setSummary(R.string.pref_wait);
@@ -408,14 +383,14 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     }
                 }
             }
-            case PREF_SELF_DESTROY_CONFIG -> {
-                SwitchPreference p = findPreference(PREF_SELF_DESTROY);
+            case SettingsConstants.PREF_SELF_DESTROY_CONFIG -> {
+                SwitchPreference p = findPreference(SettingsConstants.PREF_SELF_DESTROY);
                 boolean v = p != null && p.isChecked();
                 pref.setVisible(v);
 
             }
 
-            case PREF_GALLERY_ACCESS, PREF_MUSIC_ACCESS_SAF -> pref.setSummary(sp.getString(key, getString(R.string.pref_saf_access_summary)));
+            case SettingsConstants.PREF_GALLERY_ACCESS, SettingsConstants.PREF_MUSIC_ACCESS_SAF -> pref.setSummary(sp.getString(key, getString(R.string.pref_saf_access_summary)));
         }
     }
 
@@ -429,38 +404,38 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         if (pref == null) return;
 
         switch (key) {
-            case PREF_PRIVILEGE_PROVIDER -> {
+            case SettingsConstants.PREF_PRIVILEGE_PROVIDER -> {
                 prefSetup(pref);
-                if ((pref = findPreference(PREF_CHECK_PRIVILEGE)) != null)
+                if ((pref = findPreference(SettingsConstants.PREF_CHECK_PRIVILEGE)) != null)
                     pref.setSummary(R.string.pref_tap_me);
-                Preference p = findPreference(PREF_CHECK_DEVICE_ADMIN);
+                Preference p = findPreference(SettingsConstants.PREF_CHECK_DEVICE_ADMIN);
                 if (p != null) p.setSummary(R.string.pref_tap_me);
             }
-            case PREF_EXIT_FAKEUI_METHOD -> {
-                EditTextPreference exitFakeuiConfig = findPreference(PREF_EXIT_FAKEUI_CONFIG_PASSWD);
-                Preference p = findPreference(PREF_EXIT_FAKEUI_CONFIG_KEY);
+            case SettingsConstants.PREF_EXIT_FAKEUI_METHOD -> {
+                EditTextPreference exitFakeuiConfig = findPreference(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD);
+                Preference p = findPreference(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY);
                 prefSetup(pref);
                 if (exitFakeuiConfig != null && p != null) {
                     prefSetup(exitFakeuiConfig);
                     prefSetup(p);
                     String currentPasswd = exitFakeuiConfig.getText();
                     if (currentPasswd == null || currentPasswd.isEmpty()) {
-                        sp.edit().putString(PREF_EXIT_FAKEUI_CONFIG_PASSWD, "1234")
+                        sp.edit().putString(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "1234")
                                 .apply();
                         exitFakeuiConfig.setText("1234");
                     }
                 }
             }
-            case PREF_ENABLE_DHIZUKU -> {
-                if ((pref = findPreference(PREF_CHECK_DEVICE_ADMIN)) != null) prefSetup(pref);
+            case SettingsConstants.PREF_ENABLE_DHIZUKU -> {
+                if ((pref = findPreference(SettingsConstants.PREF_CHECK_DEVICE_ADMIN)) != null) prefSetup(pref);
             }
-            case PREF_MAIN_UI_HEIGHT_SCALE -> {
+            case SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE -> {
                 SeekBarPreference p = findPreference(key);
                 if (p != null && p.getValue() == 0) p.setValue(10);
             }
-            case PREF_ENHANCED_TOUCH_BLOCKING -> {
+            case SettingsConstants.PREF_ENHANCED_TOUCH_BLOCKING -> {
                 SwitchPreference p = (SwitchPreference) pref;
-                if (sp.getBoolean(PREF_ENHANCED_TOUCH_BLOCKING, false)) {
+                if (sp.getBoolean(SettingsConstants.PREF_ENHANCED_TOUCH_BLOCKING, false)) {
 
                     new AlertDialog.Builder(requireContext())
                             .setTitle(R.string.dialog_title_warning)
@@ -470,9 +445,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                             .show();
                 }
             }
-            case PREF_SELF_DESTROY -> {
+            case SettingsConstants.PREF_SELF_DESTROY -> {
                 SwitchPreference p = (SwitchPreference) pref;
-                if (sp.getBoolean(PREF_SELF_DESTROY, false)) {
+                if (sp.getBoolean(SettingsConstants.PREF_SELF_DESTROY, false)) {
                     new AlertDialog.Builder(requireContext())
                             .setTitle(R.string.dialog_title_warning)
                             .setMessage(R.string.dialog_message_self_destroy)
@@ -480,7 +455,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                             .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> p.setChecked(false))
                             .show();
                 }
-                prefSetup(Objects.requireNonNull(findPreference(PREF_SELF_DESTROY_CONFIG)));
+                prefSetup(Objects.requireNonNull(findPreference(SettingsConstants.PREF_SELF_DESTROY_CONFIG)));
 
             }
         }
@@ -493,8 +468,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         String key = pref.getKey();
         String value;
         switch (key) {
-            case PREF_CHECK_PRIVILEGE -> {
-                value = sp.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
+            case SettingsConstants.PREF_CHECK_PRIVILEGE -> {
+                value = sp.getString(SettingsConstants.PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {
                     if (!"None".equals(value)) {
                         boolean isGranted = PrivilegeProvider.checkPrivilege(PrivilegeProvider.privilegeToInt(value));
@@ -511,11 +486,11 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     }
                 }).start();
             }
-            case PREF_CHECK_DEVICE_ADMIN -> prefSetup(pref);
-            case PREF_PERMISSION_GRANT_STATUS ->
+            case SettingsConstants.PREF_CHECK_DEVICE_ADMIN -> prefSetup(pref);
+            case SettingsConstants.PREF_PERMISSION_GRANT_STATUS ->
                     UIHelper.intentStarter(requireActivity(), SettingsActivity.PermissionStatus.class);
-            case PREF_GRANT_ALL_PERMISSIONS -> {
-                value = sp.getString(PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
+            case SettingsConstants.PREF_GRANT_ALL_PERMISSIONS -> {
+                value = sp.getString(SettingsConstants.PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {
                     PrivilegeProvider.requestAllPermissions(requireActivity(), PrivilegeProvider.privilegeToInt(value));
                     requireActivity().runOnUiThread(() -> {
@@ -526,15 +501,15 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 }).start();
 
             }
-            case PREF_DEACTIVATE_DEVICE_OWNER -> {
+            case SettingsConstants.PREF_DEACTIVATE_DEVICE_OWNER -> {
                 DevicePolicyManager dpm = getSystemService(requireContext(), DevicePolicyManager.class);
                 if (dpm == null) break;
                 dpm.clearDeviceOwnerApp(requireActivity().getPackageName());
 
                 Preference p;
                 Preference p2;
-                if ((p = findPreference(PREF_CHECK_DEVICE_ADMIN)) == null ||
-                        (p2 = findPreference(PREF_ENABLE_DHIZUKU)) == null) break;
+                if ((p = findPreference(SettingsConstants.PREF_CHECK_DEVICE_ADMIN)) == null ||
+                        (p2 = findPreference(SettingsConstants.PREF_ENABLE_DHIZUKU)) == null) break;
                 p.setSummary(R.string.pref_wait);
                 p.setEnabled(false);
                 p2.setEnabled(false);
@@ -546,11 +521,11 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     p2.setEnabled(true);
                 }, 1000);
             }
-            case PREF_GALLERY_ACCESS ->
+            case SettingsConstants.PREF_GALLERY_ACCESS ->
                     gallery_saf.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
-            case PREF_MUSIC_ACCESS_SAF ->
+            case SettingsConstants.PREF_MUSIC_ACCESS_SAF ->
                     music_saf.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
-            case PREF_TEXT_STROKE_WIDTH -> {
+            case SettingsConstants.PREF_TEXT_STROKE_WIDTH -> {
                 View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_stroke_text, null);
                 StrokeTextView preview = view.findViewById(R.id.strokeTextPreview);
                 SeekBar bar = view.findViewById(R.id.strokeSeekBar);
@@ -575,11 +550,11 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
                 bar.setProgress(sp.getInt(key, 3));
             }
-            case PREF_MAIN_UI_HEIGHT_SCALE -> requireActivity().startActivity(
+            case SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE -> requireActivity().startActivity(
                     UIHelper.makeIntent(requireActivity(), MainActivity.class)
                             .putExtra(MainActivity.EXTRA_PREVIEW, true)
             );
-            case PREF_EXIT_FAKEUI_CONFIG_KEY -> {
+            case SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY -> {
                 if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_DPAD)) {
                     View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.preference_dialog_edittext, null, false);
                     dialogView.findViewById(android.R.id.edit).setVisibility(View.GONE);

@@ -37,7 +37,7 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.view.BaseAdapter;
 import com.wtbruh.fakelauncher.utils.UIHelper;
@@ -126,7 +126,7 @@ public class GalleryFragment extends BaseFragment {
         });
         // 从SharedPreferences拿到用户给我们授权访问的目录的Uri
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        String uriStr = sp.getString(SubSettingsFragment.PREF_GALLERY_ACCESS, "");
+        String uriStr = sp.getString(SettingsConstants.PREF_GALLERY_ACCESS, "");
         if (!uriStr.isEmpty()) {
             // 有东西，那就尝试读下照片
             // If URI is not empty, try to load the photos

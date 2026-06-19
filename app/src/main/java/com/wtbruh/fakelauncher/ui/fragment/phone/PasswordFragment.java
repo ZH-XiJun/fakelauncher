@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -95,7 +95,7 @@ public class PasswordFragment extends BaseFragment {
             error.setVisibility(View.VISIBLE);
         } else if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_SETTINGS)) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            if (passwd.equals(pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_PASSWD, ""))) {
+            if (passwd.equals(pref.getString(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD, ""))) {
                 Log.d(TAG,"password correct!!!");
                 UIHelper.doExit(requireActivity());
             } else {

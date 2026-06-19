@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
@@ -86,7 +86,7 @@ public class DialerFragment extends BaseFragment {
             String secretCode;
             if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_DIALER)) {
                 Log.d(TAG,"User set dialer for exit method");
-                secretCode = mPrefs.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "");
+                secretCode = mPrefs.getString(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "");
                 if (!secretCode.isEmpty()){
                     if (mEditText.getText().equals("*#"+secretCode+"#*")) {
                         Log.d(TAG,"secret code correct!!!");
@@ -94,7 +94,7 @@ public class DialerFragment extends BaseFragment {
                     }
                 } else Log.d(TAG,"secret code incorrect or user didn't set secret code");
             }
-            if (mPrefs.getBoolean(SubSettingsFragment.PREF_SELF_DESTROY, false)) {
+            if (mPrefs.getBoolean(SettingsConstants.PREF_SELF_DESTROY, false)) {
                 Log.d(TAG,"Self destroy enabled");
                 secretCode = "3378769"; // "destroy" in 9 keys
                 if (mEditText.getText().equals("*#"+secretCode+"#*")) {

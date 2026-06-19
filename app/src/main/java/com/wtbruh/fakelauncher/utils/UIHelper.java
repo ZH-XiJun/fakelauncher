@@ -20,7 +20,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.ApplicationHelper;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 
 import java.io.File;
@@ -67,7 +67,7 @@ public class UIHelper {
     public static boolean checkExitMethod(Context context, int expected) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String[] valueArray = context.getResources().getStringArray(R.array.pref_exit_fakeui_method);
-        String exitMethod = pref.getString(SubSettingsFragment.PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
+        String exitMethod = pref.getString(SettingsConstants.PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
         return exitMethod.equals(valueArray[expected]);
     }
 
@@ -248,7 +248,7 @@ public class UIHelper {
         };
         if (state && isInputExists) {
             PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT, enable_cmd);
-        } else if (!state && !isInputExists && sp.getBoolean(SubSettingsFragment.PREF_ENHANCED_TOUCH_BLOCKING, false)) {
+        } else if (!state && !isInputExists && sp.getBoolean(SettingsConstants.PREF_ENHANCED_TOUCH_BLOCKING, false)) {
             PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT, disable_cmd);
         }
     }

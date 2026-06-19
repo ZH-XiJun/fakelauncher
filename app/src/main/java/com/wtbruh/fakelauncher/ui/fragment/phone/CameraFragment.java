@@ -45,7 +45,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -331,7 +331,7 @@ public class CameraFragment extends BaseFragment {
             // 从SharedPreferences拿到用户给我们授权访问的目录的Uri，作为照片存储目录
             // Get gallery URI granted by user for the save destination
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            String uriStr = sp.getString(SubSettingsFragment.PREF_GALLERY_ACCESS, "");
+            String uriStr = sp.getString(SettingsConstants.PREF_GALLERY_ACCESS, "");
             if (uriStr.isEmpty()) {
                 // 如果拿到个空的，说明用户根本没授权啊，要么就是用户趁我不注意偷偷改了SharedPreference
                 // If URI is empty, that meas user didn't grant access, fuck you user!

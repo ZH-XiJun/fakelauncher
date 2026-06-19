@@ -19,7 +19,7 @@ import com.wtbruh.fakelauncher.ui.fragment.phone.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
-import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.lang.reflect.Method;
@@ -74,7 +74,7 @@ public class SubActivity extends BaseAppCompatActivity {
     private void init() {
         // 自动调整大小
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        float scale = (float) sp.getInt(SubSettingsFragment.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
+        float scale = (float) sp.getInt(SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
         if (scale > 0 && scale != 1.0) {
             View view = findViewById(R.id.actionBar);
             UIHelper.resizeView(scale, view);

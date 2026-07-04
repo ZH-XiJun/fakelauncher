@@ -99,10 +99,52 @@
         android:text="@string/no_track"
         android:textColor="#757575"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/trackCount"
+        app:layout_constraintBottom_toTopOf="@id/controlButtons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/trackProgress" />
+
+    <!-- Touch control buttons -->
+    <LinearLayout
+        android:id="@+id/controlButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="48dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/trackCount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trackStatus">
+
+        <ImageView
+            android:id="@+id/btnPrev"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="24dp"
+            android:contentDescription="@string/prev_track"
+            android:padding="8dp"
+            android:src="@drawable/ic_skip_prev" />
+
+        <ImageView
+            android:id="@+id/btnPlayPause"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:contentDescription="@string/play_pause"
+            android:padding="8dp"
+            android:src="@drawable/ic_play_arrow" />
+
+        <ImageView
+            android:id="@+id/btnNext"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="24dp"
+            android:contentDescription="@string/next_track"
+            android:padding="8dp"
+            android:src="@drawable/ic_skip_next" />
+
+    </LinearLayout>
 
     <!-- Track count -->
     <TextView
@@ -115,7 +157,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/trackStatus"
+        app:layout_constraintTop_toBottomOf="@id/controlButtons"
         tools:text="3 / 42" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

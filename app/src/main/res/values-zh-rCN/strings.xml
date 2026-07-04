@@ -110,6 +110,9 @@
     <string name="status_ended">⏹ 已结束</string>
     <string name="track_count_fmt">%1$d / %2$d</string>
     <string name="album_art">专辑封面</string>
+    <string name="prev_track">上一首</string>
+    <string name="play_pause">播放/暂停</string>
+    <string name="next_track">下一首</string>
 
     <string name="pref_category_privileges">特殊权限</string>
     <string name="pref_check_xposed">Xposed模块激活状态</string>

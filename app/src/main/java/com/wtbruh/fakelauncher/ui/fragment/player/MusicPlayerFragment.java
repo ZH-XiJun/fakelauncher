@@ -43,6 +43,7 @@ public class MusicPlayerFragment extends BaseFragment {
     private ImageView mAlbumArt;
     private TextView mTrackTitle, mTrackArtist, mAlbum;
     private TextView mTrackProgress, mTrackStatus, mTrackCount;
+    private ImageView mBtnPrev, mBtnPlayPause, mBtnNext;
 
     private List<MediaItem> mPlaylist;
     private int mCurrentIndex = -1;
@@ -66,6 +67,23 @@ public class MusicPlayerFragment extends BaseFragment {
         mTrackProgress = view.findViewById(R.id.trackProgress);
         mTrackStatus = view.findViewById(R.id.trackStatus);
         mTrackCount = view.findViewById(R.id.trackCount);
+
+        // Touch control buttons
+        mBtnPrev = view.findViewById(R.id.btnPrev);
+        mBtnPlayPause = view.findViewById(R.id.btnPlayPause);
+        mBtnNext = view.findViewById(R.id.btnNext);
+
+        mBtnPrev.setOnClickListener(v -> {
+            if (mController != null) mController.seekToPreviousMediaItem();
+        });
+
+        mBtnPlayPause.setOnClickListener(v -> {
+            togglePlayPause();
+        });
+
+        mBtnNext.setOnClickListener(v -> {
+            if (mController != null) mController.seekToNextMediaItem();
+        });
 
         return view;
     }
@@ -116,9 +134,11 @@ public class MusicPlayerFragment extends BaseFragment {
         if (mController.isPlaying()) {
             mController.pause();
             setFooterBar(C_PLAY);
+            mBtnPlayPause.setImageResource(R.drawable.ic_play_arrow);
         } else {
             mController.play();
             setFooterBar(C_PAUSE);
+            mBtnPlayPause.setImageResource(R.drawable.ic_pause);
         }
     }
 
@@ -274,8 +294,10 @@ public class MusicPlayerFragment extends BaseFragment {
         mHandler.post(() -> {
             if (mController != null && mController.isPlaying()) {
                 setFooterBar(C_PAUSE);
+                mBtnPlayPause.setImageResource(R.drawable.ic_pause);
             } else {
                 setFooterBar(C_PLAY);
+                mBtnPlayPause.setImageResource(R.drawable.ic_play_arrow);
             }
         });
     }

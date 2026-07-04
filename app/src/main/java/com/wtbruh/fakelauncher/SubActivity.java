@@ -15,14 +15,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.wtbruh.fakelauncher.ui.fragment.phone.MenuFragment;
+import com.wtbruh.fakelauncher.ui.fragment.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +33,7 @@ import java.util.List;
  * 具体接受哪些参数需要看对应Fragment的代码配置
  */
 
-public class SubActivity extends BaseAppCompatActivity {
+public class SubActivity extends BaseAppCompatActivity implements View.OnTouchListener {
 
     // Args definition 参数定义
     // Extra args for the fragment 给Fragment传的参数
@@ -90,42 +89,21 @@ public class SubActivity extends BaseAppCompatActivity {
 
         // 通过反射找到对应Fragment
         String fragmentName = intent.getStringExtra(TARGET_FRAGMENT);
-        Class<?> fragmentClass = null;
-        if (fragmentName != null &&! fragmentName.isEmpty()) {
-            // Get newInstance(Bundle args) method
-            try {
-                fragmentClass = Class.forName(fragmentName);
-                if (args != null && Fragment.class.isAssignableFrom(fragmentClass)) {
-                    Method newInstance = fragmentClass.getMethod("newInstance", Bundle.class);
-                    newInstance.setAccessible(true);
-                    mCurrentFragment = (Fragment) newInstance.invoke(fragmentClass, args);
-                    return;
-                }
-            } catch (ClassNotFoundException e) {
-                Log.e(TAG, "Got a non-existent class", e);
-                return;
-            } catch (NoSuchMethodException e) {
-                Log.e(TAG, "Args were given, but the class doesn't have newInstance() accepts parameters. Falling back to default newInstance()", e);
-            } catch (Exception e) {
-                Log.e(TAG, "Got unexpected error", e);
-                return;
-            }
-            // Get newInstance() method
-            try {
-                mCurrentFragment = (Fragment) fragmentClass.newInstance();
-            } catch (Exception e) {
-                Log.e(TAG, "Got unexpected error", e);
-            }
+        Fragment result = UIHelper.findFragmentByName(fragmentName, args);
+        if (result != null) mCurrentFragment = result;
+        if (!UIHelper.getCurrentUIType(this).equals(UIHelper.STYLE_PHONE)) {
+            Log.d(TAG, "set touch listener");
+            findViewById(R.id.container).setOnTouchListener(this);
         }
     }
 
     /**
      * No touch event | 禁用触控
      */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return true;
-    }
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent ev) {
+//        return true;
+//    }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
@@ -220,4 +198,9 @@ public class SubActivity extends BaseAppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        Log.d(TAG, "onTouch");
+        return ((BaseFragment) mCurrentFragment).onTouchEvent(motionEvent);
+    }
 }

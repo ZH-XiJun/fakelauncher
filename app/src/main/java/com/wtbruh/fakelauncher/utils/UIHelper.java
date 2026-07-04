@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,17 +17,27 @@ import android.view.Window;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.ApplicationHelper;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
+import com.wtbruh.fakelauncher.ui.fragment.phone.CameraFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.ContactsFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.GalleryFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.MessageFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.PasswordFragment;
+import com.wtbruh.fakelauncher.ui.fragment.player.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 public class UIHelper {
+    private final static String TAG = UIHelper.class.getSimpleName();
     public final static int
             EXIT_METHOD_DPAD = 0,
             EXIT_METHOD_DIALER = 1,
@@ -33,6 +45,82 @@ public class UIHelper {
 
     private static long activityLaunchLastTriggerTime = 0;
     private static final long DEBOUNCE_TIME = 300;
+
+    public static final String STYLE_PHONE = "phone";
+    public static final String STYLE_PLAYER = "player";
+
+    public final static String APP_NAME = "name";
+    public final static String APP_ICON_RES = "iconRes";
+    public final static String TARGET_FRAGMENT = "target_fragment";
+    public static Bundle[] getInternalAppList(String uiType) {
+        if (uiType.equals(UIHelper.STYLE_PHONE)) {
+            return new Bundle[] {
+                    createAppListBundle(R.string.menu_call, R.drawable.ic_menu_call, DialerFragment.class.getName()),
+                    createAppListBundle(R.string.menu_contact, R.drawable.ic_menu_contact, ContactsFragment.class.getName()),
+                    createAppListBundle(R.string.menu_sms, R.drawable.ic_menu_sms, MessageFragment.class.getName()),
+                    createAppListBundle(R.string.menu_camera, R.drawable.ic_menu_camera, CameraFragment.class.getName()),
+                    createAppListBundle(R.string.menu_gallery, R.drawable.ic_menu_gallery, GalleryFragment.class.getName()),
+                    createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName()),
+            };
+        } else if (uiType.equals(UIHelper.STYLE_PLAYER)) {
+            return new Bundle[] {
+                    createAppListBundle(R.string.menu_media, R.drawable.ic_menu_media, MusicPlayerFragment.class.getName()),
+                    createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName()),
+            };
+        } else {
+            Log.e(TAG, "Unknown UI type: " + uiType + ", Falling back to phone ui.");
+            return getInternalAppList(UIHelper.STYLE_PHONE);
+        }
+    }
+
+    private static Bundle createAppListBundle(int nameRes, int iconRes, String fragment) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(APP_NAME, nameRes);
+        bundle.putInt(APP_ICON_RES, iconRes);
+        bundle.putString(TARGET_FRAGMENT, fragment);
+        return bundle;
+    }
+
+    public static Fragment findFragmentByName(String fragmentName) {
+        return findFragmentByName(fragmentName, null);
+    }
+
+    public static Fragment findFragmentByName(String fragmentName, Bundle args) {
+        Class<?> fragmentClass = null;
+        if (fragmentName != null &&! fragmentName.isEmpty()) {
+            // Get newInstance(Bundle args) method
+            try {
+                fragmentClass = Class.forName(fragmentName);
+                if (args != null && Fragment.class.isAssignableFrom(fragmentClass)) {
+                    Method newInstance = fragmentClass.getMethod("newInstance", Bundle.class);
+                    newInstance.setAccessible(true);
+                    return (Fragment) newInstance.invoke(fragmentClass, args);
+                }
+            } catch (ClassNotFoundException e) {
+                Log.e(TAG, "Got a non-existent class", e);
+                return null;
+            } catch (NoSuchMethodException e) {
+                Log.e(TAG, "Args were given, but the class doesn't have newInstance() accepts parameters. Falling back to default newInstance()", e);
+            } catch (Exception e) {
+                Log.e(TAG, "Got unexpected error", e);
+                return null;
+            }
+            // Get newInstance() method
+            try {
+                return (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                Log.e(TAG, "Got unexpected error", e);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public static String getCurrentUIType(Context context) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        return pref.getString(SettingsConstants.PREF_STYLE,
+                context.getResources().getString(R.string.pref_style_default));
+    }
 
     /**
      * <h3>Text editor | 文本内容编辑器</h3>

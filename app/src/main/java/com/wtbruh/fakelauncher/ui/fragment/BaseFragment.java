@@ -1,6 +1,7 @@
 package com.wtbruh.fakelauncher.ui.fragment;
 
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
@@ -30,6 +31,8 @@ public abstract class BaseFragment extends Fragment {
 
     public View rootView;
     public abstract boolean onKeyUp(int keyCode, KeyEvent event);
+
+    public boolean onTouchEvent(MotionEvent event) {return false;}
 
     public void setFooterBar(String[]... texts) {
         requireSubActivity().setFooterBar(texts);

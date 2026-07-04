@@ -34,6 +34,7 @@ import androidx.preference.PreferenceManager;
 import com.rosan.dhizuku.api.Dhizuku;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
+import com.wtbruh.fakelauncher.ui.fragment.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.player.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
@@ -58,11 +59,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     public final static String
             EXTRA_PREVIEW = "preview",
             EXTRA_EXIT = "exit";
-
-    // UI style
-    public final static String
-            STYLE_PHONE = "phone",
-            STYLE_PLAYER = "player";
     private String mStyle;
 
     // UI scale
@@ -127,10 +123,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         EdgeToEdge.enable(this);
 
         // Switch UI style
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        String mDefaultStyle = getResources().getString(R.string.pref_style_default);
-        mStyle = pref.getString(SettingsConstants.PREF_STYLE, mDefaultStyle);
-        if (mStyle.equals(STYLE_PLAYER)) {
+        mStyle = UIHelper.getCurrentUIType(this);
+        if (mStyle.equals(UIHelper.STYLE_PLAYER)) {
             setContentView(R.layout.activity_main_player);
         } else {
             setContentView(R.layout.activity_main_phone);
@@ -141,7 +135,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // If expected preview, only initialize UI
+        // If expected preview, then only initialize UI
         // 如果只需要预览，就只做UI初始化
         if (getIntent().getBooleanExtra(EXTRA_PREVIEW, false)) {
             mPreviewMode = true;
@@ -163,7 +157,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         receiverRegister(true);
         // Manually get connection status 手动获取连接状态
         getConnectionStatus();
-        if (mStyle.equals(STYLE_PLAYER)) {
+        if (mStyle.equals(UIHelper.STYLE_PLAYER)) {
             findViewById(R.id.Main).setOnTouchListener(this);
         } else { // Default/Fallback: feature phone UI
             ScreenObserver screenObserver = new ScreenObserver(this);
@@ -200,7 +194,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         mScale = (float) sp.getInt(SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
         batteryAccurate();
-        if (mStyle.equals(STYLE_PLAYER)) {
+        if (mStyle.equals(UIHelper.STYLE_PLAYER)) {
             // todo: mp3 ui init
         } else { // Default/Fallback: feature phone UI
             int[] simpleResizableView = {
@@ -310,13 +304,19 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         Log.d(TAG,"onTouch");
+        if (mStyle.equals(UIHelper.STYLE_PHONE)) return false;
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (!UIHelper.intentStarterDebounce(SubActivity.class)) {
-                startActivity(
-                        new Intent().setClass(MainActivity.this, SubActivity.class)
-                                .putExtra(SubActivity.TARGET_FRAGMENT, MusicPlayerFragment.class.getName())
-                                .putExtra(SubActivity.HIDE_ACTION_BAR, true)
-                );
+                Intent intent = new Intent().setClass(MainActivity.this, SubActivity.class)
+                        .putExtra(SubActivity.HIDE_ACTION_BAR, true);
+                if (false) {// Detect if playing music
+                    intent.putExtra(SubActivity.TARGET_FRAGMENT, MusicPlayerFragment.class.getName());
+
+                } else {
+                    intent.putExtra(SubActivity.TARGET_FRAGMENT, MenuFragment.class.getName());
+                }
+                startActivity(intent);
                 // Disable transition anim
                 // 去掉过渡动画
                 overridePendingTransition(0, 0);
@@ -327,7 +327,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (mStyle.equals(STYLE_PHONE)) {
+        if (mStyle.equals(UIHelper.STYLE_PHONE)) {
             // Star key long press detection
             // 长按星键检测
             if (mLocked && keyCode == KeyEvent.KEYCODE_STAR && event.getRepeatCount() >= 2) {
@@ -343,7 +343,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mPreviewMode) {
             return super.onKeyUp(keyCode, event);
         }
-        if (mStyle.equals(STYLE_PHONE)) {
+        if (mStyle.equals(UIHelper.STYLE_PHONE)) {
             if (mLocked) { // 需要解锁的情况 Need star key unlock
                 if (keyCode == KeyEvent.KEYCODE_MENU) {
                     setDialog(UIHelper.showCustomDialog(this, R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
@@ -499,7 +499,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 break;
             }
             case DATE: {
-                String pattern = STYLE_PLAYER.equals(mStyle) ? "yyyy-MM-dd" : getResources().getString(R.string.date_format);
+                String pattern = UIHelper.STYLE_PLAYER.equals(mStyle) ? "yyyy-MM-dd" : getResources().getString(R.string.date_format);
                 format = new SimpleDateFormat(pattern, Locale.getDefault());
                 break;
             }
@@ -524,7 +524,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     TextView timeView = findViewById(R.id.time), 
                             dateView = findViewById(R.id.date),
                             lunarView = findViewById(R.id.lunarDate),
-                            weekView = STYLE_PLAYER.equals(mStyle) ? findViewById(R.id.week) : null;
+                            weekView = UIHelper.STYLE_PLAYER.equals(mStyle) ? findViewById(R.id.week) : null;
                     String time = getTime(TIME),
                             date = getTime(DATE);
                     int battery = getBattery();
@@ -547,11 +547,11 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     }
     @SuppressLint("SetTextI18n")
     private void setBattery(int battery) {
-        if (mStyle.equals(STYLE_PLAYER)) {
+        if (mStyle.equals(UIHelper.STYLE_PLAYER)) {
             TextView battery_view = findViewById(R.id.battery);
             battery_view.setText(battery+"%");
         }
-        else if (mStyle.equals(STYLE_PHONE)) {
+        else if (mStyle.equals(UIHelper.STYLE_PHONE)) {
             if (mShowAccurateBattery) {
                 TextView battery_view = findViewById(R.id.battery);
                 battery_view.setText(battery+"%");
@@ -623,7 +623,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     }
 
     private void setConnectionStatus() {
-        if (mStyle.equals(STYLE_PLAYER)) {
+        if (mStyle.equals(UIHelper.STYLE_PLAYER)) {
             View connection_view = findViewById(R.id.connection);
             if (mCharging) {
                 connection_view.setVisibility(View.VISIBLE);
@@ -689,13 +689,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private void batteryAccurate() {
         View statusBarView = findViewById(R.id.statusBar),
                 dateView = switch (mStyle) {
-                    case STYLE_PLAYER -> findViewById(R.id.week);
-                    default -> findViewById(R.id.lunarDate); // case STYLE_PHONE
+                    case UIHelper.STYLE_PLAYER -> findViewById(R.id.week);
+                    default -> findViewById(R.id.lunarDate); // case UIHelper.STYLE_PHONE
                 };
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mShowAccurateBattery = sharedPrefs.getBoolean(SettingsConstants.PREF_SHOW_ACCURATE_BATTERY, false);
         statusBarView.setVisibility(mShowAccurateBattery? View.VISIBLE : View.INVISIBLE);
-        if (mStyle.equals(STYLE_PHONE)) dateView.setVisibility(mShowAccurateBattery? View.INVISIBLE : View.VISIBLE);
+        if (mStyle.equals(UIHelper.STYLE_PHONE)) dateView.setVisibility(mShowAccurateBattery? View.INVISIBLE : View.VISIBLE);
 
     }
 

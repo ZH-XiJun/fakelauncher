@@ -31,8 +31,10 @@
     <string name="menu_contact">联系人</string>
     <string name="menu_sms">短信</string>
     <string name="menu_set">设置</string>
+    <string name="menu_utils">工具</string>
+    <string name="menu_media">多媒体</string>
     <!-- 主界面文字 -->
-    <string name="sim_inseted">已插入</string>
+    <string name="sim_inserted">已插入</string>
     <string name="sim_removed">未插入</string>
     <string name="dialog_long_press_star_unlock">长按*键解锁</string>
     <string name="dialog_press_star_unlock">再按*键解锁</string>
@@ -95,6 +97,19 @@
     <string name="pref_music_access_type_auto_search">自动搜索</string>
     <string name="pref_music_access_type_custom_dir">手动选择路径</string>
     <string name="pref_music_access_saf">选择一个路径以提供音乐访问</string>
+
+    <!-- 音乐播放器 -->
+    <string name="no_track">无曲目</string>
+    <string name="unknown_title">未知标题</string>
+    <string name="unknown_artist">未知艺术家</string>
+    <string name="connection_failed">连接失败</string>
+    <string name="status_idle">空闲</string>
+    <string name="status_buffering">缓冲中…</string>
+    <string name="status_playing">▶ 播放中</string>
+    <string name="status_paused">⏸ 已暂停</string>
+    <string name="status_ended">⏹ 已结束</string>
+    <string name="track_count_fmt">%1$d / %2$d</string>
+    <string name="album_art">专辑封面</string>
 
     <string name="pref_category_privileges">特殊权限</string>
     <string name="pref_check_xposed">Xposed模块激活状态</string>

@@ -23,6 +23,8 @@ coreKtx = "1.13.1"
 # Do not upgrade them. They are set to the maximum version supported by Android 5.
 dhizukuApi = "2.5.3"
 media3Session = "1.8.0"
+media3Exoplayer = "1.8.0"
+media3Datasource = "1.8.0"
 
 [libraries]
 androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCore" }
@@ -32,6 +34,8 @@ androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
 androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
 androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "media3Session" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-media3-datasource = { module = "androidx.media3:media3-datasource", version.ref = "media3Datasource" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizukuApi" }
 dhizuku-api = { module = "io.github.iamr0s:Dhizuku-API", version.ref = "dhizukuApi" }

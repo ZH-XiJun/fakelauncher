@@ -32,8 +32,10 @@
     <string name="menu_contact">Contacts</string>
     <string name="menu_sms">SMS</string>
     <string name="menu_set">Settings</string>
+    <string name="menu_utils">Utilities</string>
+    <string name="menu_media">MultiMedia</string>
     <!-- Main UI hint -->
-    <string name="sim_inseted">Inserted</string>
+    <string name="sim_inserted">Inserted</string>
     <string name="sim_removed">Removed</string>
     <string name="dialog_long_press_star_unlock">Long press "*" to unlock</string>
     <string name="dialog_press_star_unlock">Now press "*" key</string>
@@ -99,6 +101,19 @@
     <string name="pref_music_access_type_auto_search">Automatically search</string>
     <string name="pref_music_access_type_custom_dir">Manually pick a music folder</string>
     <string name="pref_music_access_saf">Choose a path to access musics for music player</string>
+
+    <!-- Music Player -->
+    <string name="no_track">No track</string>
+    <string name="unknown_title">Unknown Title</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="connection_failed">Connection failed</string>
+    <string name="status_idle">Idle</string>
+    <string name="status_buffering">Buffering…</string>
+    <string name="status_playing">▶ Playing</string>
+    <string name="status_paused">⏸ Paused</string>
+    <string name="status_ended">⏹ Ended</string>
+    <string name="track_count_fmt">%1$d / %2$d</string>
+    <string name="album_art">Album art</string>
 
     <string name="pref_category_privileges">Privileges</string>
     <string name="pref_check_xposed">Xposed module activation status</string>

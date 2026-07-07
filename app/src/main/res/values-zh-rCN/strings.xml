@@ -63,6 +63,17 @@
     <string name="message_empty">无信息</string>
     <!-- 联系人界面文字提示 -->
     <string name="contacts_empty">无联系人</string>
+    <!-- 音乐播放器文字提示 -->
+    <string name="music_no_track">无曲目</string>
+    <string name="music_unknown_title">未知标题</string>
+    <string name="music_unknown_artist">未知艺术家</string>
+    <string name="music_connection_failed">连接失败</string>
+    <string name="music_status_buffering">缓冲中…</string>
+    <string name="music_track_count_fmt">%1$d / %2$d</string>
+    <string name="music_album_art">专辑封面</string>
+    <string name="music_prev_track">上一首</string>
+    <string name="music_play_pause">播放/暂停</string>
+    <string name="music_next_track">下一首</string>
     <!-- 音量调节文字 -->
     <string name="volume_adjust">音量调节</string>
     <!-- 选项菜单 -->
@@ -85,6 +96,7 @@
 
     <string name="pref_page_permissions">权限与特权</string>
     <string name="pref_page_permissions_summary">程序正常运行需要用户提供权限</string>
+    <string name="pref_permissions_not_granted_hint">你还有权限没授权啊喂！！！看过来快看过来QAQ</string>
     <string name="pref_category_permissions">普通权限</string>
     <string name="pref_grant_all_permissions">使用授权器授权所有权限</string>
     <string name="pref_grant_all_permissions_summary">记得先选择一个授权器</string>
@@ -97,22 +109,6 @@
     <string name="pref_music_access_type_auto_search">自动搜索</string>
     <string name="pref_music_access_type_custom_dir">手动选择路径</string>
     <string name="pref_music_access_saf">选择一个路径以提供音乐访问</string>
-
-    <!-- 音乐播放器 -->
-    <string name="no_track">无曲目</string>
-    <string name="unknown_title">未知标题</string>
-    <string name="unknown_artist">未知艺术家</string>
-    <string name="connection_failed">连接失败</string>
-    <string name="status_idle">空闲</string>
-    <string name="status_buffering">缓冲中…</string>
-    <string name="status_playing">▶ 播放中</string>
-    <string name="status_paused">⏸ 已暂停</string>
-    <string name="status_ended">⏹ 已结束</string>
-    <string name="track_count_fmt">%1$d / %2$d</string>
-    <string name="album_art">专辑封面</string>
-    <string name="prev_track">上一首</string>
-    <string name="play_pause">播放/暂停</string>
-    <string name="next_track">下一首</string>
 
     <string name="pref_category_privileges">特殊权限</string>
     <string name="pref_check_xposed">Xposed模块激活状态</string>

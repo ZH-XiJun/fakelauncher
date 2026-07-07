@@ -67,6 +67,17 @@
     <string name="message_empty">No message</string>
     <!-- Contacts UI hint -->
     <string name="contacts_empty">No contact</string>
+    <!-- Music Player hint -->
+    <string name="music_no_track">No track</string>
+    <string name="music_unknown_title">Unknown Title</string>
+    <string name="music_unknown_artist">Unknown Artist</string>
+    <string name="music_connection_failed">Connection failed</string>
+    <string name="music_status_buffering">Buffering…</string>
+    <string name="music_track_count_fmt">%1$d / %2$d</string>
+    <string name="music_album_art">Album art</string>
+    <string name="music_prev_track">Previous track</string>
+    <string name="music_play_pause">Play/Pause</string>
+    <string name="music_next_track">Next track</string>
     <!-- Volume UI hint -->
     <string name="volume_adjust">Volume adjust</string>
     <!-- Option menu -->
@@ -89,6 +100,7 @@
 
     <string name="pref_page_permissions">Permissions and privileges</string>
     <string name="pref_page_permissions_summary">Program needs them to run normally</string>
+    <string name="pref_permissions_not_granted_hint">You have ungranted permissions!!!! Several functions may not work properly!!!</string>
     <string name="pref_category_permissions">Permissions</string>
     <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
     <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
@@ -101,22 +113,6 @@
     <string name="pref_music_access_type_auto_search">Automatically search</string>
     <string name="pref_music_access_type_custom_dir">Manually pick a music folder</string>
     <string name="pref_music_access_saf">Choose a path to access musics for music player</string>
-
-    <!-- Music Player -->
-    <string name="no_track">No track</string>
-    <string name="unknown_title">Unknown Title</string>
-    <string name="unknown_artist">Unknown Artist</string>
-    <string name="connection_failed">Connection failed</string>
-    <string name="status_idle">Idle</string>
-    <string name="status_buffering">Buffering…</string>
-    <string name="status_playing">▶ Playing</string>
-    <string name="status_paused">⏸ Paused</string>
-    <string name="status_ended">⏹ Ended</string>
-    <string name="track_count_fmt">%1$d / %2$d</string>
-    <string name="album_art">Album art</string>
-    <string name="prev_track">Previous track</string>
-    <string name="play_pause">Play/Pause</string>
-    <string name="next_track">Next track</string>
 
     <string name="pref_category_privileges">Privileges</string>
     <string name="pref_check_xposed">Xposed module activation status</string>

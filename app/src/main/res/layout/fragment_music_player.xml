@@ -12,7 +12,7 @@
         android:id="@+id/albumArt"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:contentDescription="@string/album_art"
+        android:contentDescription="@string/music_album_art"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_music_note"
         app:layout_constraintBottom_toTopOf="@id/trackTitle"
@@ -96,7 +96,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        tools:text="@string/no_track"
+        tools:text="@string/music_no_track"
         android:textColor="#B0B0B0"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/controlButtons"
@@ -123,7 +123,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginEnd="24dp"
-            android:contentDescription="@string/prev_track"
+            android:contentDescription="@string/music_prev_track"
             android:padding="8dp"
             android:src="@drawable/ic_skip_prev" />
 
@@ -131,7 +131,7 @@
             android:id="@+id/btnPlayPause"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:contentDescription="@string/play_pause"
+            android:contentDescription="@string/music_play_pause"
             android:padding="8dp"
             android:src="@drawable/ic_play_arrow" />
 
@@ -140,7 +140,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginStart="24dp"
-            android:contentDescription="@string/next_track"
+            android:contentDescription="@string/music_next_track"
             android:padding="8dp"
             android:src="@drawable/ic_skip_next" />
 

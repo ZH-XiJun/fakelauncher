@@ -1,7 +1,12 @@
 package com.wtbruh.fakelauncher.ui.fragment.player;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
+import android.media.session.MediaSessionManager;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,10 +34,13 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.service.MusicService;
+import com.wtbruh.fakelauncher.service.NotificationListenerService;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -55,6 +63,8 @@ public class MusicPlayerFragment extends BaseFragment {
 
     private List<MediaItem> mPlaylist;
     private int mCurrentIndex = -1;
+    /** Whether the current controller belongs to an external app rather than MusicService */
+    private boolean mIsExternalController = false;
 
     public MusicPlayerFragment() {}
 
@@ -158,20 +168,81 @@ public class MusicPlayerFragment extends BaseFragment {
 
     // ─── MediaController Connection ───────────────────────────
 
+    /**
+     * Scans all active media sessions. Connects to a playing external one if found;
+     * otherwise falls back to our own MusicService.
+     */
     private void connectToService() {
+        MediaSessionManager msm = (MediaSessionManager)
+                requireContext().getSystemService(Context.MEDIA_SESSION_SERVICE);
+        ComponentName nlComponent = new ComponentName(
+                requireContext(),
+                NotificationListenerService.class);
+
+        List<android.media.session.MediaController> sessions;
+        try {
+            sessions = msm.getActiveSessions(nlComponent);
+        } catch (SecurityException e) {
+            Log.w(TAG, "No permission to list active sessions; using own service", e);
+            connectOwnService();
+            return;
+        }
+
+        for (android.media.session.MediaController pc : sessions) {
+            PlaybackState ps = pc.getPlaybackState();
+            if (ps != null && ps.getState() == PlaybackState.STATE_PLAYING) {
+                // Skip our own MusicService — we only care about *other* apps
+                if (requireContext().getPackageName().equals(pc.getPackageName())) continue;
+
+                Log.i(TAG, "Found playing external session: " + pc.getPackageName());
+                connectToExternal(pc.getSessionToken());
+                return;
+            }
+        }
+
+        Log.i(TAG, "No external session is playing; connecting own service");
+        connectOwnService();
+    }
+
+    private void connectOwnService() {
+        mIsExternalController = false;
         SessionToken token = new SessionToken(
                 requireContext(),
-                new android.content.ComponentName(requireContext(), MusicService.class)
-        );
+                new ComponentName(requireContext(), MusicService.class));
 
         mControllerFuture = new MediaController.Builder(requireContext(), token).buildAsync();
         mControllerFuture.addListener(() -> {
             try {
                 mController = mControllerFuture.get();
-                onConnected();
+                mHandler.post(() -> onConnected());
             } catch (Exception e) {
-                Log.e(TAG, "Failed to connect to MusicService", e);
-                updateStatus(getString(R.string.connection_failed));
+                Log.e(TAG, "Failed to connect to own MusicService", e);
+                mHandler.post(() -> updateStatus(getString(R.string.music_connection_failed)));
+            }
+        }, Executors.newSingleThreadExecutor());
+    }
+
+    private void connectToExternal(android.media.session.MediaSession.Token platformToken) {
+        mIsExternalController = true;
+        // Convert platform token to media3 SessionToken (async, per official demo)
+        ListenableFuture<SessionToken> tokenFuture =
+                SessionToken.createSessionToken(requireContext(), platformToken);
+        tokenFuture.addListener(() -> {
+            try {
+                SessionToken media3Token = tokenFuture.get();
+                mControllerFuture = new MediaController.Builder(requireContext(), media3Token).buildAsync();
+                mControllerFuture.addListener(() -> {
+                    try {
+                        mController = mControllerFuture.get();
+                        mHandler.post(this::onConnected);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to connect to external session, falling back", e);
+                        mHandler.post(this::connectOwnService);
+                    }
+                }, Executors.newSingleThreadExecutor());
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to create SessionToken from platform token, falling back", e);
+                connectOwnService();
             }
         }, Executors.newSingleThreadExecutor());
     }
@@ -201,8 +272,15 @@ public class MusicPlayerFragment extends BaseFragment {
                 R_DEFAULT
         );
 
-        // Load media items
-        loadMediaItems();
+        // Only load our own playlist when connected to MusicService.
+        // External controllers manage their own media items.
+        if (!mIsExternalController) {
+            loadMediaItems();
+        }
+
+        // Always refresh UI with the current playback state
+        updateTrackInfo();
+        updatePlayPauseButton();
 
         // Start progress updates
         startProgressUpdater();
@@ -216,6 +294,8 @@ public class MusicPlayerFragment extends BaseFragment {
     }
 
     private void loadMediaItems() {
+        // Never load our own playlist into an external controller
+        if (mIsExternalController) return;
         mHandler.post(() -> {
             if (mController == null || mController.isPlaying() || mController.getMediaItemCount() > 0) return;
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
@@ -233,26 +313,111 @@ public class MusicPlayerFragment extends BaseFragment {
                     }
                 }
                 if (!mMusicUriList.isEmpty()) {
-                    mPlaylist = new ArrayList<>();
-                    for (Uri uri : mMusicUriList) {
-                        MediaItem item = new MediaItem.Builder()
-                                .setUri(uri)
-                                .setMediaMetadata(new MediaMetadata.Builder()
-                                        .setTitle(uri.getLastPathSegment())
-                                        .build())
-                                .build();
-                        mPlaylist.add(item);
-                    }
-                    mController.setMediaItems(mPlaylist);
-                    mController.prepare();
-                } else {
-                    // updateStatus(getString(R.string.no_audio_files));
+                    // Extract metadata in background — MediaMetadataRetriever does I/O
+                    final ArrayList<Uri> uriList = new ArrayList<>(mMusicUriList);
+                    final android.content.Context ctx = requireContext();
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        mPlaylist = buildPlaylist(ctx, uriList);
+                        mHandler.post(() -> {
+                            if (mController != null) {
+                                mController.setMediaItems(mPlaylist);
+                                mController.prepare();
+                            }
+                        });
+                    });
                 }
             }
         });
 
     }
 
+    /**
+     * Builds a playlist from URIs, extracting embedded MP3 metadata (title, artist,
+     * album, album art) via MediaMetadataRetriever. Runs on a background thread.
+     */
+    private List<MediaItem> buildPlaylist(android.content.Context ctx, List<Uri> uris) {
+        List<MediaItem> playlist = new ArrayList<>();
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        for (Uri uri : uris) {
+            try {
+                mmr.setDataSource(ctx, uri);
+
+                String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+
+                // Fallback to filename when the file has no title tag
+                if (title == null || title.isEmpty()) {
+                    title = uri.getLastPathSegment();
+                }
+
+                MediaMetadata.Builder mmBuilder = new MediaMetadata.Builder()
+                        .setTitle(title);
+                if (artist != null && !artist.isEmpty()) {
+                    mmBuilder.setArtist(artist);
+                }
+                if (album != null && !album.isEmpty()) {
+                    mmBuilder.setAlbumTitle(album);
+                }
+
+                // Embedded album art — save to cache so artworkUri is set for Glide
+                byte[] artBytes = mmr.getEmbeddedPicture();
+                if (artBytes != null && artBytes.length > 0) {
+                    Uri artCacheUri = saveArtworkToCache(ctx, uri, artBytes);
+                    if (artCacheUri != null) {
+                        mmBuilder.setArtworkUri(artCacheUri);
+                    }
+                }
+
+                MediaItem item = new MediaItem.Builder()
+                        .setUri(uri)
+                        .setMediaMetadata(mmBuilder.build())
+                        .build();
+                playlist.add(item);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to read metadata, using filename fallback: " + uri, e);
+                // If metadata extraction fails entirely, still add the item with filename
+                MediaItem item = new MediaItem.Builder()
+                        .setUri(uri)
+                        .setMediaMetadata(new MediaMetadata.Builder()
+                                .setTitle(uri.getLastPathSegment())
+                                .build())
+                        .build();
+                playlist.add(item);
+            }
+        }
+        try {
+            mmr.release();
+        } catch (Exception ignored) {
+        }
+        return playlist;
+    }
+
+    /**
+     * Saves embedded album art bytes to a cache file and returns its Uri.
+     * The filename is derived from the source track Uri to avoid duplicates.
+     */
+    @Nullable
+    private Uri saveArtworkToCache(android.content.Context ctx, Uri trackUri, byte[] data) {
+        File cacheDir = new File(ctx.getCacheDir(), "album_art");
+        if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+            Log.w(TAG, "Failed to create album art cache directory");
+            return null;
+        }
+        // Use hash of track URI so the same track always hits the same cache file
+        String filename = Integer.toHexString(trackUri.hashCode()) + ".jpg";
+        File artFile = new File(cacheDir, filename);
+        if (!artFile.exists()) {
+            try (FileOutputStream fos = new FileOutputStream(artFile)) {
+                fos.write(data);
+                fos.flush();
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to write album art cache file", e);
+                return null;
+            }
+        }
+        return Uri.fromFile(artFile);
+    }
 
     // ─── UI Updates ───────────────────────────────────────────
 
@@ -271,21 +436,22 @@ public class MusicPlayerFragment extends BaseFragment {
 
         if (currentItem == null) {
             mHandler.post(() -> {
-                mTrackTitle.setText(R.string.no_track);
+                mTrackTitle.setText(R.string.music_no_track);
                 mTrackArtist.setText("");
                 mAlbum.setText("");
                 mAlbumArt.setImageResource(R.drawable.ic_music_note);
                 mTrackCount.setText("");
-                mTrackStatus.setText(R.string.no_track);
+                mTrackStatus.setText(R.string.music_no_track);
             });
             return;
         }
 
         MediaMetadata metadata = currentItem.mediaMetadata;
-        String title = metadata.title != null ? metadata.title.toString() : getString(R.string.unknown_title);
-        String artist = metadata.artist != null ? metadata.artist.toString() : getString(R.string.unknown_artist);
+        String title = metadata.title != null ? metadata.title.toString() : getString(R.string.music_unknown_title);
+        String artist = metadata.artist != null ? metadata.artist.toString() : getString(R.string.music_unknown_artist);
         String album = metadata.albumTitle != null ? metadata.albumTitle.toString() : "";
         Uri artUri = metadata.artworkUri;
+        byte[] artData = metadata.artworkData;
 
         // Find current index
         if (mPlaylist != null) {
@@ -302,10 +468,16 @@ public class MusicPlayerFragment extends BaseFragment {
             mTrackArtist.setText(artist);
             mAlbum.setText(album);
 
-            // Load album art with Glide
+            // Load album art with Glide — try URI first, then raw bytes, then fallback
             if (artUri != null) {
                 Glide.with(MusicPlayerFragment.this)
                         .load(artUri)
+                        .placeholder(R.drawable.ic_music_note)
+                        .error(R.drawable.ic_music_note)
+                        .into(mAlbumArt);
+            } else if (artData != null && artData.length > 0) {
+                Glide.with(MusicPlayerFragment.this)
+                        .load(artData)
                         .placeholder(R.drawable.ic_music_note)
                         .error(R.drawable.ic_music_note)
                         .into(mAlbumArt);
@@ -315,7 +487,7 @@ public class MusicPlayerFragment extends BaseFragment {
 
             // Track count
             if (mPlaylist != null && mCurrentIndex >= 0) {
-                mTrackCount.setText(getString(R.string.track_count_fmt, mCurrentIndex + 1, mPlaylist.size()));
+                mTrackCount.setText(getString(R.string.music_track_count_fmt, mCurrentIndex + 1, mPlaylist.size()));
             }
 
             updatePlaybackUI();
@@ -327,7 +499,7 @@ public class MusicPlayerFragment extends BaseFragment {
             if (mController == null) return;
             int state = mController.getPlaybackState();
             if (state == Player.STATE_BUFFERING) {
-                mTrackStatus.setText(R.string.status_buffering);
+                mTrackStatus.setText(R.string.music_status_buffering);
             } else {
                 mTrackStatus.setText("");
             }

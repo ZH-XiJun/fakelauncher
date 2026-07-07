@@ -69,6 +69,9 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
+    // Tencent MMKV
+    implementation libs.mmkv
+
     // CameraX
     implementation libs.androidx.camera.core
     implementation libs.androidx.camera.camera2

@@ -31,4 +31,5 @@ public final class SettingsConstants {
     public static final String PREF_FAKEUI_ON_BOOT = "fakeui_on_boot";
     public static final String PREF_MUSIC_ACCESS_TYPE = "music_access_type";
     public static final String PREF_MUSIC_ACCESS_SAF = "music_access_saf";
+    public static final String PREF_MUSIC_ITEMS = "music_items";
 }

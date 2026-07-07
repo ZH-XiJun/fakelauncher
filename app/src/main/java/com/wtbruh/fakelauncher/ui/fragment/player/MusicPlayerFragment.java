@@ -1,5 +1,6 @@
 package com.wtbruh.fakelauncher.ui.fragment.player;
 
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,25 +15,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
+import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.Glide;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.service.MusicService;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class MusicPlayerFragment extends BaseFragment {
-    private static final String TAG = "MusicPlayerFragment";
+    private static final String TAG = MusicPlayerFragment.class.getSimpleName();
+
+    public static final String MIME_AUDIO = "audio/";
 
     private MediaController mController;
     private ListenableFuture<MediaController> mControllerFuture;
@@ -99,6 +107,12 @@ public class MusicPlayerFragment extends BaseFragment {
         super.onStop();
         stopProgressUpdater();
         releaseController();
+    }
+
+    @Override
+    public void onResume() {
+        updateTrackInfo();
+        super.onResume();
     }
 
     // ─── Button Handling (hardware keys) ──────────────────────
@@ -187,8 +201,8 @@ public class MusicPlayerFragment extends BaseFragment {
                 R_DEFAULT
         );
 
-        // Load library
-        // loadLibrary();
+        // Load media items
+        loadMediaItems();
 
         // Start progress updates
         startProgressUpdater();
@@ -201,10 +215,49 @@ public class MusicPlayerFragment extends BaseFragment {
         }
     }
 
+    private void loadMediaItems() {
+        mHandler.post(() -> {
+            if (mController == null || mController.isPlaying() || mController.getMediaItemCount() > 0) return;
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
+            String mediaUri = sp.getString(SettingsConstants.PREF_MUSIC_ACCESS_SAF, "");
+            ArrayList<Uri> mMusicUriList = new ArrayList<>();
+            if (!mediaUri.isEmpty()) {
+                DocumentFile dir = DocumentFile.fromTreeUri(requireContext(), Uri.parse(mediaUri));
+                if (dir != null && dir.exists() && dir.isDirectory()) {
+                    DocumentFile[] files = dir.listFiles();
+                    for (DocumentFile file : files) {
+                        Uri fileUri = file.getUri();
+                        String mimeType = file.getType();
+                        if (mimeType != null && mimeType.startsWith(MIME_AUDIO))
+                            mMusicUriList.add(fileUri);
+                    }
+                }
+                if (!mMusicUriList.isEmpty()) {
+                    mPlaylist = new ArrayList<>();
+                    for (Uri uri : mMusicUriList) {
+                        MediaItem item = new MediaItem.Builder()
+                                .setUri(uri)
+                                .setMediaMetadata(new MediaMetadata.Builder()
+                                        .setTitle(uri.getLastPathSegment())
+                                        .build())
+                                .build();
+                        mPlaylist.add(item);
+                    }
+                    mController.setMediaItems(mPlaylist);
+                    mController.prepare();
+                } else {
+                    // updateStatus(getString(R.string.no_audio_files));
+                }
+            }
+        });
+
+    }
+
 
     // ─── UI Updates ───────────────────────────────────────────
 
     private void updateTrackInfo() {
+        Log.d(TAG, "updateTrackInfo called");
         if (mController == null) return;
 
         MediaItem currentItem = mController.getCurrentMediaItem();
@@ -273,19 +326,10 @@ public class MusicPlayerFragment extends BaseFragment {
         mHandler.post(() -> {
             if (mController == null) return;
             int state = mController.getPlaybackState();
-            switch (state) {
-                case Player.STATE_IDLE:
-                    mTrackStatus.setText(R.string.status_idle);
-                    break;
-                case Player.STATE_BUFFERING:
-                    mTrackStatus.setText(R.string.status_buffering);
-                    break;
-                case Player.STATE_READY:
-                    mTrackStatus.setText(mController.isPlaying() ? R.string.status_playing : R.string.status_paused);
-                    break;
-                case Player.STATE_ENDED:
-                    mTrackStatus.setText(R.string.status_ended);
-                    break;
+            if (state == Player.STATE_BUFFERING) {
+                mTrackStatus.setText(R.string.status_buffering);
+            } else {
+                mTrackStatus.setText("");
             }
         });
     }

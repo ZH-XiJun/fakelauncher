@@ -9,6 +9,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
+import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
@@ -39,6 +40,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         if (pref != null) pref.setVisible(!UIHelper.getTouchscreenState(requireContext()));
         for (String page : pages) {
             if ((pref = findPreference(page)) != null) pref.setOnPreferenceClickListener(this);
+        }
+
+        // 没给全权限我就这样
+        // If any permissions are missing, update the page_permission summary as a warning
+        Preference permPref = findPreference(PAGE_PERMISSION);
+        if (permPref != null && !PrivilegeProvider.checkAllPermissions(requireContext())) {
+            permPref.setSummary(R.string.pref_permissions_not_granted_hint);
         }
     }
 

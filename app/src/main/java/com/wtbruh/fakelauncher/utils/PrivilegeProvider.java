@@ -104,6 +104,22 @@ public class PrivilegeProvider {
     }
 
     /**
+     * Check if all permissions have been granted<br>
+     * 检查是否已获得所有权限
+     *
+     * @param context Activity的上下文数据
+     * @return 全部授权即为true，有一个没授权就返回false
+     */
+    public static boolean checkAllPermissions(Context context) {
+        for (String permission: getAllPermissions(context)) {
+            Log.d(TAG, "Checking permission:" + permission);
+            if (!checkPermission(context, permission)) return false;
+        }
+        Log.d(TAG, "All permissions granted");
+        return true;
+    }
+
+    /**
      * Request permission<br>
      * 请求权限
      *

@@ -28,9 +28,11 @@
     <com.wtbruh.fakelauncher.ui.widget.FitTextView
         android:id="@+id/appName"
         android:layout_width="match_parent"
-        android:layout_height="144dp"
+        android:layout_height="101dp"
         android:layout_marginBottom="50dp"
         android:gravity="center"
+        android:maxLines="1"
+        android:textSize="50sp"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@color/white"

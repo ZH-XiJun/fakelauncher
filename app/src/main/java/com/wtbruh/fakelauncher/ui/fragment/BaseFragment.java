@@ -19,6 +19,7 @@ public abstract class BaseFragment extends Fragment {
     public final static String[] L_EMPTY = {LEFT_BTN, "-1"};
     public final static String[] L_OPTION = {LEFT_BTN, String.valueOf(R.string.option_leftButton)};
     public final static String[] L_SAVE = {LEFT_BTN, String.valueOf(R.string.save_leftButton)};
+    public final static String[] L_ADD = {LEFT_BTN, String.valueOf(R.string.add_leftButton)};
     public final static String[] R_DEFAULT = {RIGHT_BTN, String.valueOf(R.string.common_rightButton)};
     public final static String[] R_EDITTEXT = {RIGHT_BTN, String.valueOf(R.string.edittext_rightButton)};
     public final static String[] R_EMPTY = {RIGHT_BTN, "-1"};

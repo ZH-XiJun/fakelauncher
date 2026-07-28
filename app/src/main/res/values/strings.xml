@@ -15,6 +15,7 @@
     <string name="unlock_leftButton">Unlock</string>
     <string name="common_leftButton">OK</string>
     <string name="save_leftButton">Save</string>
+    <string name="add_leftButton">新增</string>
     <!-- Right btn -->
     <string name="common_rightButton">Back</string>
     <string name="edittext_rightButton">Delete</string>
@@ -65,8 +66,17 @@
     <string name="gallery_detail">%s\nDate: %s\nWidth: %d\nHeight: %d</string>
     <!-- Message UI hint -->
     <string name="message_empty">No message</string>
+    <!-- Fake in-call UI -->
+    <string name="fake_incall_status">Calling</string>
+    <string name="fake_incall_unknown">Unknown Number</string>
     <!-- Contacts UI hint -->
     <string name="contacts_empty">No contact</string>
+    <string name="contact_add_title">Add</string>
+    <string name="contact_name_label">Name</string>
+    <string name="contact_number_label">Number</string>
+    <string name="contact_input_required">Please input name and number</string>
+    <string name="contact_save_failed">Save failed</string>
+    <string name="contact_save_success">Successfully saved</string>
     <!-- Music Player hint -->
     <string name="music_no_track">No track</string>
     <string name="music_unknown_title">Unknown Title</string>
@@ -100,7 +110,6 @@
 
     <string name="pref_page_permissions">Permissions and privileges</string>
     <string name="pref_page_permissions_summary">Program needs them to run normally</string>
-    <string name="pref_permissions_not_granted_hint">You have ungranted permissions!!!! Several functions may not work properly!!!</string>
     <string name="pref_category_permissions">Permissions</string>
     <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
     <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>

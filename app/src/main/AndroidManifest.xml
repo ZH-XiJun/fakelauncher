@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:name=".ApplicationHelper"
@@ -88,6 +89,14 @@
         <activity
             android:name=".SubActivity"
             android:exported="false"
+            android:theme="@style/Theme.FakeLauncher"/>
+        <activity
+            android:name=".FakeInCallActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
             android:theme="@style/Theme.FakeLauncher"/>
 
         <service

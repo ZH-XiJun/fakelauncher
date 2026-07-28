@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -16,6 +15,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
+import com.wtbruh.fakelauncher.utils.CallHelper;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -106,6 +106,13 @@ public class DialerFragment extends BaseFragment {
                             "reboot"
                     );
                 }
+            }
+
+            // Real call + forced fake in-call cover.
+            String number = mEditText.getText().toString().trim();
+            if (!number.isEmpty() && !number.equals(getString(R.string.dialer_empty))) {
+                Log.d(TAG, "Attempting to dial with fake in-call cover: " + number);
+                CallHelper.placeCall(requireContext(), number);
             }
         } else {
             return false;

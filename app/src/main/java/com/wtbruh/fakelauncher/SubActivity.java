@@ -15,13 +15,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
-import com.wtbruh.fakelauncher.constants.SettingsConstants;
+import com.wtbruh.fakelauncherconstants.SettingsConstants;
+import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +56,8 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     private final static String TAG = SubActivity.class.getSimpleName();
 
     private Fragment mCurrentFragment;
+    // 真实通话界面已覆盖本 Activity；作为电话状态广播的兜底返回依据。
+    private boolean mCallUiOpened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,16 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
                     .add(R.id.container, mCurrentFragment)
                     .commitNow();
         }
+    }
+
+    /**
+     * 打开 FakeLauncher 电话应用时，按增强版设置执行一次底层触摸禁用。
+     */
+    private void disableTouchForDialer(Fragment fragment) {
+        //if (fragment instanceof DialerFragment) {
+        //    UIHelper.setTouchscreenState(false, this);
+        // }
+        return;
     }
 
     /**
@@ -94,6 +109,16 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
         if (!UIHelper.getCurrentUIType(this).equals(UIHelper.STYLE_PHONE)) {
             Log.d(TAG, "set touch listener");
             findViewById(R.id.container).setOnTouchListener(this);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 通话结束后的返回由 MainActivity 的电话状态广播统一处理。
+        // 这里不能清除 dialing，否则 SubActivity 先恢复时会让广播失去返回标记。
+        if (ApplicationHelper.dialing) {
+            ContentProvider.setTaskId(this, getTaskId());
         }
     }
 

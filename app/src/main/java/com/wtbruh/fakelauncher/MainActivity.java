@@ -6,10 +6,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.telephony.TelephonyManager;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
@@ -86,6 +88,47 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     // 广播接收器 Broadcast receiver
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
     private boolean mReceiverRegistered = false;
+    private boolean mPhoneWasActive = false;
+    /*
+     * 通话应用会在电话状态变为 IDLE 后继续处理 END_CALL，并可能再次把系统桌面
+     * 置前。因此不能在收到 IDLE 的瞬间立即启动 FakeLauncher，需等待电话应用收尾。
+     */
+    private final Handler mPhoneReturnHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mReturnToFakeLauncher = () -> {
+        // Always re-show MainActivity after hangup; dialing may already be cleared
+        // by FakeInCallActivity.finishCallUi().
+        Intent launcherIntent = new Intent(MainActivity.this, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(launcherIntent);
+        // Restore pin to MainActivity task so UI accepts input again.
+        if (!ApplicationHelper.dialing) {
+            setLockApp(MainActivity.this, getTaskId());
+        }
+    };
+    private final BroadcastReceiver mPhoneStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(intent.getAction())) return;
+            String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+            if (TelephonyManager.EXTRA_STATE_RINGING.equals(state)
+                    || TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)) {
+                mPhoneWasActive = true;
+                mPhoneReturnHandler.removeCallbacks(mReturnToFakeLauncher);
+            } else if (TelephonyManager.EXTRA_STATE_IDLE.equals(state)
+                    && (ApplicationHelper.dialing || mPhoneWasActive)) {
+                mPhoneWasActive = false;
+                mPhoneReturnHandler.removeCallbacks(mReturnToFakeLauncher);
+                // Let FakeInCallActivity close itself and clear dialing; then bring
+                // MainActivity back after system phone UI finishes cleanup.
+                FakeInCallActivity.requestEnd(MainActivity.this);
+                mPhoneReturnHandler.postDelayed(mReturnToFakeLauncher, 900);
+            }
+        }
+    };
+    private boolean mPhoneStateRegistered = false;
 
     // is screen off 是否熄屏
     private boolean mLocked = false;
@@ -305,6 +348,38 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     public void onResume() {
         super.onResume();
         batteryAccurate();
+        // Only re-cover the call UI when a fake-call session is still active.
+        if (ApplicationHelper.dialing
+                && ApplicationHelper.fakeCallNumber != null
+                && !ApplicationHelper.fakeCallNumber.isEmpty()) {
+            Intent cover = new Intent(this, FakeInCallActivity.class)
+                    .putExtra(FakeInCallActivity.EXTRA_NUMBER, ApplicationHelper.fakeCallNumber)
+                    .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(cover);
+            overridePendingTransition(0, 0);
+            return;
+        }
+        // Hangup / residual state cleanup.
+        if (ApplicationHelper.dialing) {
+            ApplicationHelper.dialing = false;
+            ApplicationHelper.fakeCallNumber = "";
+        }
+        // After call session ends, keep pin on MainActivity so keys work again.
+        setLockApp(this, getTaskId());
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ApplicationHelper.dialing) return true;
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (ApplicationHelper.dialing) return true;
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
@@ -716,12 +791,21 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 mReceiverRegistered = true;
                 Log.d(TAG, "Receiver registered!");
             } else Log.w(TAG, "Receiver has already registered!");
+            if (!mPhoneStateRegistered) {
+                IntentFilter phoneFilter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+                registerReceiver(mPhoneStateReceiver, phoneFilter);
+                mPhoneStateRegistered = true;
+            }
         } else {
             if (mReceiverRegistered) {
                 unregisterReceiver(mReceiver);
                 mReceiverRegistered = false;
                 Log.d(TAG, "Receiver unregistered!");
             } else Log.w(TAG, "Receiver was not registered yet!");
+            if (mPhoneStateRegistered) {
+                unregisterReceiver(mPhoneStateReceiver);
+                mPhoneStateRegistered = false;
+            }
         }
     }
 

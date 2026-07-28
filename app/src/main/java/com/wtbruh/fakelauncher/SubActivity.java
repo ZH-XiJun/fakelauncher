@@ -15,11 +15,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
+import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.lang.reflect.Method;
@@ -54,6 +56,8 @@ public class SubActivity extends BaseAppCompatActivity {
     private final static String TAG = SubActivity.class.getSimpleName();
 
     private Fragment mCurrentFragment;
+    // 真实通话界面已覆盖本 Activity；作为电话状态广播的兜底返回依据。
+    private boolean mCallUiOpened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,16 @@ public class SubActivity extends BaseAppCompatActivity {
                     .add(R.id.container, mCurrentFragment)
                     .commitNow();
         }
+    }
+
+    /**
+     * 打开 FakeLauncher 电话应用时，按增强版设置执行一次底层触摸禁用。
+     */
+    private void disableTouchForDialer(Fragment fragment) {
+        //if (fragment instanceof DialerFragment) {
+        //    UIHelper.setTouchscreenState(false, this);
+        // }
+        return;
     }
 
     /**
@@ -99,6 +113,7 @@ public class SubActivity extends BaseAppCompatActivity {
                     Method newInstance = fragmentClass.getMethod("newInstance", Bundle.class);
                     newInstance.setAccessible(true);
                     mCurrentFragment = (Fragment) newInstance.invoke(fragmentClass, args);
+                    disableTouchForDialer(mCurrentFragment);
                     return;
                 }
             } catch (ClassNotFoundException e) {
@@ -113,9 +128,20 @@ public class SubActivity extends BaseAppCompatActivity {
             // Get newInstance() method
             try {
                 mCurrentFragment = (Fragment) fragmentClass.newInstance();
+                disableTouchForDialer(mCurrentFragment);
             } catch (Exception e) {
                 Log.e(TAG, "Got unexpected error", e);
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 通话结束后的返回由 MainActivity 的电话状态广播统一处理。
+        // 这里不能清除 dialing，否则 SubActivity 先恢复时会让广播失去返回标记。
+        if (ApplicationHelper.dialing) {
+            ContentProvider.setTaskId(this, getTaskId());
         }
     }
 
@@ -156,6 +182,7 @@ public class SubActivity extends BaseAppCompatActivity {
      * @param fragment Fragment对象
      */
     public void fragmentStarter(Fragment fragment) {
+        disableTouchForDialer(fragment);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, fragment);
         ft.addToBackStack(null);

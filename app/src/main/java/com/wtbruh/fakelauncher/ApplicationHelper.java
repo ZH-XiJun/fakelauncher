@@ -3,7 +3,12 @@ package com.wtbruh.fakelauncher;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.telephony.TelephonyManager;
+import androidx.preference.PreferenceManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -15,6 +20,8 @@ import com.wtbruh.fakelauncher.service.NotificationListenerService;
 public class ApplicationHelper extends Application {
 
     public static String topActivity;
+    public static volatile boolean dialing = false;
+    public static volatile String fakeCallNumber = "";
     private final static String TAG = ApplicationHelper.class.getSimpleName();
     public final static String PACKAGE_NAME = "com.wtbruh.fakelauncher"; // Static reference
 

@@ -15,6 +15,7 @@
     <string name="unlock_leftButton">Unlock</string>
     <string name="common_leftButton">OK</string>
     <string name="save_leftButton">Save</string>
+    <string name="add_leftButton">新增</string>
     <!-- Right btn -->
     <string name="common_rightButton">Back</string>
     <string name="edittext_rightButton">Delete</string>
@@ -63,8 +64,17 @@
     <string name="gallery_detail">%s\nDate: %s\nWidth: %d\nHeight: %d</string>
     <!-- Message UI hint -->
     <string name="message_empty">No message</string>
+    <!-- Fake in-call UI -->
+    <string name="fake_incall_status">通话中</string>
+    <string name="fake_incall_unknown">未知号码</string>
     <!-- Contacts UI hint -->
     <string name="contacts_empty">No contact</string>
+    <string name="contact_add_title">新增联系人</string>
+    <string name="contact_name_label">名字</string>
+    <string name="contact_number_label">电话号码</string>
+    <string name="contact_input_required">请输入名字和电话号码</string>
+    <string name="contact_save_failed">联系人保存失败</string>
+    <string name="contact_save_success">联系人已保存</string>
     <!-- Volume UI hint -->
     <string name="volume_adjust">Volume adjust</string>
     <!-- Option menu -->

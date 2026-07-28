@@ -2,7 +2,6 @@ package com.wtbruh.fakelauncher.ui.fragment.phone;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,6 +14,7 @@ import androidx.preference.PreferenceManager;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.settings.SubSettingsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
+import com.wtbruh.fakelauncher.utils.CallHelper;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -23,14 +23,12 @@ public class DialerFragment extends BaseFragment {
     public static final String ARG_INPUT = "input";
     private SharedPreferences mPrefs;
     private TextView mEditText;
-
     public DialerFragment() {
         // Required empty public constructor
     }
     public static DialerFragment newInstance() {
         return new DialerFragment();
     }
-
     /**
      * 启动该fragment时传入参数<br>
      *
@@ -42,7 +40,6 @@ public class DialerFragment extends BaseFragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +52,9 @@ public class DialerFragment extends BaseFragment {
         init();
         return rootView;
     }
-
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         String content = mEditText.getText().toString();
-
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
             if (content.equals(getString(R.string.dialer_empty))) {
                 setFooterBar(R_EDITTEXT);
@@ -91,6 +86,7 @@ public class DialerFragment extends BaseFragment {
                     if (mEditText.getText().equals("*#"+secretCode+"#*")) {
                         Log.d(TAG,"secret code correct!!!");
                         UIHelper.doExit(requireActivity());
+                        return true;
                     }
                 } else Log.d(TAG,"secret code incorrect or user didn't set secret code");
             }
@@ -106,12 +102,18 @@ public class DialerFragment extends BaseFragment {
                     );
                 }
             }
+
+            // Real call + forced fake in-call cover.
+            String number = mEditText.getText().toString().trim();
+            if (!number.isEmpty() && !number.equals(getString(R.string.dialer_empty))) {
+                Log.d(TAG, "Attempting to dial with fake in-call cover: " + number);
+                CallHelper.placeCall(requireContext(), number);
+            }
         } else {
             return false;
         }
         return true;
     }
-
     private void init() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
         mEditText = rootView.findViewById(R.id.dialer);
@@ -119,8 +121,5 @@ public class DialerFragment extends BaseFragment {
             mEditText.setText(getArguments().getString(ARG_INPUT));
             setFooterBar(R_EDITTEXT);
         }
-
     }
-
-
 }

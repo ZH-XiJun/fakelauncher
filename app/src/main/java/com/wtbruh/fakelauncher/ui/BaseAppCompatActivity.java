@@ -38,7 +38,7 @@ public class BaseAppCompatActivity extends AppCompatActivity {
             // Volume key interruption
             // 音量键拦截
             case KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                UIHelper.intentStarter(this, VolumeActivity.class);
+                UIHelper.startIntent(this, VolumeActivity.class);
                 // 阻止系统音量面板弹出
                 yield true;
             }

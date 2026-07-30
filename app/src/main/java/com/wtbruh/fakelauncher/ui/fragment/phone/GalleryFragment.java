@@ -36,6 +36,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.tencent.mmkv.MMKV;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
@@ -125,8 +126,8 @@ public class GalleryFragment extends BaseFragment {
             }
         });
         // 从SharedPreferences拿到用户给我们授权访问的目录的Uri
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        String uriStr = sp.getString(SettingsConstants.PREF_GALLERY_ACCESS, "");
+        MMKV kv = MMKV.defaultMMKV();
+        String uriStr = kv.decodeString(SettingsConstants.PREF_GALLERY_ACCESS, "");
         if (!uriStr.isEmpty()) {
             // 有东西，那就尝试读下照片
             // If URI is not empty, try to load the photos

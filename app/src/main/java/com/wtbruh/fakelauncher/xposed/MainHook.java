@@ -27,6 +27,7 @@ public class MainHook extends LogHelper implements IXposedHookLoadPackage, IXpos
         switch (lpparam.packageName) {
             case "android":
                 initHook(new PinningHook(), lpparam);
+                initHook(new PhoneWindowManagerHook(), lpparam);
                 logI(TAG, "Android framework hooked");
                 break;
             case "com.android.systemui":

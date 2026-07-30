@@ -33,12 +33,14 @@ public class FitTextView extends androidx.appcompat.widget.AppCompatTextView {
     }
 
     public void fitWidth() {
+        if (getLayout() == null) return;
         TextPaint paint = getLayout().getPaint();
         getLayoutParams().width = (int) (paint.measureText((String) getText()) + getPaddingStart() + getPaddingEnd());
         requestLayout();
     }
 
     public void fitHeight() {
+        if (getLayout() == null) return;
         TextViewCompat.setAutoSizeTextTypeWithDefaults(this, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
         getLayoutParams().height = (int) (getTextSize() + getPaddingTop() + getPaddingBottom() + 10);
         requestLayout();

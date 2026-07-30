@@ -301,20 +301,26 @@ public class UIHelper {
      * @param listener 按键监听器 | key listener
      */
     public static Dialog showCustomDialog(Context context, int msgResId, DialogInterface.OnKeyListener listener) {
-        // Load custom layout
-        // 加载自制布局
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_custom, null, false);
-        // Set message
+
         // 设置消息文本
-        TextView messageTv = view.findViewById(R.id.dialogMessage);
+        FitTextView messageTv = view.findViewById(R.id.dialogMessage);
         messageTv.setText(msgResId);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_FakeLauncher_Dialog);
         AlertDialog dialog = builder.setView(view).create();
-        // Touch event is not allowed
-        // 杜绝触屏操作，不然穿帮了
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+
+        // 布局完成后按文字实际宽度适配，让字尽可能大
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                messageTv.fitWidth();
+            }
+        });
+
         if (listener != null) dialog.setOnKeyListener(listener);
 
         Window window = dialog.getWindow();

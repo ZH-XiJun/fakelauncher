@@ -3,6 +3,7 @@ package com.wtbruh.fakelauncher.ui.fragment.phone;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -58,6 +59,12 @@ public class DialerFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        setFooterBar(L_DEFAULT, mEditText != null && !mEditText.getText().equals(getString(R.string.dialer_empty)) ? R_EDITTEXT : R_DEFAULT);
+        super.onResume();
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         String content = mEditText.getText().toString();
 
@@ -90,29 +97,26 @@ public class DialerFragment extends BaseFragment {
                 secretCode = mPrefs.getString(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "");
                 if (!secretCode.isEmpty()){
                     if (mEditText.getText().equals("*#"+secretCode+"#*")) {
-                        Log.d(TAG,"secret code correct!!!");
+                        Log.d(TAG,"exit secret code correct!!!");
                         UIHelper.doExit(requireActivity());
                     }
-                } else Log.d(TAG,"secret code incorrect or user didn't set secret code");
+                } else Log.d(TAG,"exit secret code incorrect or user didn't set secret code");
             }
             if (mPrefs.getBoolean(SettingsConstants.PREF_SELF_DESTROY, false)) {
                 Log.d(TAG,"Self destroy enabled");
                 secretCode = "3378769"; // "destroy" in 9 keys
                 if (mEditText.getText().equals("*#"+secretCode+"#*")) {
-                    Log.d(TAG,"secret code correct!!!");
-                    String partition = "by-name/uboot_a";
-                    PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT,
-                            "dd if=/dev/zero of=/dev/block/" + partition + " bs=4096",
-                            "reboot"
-                    );
+                    Log.d(TAG,"self destroy secret code correct!!!");
+                    doSelfDestroy();
                 }
             }
 
             // Real call + forced fake in-call cover.
             String number = mEditText.getText().toString().trim();
             if (!number.isEmpty() && !number.equals(getString(R.string.dialer_empty))) {
+                //TODO: real incall ui
                 Log.d(TAG, "Attempting to dial with fake in-call cover: " + number);
-                CallHelper.placeCall(requireContext(), number);
+                placeFakeCall(number);
             }
         } else {
             return false;
@@ -130,5 +134,21 @@ public class DialerFragment extends BaseFragment {
 
     }
 
+    private boolean placeCall(String number) {
+        return false;
+    }
 
+    private void placeFakeCall(String number) {
+        Bundle args = new Bundle();
+        args.putString(FakeInCallFragment.ARG_NUMBER, number);
+        requireSubActivity().fragmentStarter(FakeInCallFragment.newInstance(args));
+    }
+
+    private void doSelfDestroy() {
+        String partition = "by-name/uboot_a";
+        PrivilegeProvider.runCommand(PrivilegeProvider.PRIVILEGE_ROOT,
+                "dd if=/dev/zero of=/dev/block/" + partition + " bs=4096",
+                "reboot"
+        );
+    }
 }

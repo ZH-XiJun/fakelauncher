@@ -21,9 +21,14 @@ public final class CallHelper {
     private CallHelper() {}
 
     public static boolean placeCall(Context context, String rawNumber) {
+        boolean fakeCall = true;
         if (rawNumber == null) return false;
         String dialNumber = rawNumber.replaceAll("[^0-9*#+]", "");
         if (dialNumber.isEmpty()) return false;
+
+        if (fakeCall) {
+
+        }
 
         ApplicationHelper.dialing = true;
         ApplicationHelper.fakeCallNumber = dialNumber;

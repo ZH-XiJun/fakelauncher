@@ -23,6 +23,7 @@ public abstract class BaseFragment extends Fragment {
     public final static String[] R_DEFAULT = {RIGHT_BTN, String.valueOf(R.string.common_rightButton)};
     public final static String[] R_EDITTEXT = {RIGHT_BTN, String.valueOf(R.string.edittext_rightButton)};
     public final static String[] R_EMPTY = {RIGHT_BTN, "-1"};
+    public final static String[] R_END_CALL = {RIGHT_BTN, String.valueOf(R.string.endcall_rightButton)};
     public final static String[] C_PLAY = {CENTER_BTN, String.valueOf(R.string.play_centerButton)};
     public final static String[] C_PAUSE = {CENTER_BTN, String.valueOf(R.string.pause_centerButton)};
     public final static String[] C_RESUME = {CENTER_BTN, String.valueOf(R.string.resume_centerButton)};
@@ -41,6 +42,10 @@ public abstract class BaseFragment extends Fragment {
 
     public SubActivity requireSubActivity() {
         return ((SubActivity) requireActivity());
+    }
+
+    public <T extends android.view.View> T findViewById(int id) {
+        return rootView == null ? null : rootView.findViewById(id);
     }
 
 }

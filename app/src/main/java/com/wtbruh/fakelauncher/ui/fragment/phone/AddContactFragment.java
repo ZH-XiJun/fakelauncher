@@ -11,11 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.util.ArrayList;
 
@@ -84,11 +84,11 @@ public class AddContactFragment extends BaseFragment {
         String name = nameView.getText().toString().trim();
         String number = numberView.getText().toString().trim();
         if (name.isEmpty() || number.isEmpty()) {
-            Toast.makeText(requireContext(), R.string.contact_input_required, Toast.LENGTH_SHORT).show();
+            UIHelper.showCustomDialog(requireContext(), R.string.contact_input_required, null);
             return;
         }
         if (!PrivilegeProvider.checkPermission(requireContext(), Manifest.permission.WRITE_CONTACTS)) {
-            Toast.makeText(requireContext(), R.string.contact_save_failed, Toast.LENGTH_SHORT).show();
+            UIHelper.showCustomDialog(requireContext(), R.string.dialog_save_fail, null);
             return;
         }
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
@@ -112,10 +112,10 @@ public class AddContactFragment extends BaseFragment {
                 .build());
         try {
             requireContext().getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
-            Toast.makeText(requireContext(), R.string.contact_save_success, Toast.LENGTH_SHORT).show();
-            requireActivity().onBackPressed();
+            UIHelper.showCustomDialog(requireContext(), R.string.dialog_save_success, null).setOnDismissListener(dialogInterface -> requireActivity().onBackPressed());
+
         } catch (RemoteException | OperationApplicationException | SecurityException e) {
-            Toast.makeText(requireContext(), R.string.contact_save_failed, Toast.LENGTH_SHORT).show();
+            UIHelper.showCustomDialog(requireContext(), R.string.dialog_save_fail, null);
         }
     }
 }

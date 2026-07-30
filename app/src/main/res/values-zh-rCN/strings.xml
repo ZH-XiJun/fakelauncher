@@ -74,8 +74,6 @@
     <string name="contact_name_label">姓名</string>
     <string name="contact_number_label">电话号码</string>
     <string name="contact_input_required">请输入姓名和电话号码</string>
-    <string name="contact_save_failed">保存失败</string>
-    <string name="contact_save_success">已保存</string>
     <!-- 音乐播放器文字提示 -->
     <string name="music_no_track">无曲目</string>
     <string name="music_unknown_title">未知标题</string>

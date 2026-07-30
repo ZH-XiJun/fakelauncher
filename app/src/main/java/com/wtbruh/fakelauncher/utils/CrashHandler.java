@@ -23,7 +23,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private Context mContext;
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     private final static String TAG = CrashHandler.class.getSimpleName();
-    private boolean mShowCrashLog = false;
 
     @Override
     public void uncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {

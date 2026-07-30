@@ -31,9 +31,11 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.wtbruh.fakelauncher.ApplicationHelper;
+import com.tencent.mmkv.MMKV;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
@@ -73,9 +75,11 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
                                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         Uri uri = result.getData().getData();
-                        SharedPreferences sp = getDefaultSharedPreferences(requireContext());
+                        MMKV kv = MMKV.defaultMMKV();
+                        // SharedPreferences sp = getDefaultSharedPreferences(requireContext());
                         if (uri != null) {
-                            String oldUri = sp.getString(targetKeyToSave, "");
+                            // String oldUri = sp.getString(targetKeyToSave, "");
+                            String oldUri = kv.decodeString(targetKeyToSave, "");
                             if (!oldUri.isEmpty() && !oldUri.equals(String.valueOf(uri))) {
                                 Log.d(TAG, "User has granted another directory's access permission, revoking the old one...");
                                 requireActivity().revokeUriPermission(Uri.parse(oldUri), takeFlags);
@@ -83,11 +87,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                             // 获取权限
                             requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
                             // 存入SharedPreferences
-                            sp.edit()
-                                    .putString(targetKeyToSave, String.valueOf(uri))
-                                    .apply();
+                            kv.encode(targetKeyToSave, String.valueOf(uri));
                             Preference pref = findPreference(targetKeyToSave);
-                            if (pref != null) pref.setSummary(sp.getString(targetKeyToSave, getString(R.string.pref_saf_access_summary)));
+                            if (pref != null) pref.setSummary(kv.decodeString(targetKeyToSave, getString(R.string.pref_saf_access_summary)));
                         }
                     }
                 }
@@ -135,7 +137,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         super.onResume();
         // Register the listener that observe changes of SharedPreference
         // 注册检测SharedPreference变化的监听器
-        Objects.requireNonNull(getPreferenceScreen().getSharedPreferences()).registerOnSharedPreferenceChangeListener(this);
+        // Objects.requireNonNull(getPreferenceScreen().getSharedPreferences()).registerOnSharedPreferenceChangeListener(this);
+        PreferenceManager.getDefaultSharedPreferences(requireContext()).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -143,7 +146,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         super.onPause();
         // Unregister the listener that observe changes of SharedPreference
         // 注销检测SharedPreference变化的监听器
-        Objects.requireNonNull(getPreferenceScreen().getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this);
+        // Objects.requireNonNull(getPreferenceScreen().getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this);
+        PreferenceManager.getDefaultSharedPreferences(requireContext()).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -177,7 +181,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         SettingsConstants.PREF_CHECK_XPOSED,
                         SettingsConstants.PREF_CHECK_DEVICE_ADMIN,
                         SettingsConstants.PREF_GALLERY_ACCESS,
-                        SettingsConstants.PREF_MUSIC_ACCESS_SAF
+                        SettingsConstants.PREF_MUSIC_ACCESS_SAF,
+                        SettingsConstants.PREF_MUSIC_ACCESS_TYPE
                 };
                 listPrefs = new String[] {
                         SettingsConstants.PREF_PRIVILEGE_PROVIDER,
@@ -395,7 +400,16 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
             }
 
-            case SettingsConstants.PREF_GALLERY_ACCESS, SettingsConstants.PREF_MUSIC_ACCESS_SAF -> pref.setSummary(sp.getString(key, getString(R.string.pref_saf_access_summary)));
+            case SettingsConstants.PREF_GALLERY_ACCESS, SettingsConstants.PREF_MUSIC_ACCESS_SAF -> {
+                MMKV kv = MMKV.defaultMMKV();
+                pref.setSummary(kv.decodeString(key, getString(R.string.pref_saf_access_summary)));
+            }
+            case SettingsConstants.PREF_MUSIC_ACCESS_TYPE -> {
+                Preference p = findPreference(SettingsConstants.PREF_MUSIC_ACCESS_SAF);
+                if (p != null) p.setVisible(
+                        sp.getString(SettingsConstants.PREF_MUSIC_ACCESS_TYPE, getString(R.string.pref_music_access_type_default)).equals("custom_dir")
+                );
+            }
         }
     }
 
@@ -463,6 +477,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 prefSetup(Objects.requireNonNull(findPreference(SettingsConstants.PREF_SELF_DESTROY_CONFIG)));
 
             }
+
+            case SettingsConstants.PREF_MUSIC_ACCESS_TYPE -> prefSetup(pref);
         }
     }
 

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.wtbruh.fakelauncher.BuildConfig;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
 
@@ -47,7 +48,7 @@ public class AboutFragment extends Fragment {
             versionName = packageInfo.versionName;
             versionCode = String.valueOf(packageInfo.versionCode);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Error on initializing About page: "+e);
+            Log.e(TAG, "Error on initializing About page: ", e);
             versionName = "unknown";
             versionCode = "unknown";
         }
@@ -59,8 +60,7 @@ public class AboutFragment extends Fragment {
             startActivity(intent);
         });
         TextView debugVariant = rootView.findViewById(R.id.debugVariant);
-        if ((requireContext().getApplicationInfo().flags &
-                ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+        if (BuildConfig.DEBUG) {
             debugVariant.setVisibility(View.VISIBLE);
         }
     }

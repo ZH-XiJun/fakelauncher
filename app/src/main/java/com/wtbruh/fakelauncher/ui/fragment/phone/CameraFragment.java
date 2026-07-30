@@ -43,6 +43,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.tencent.mmkv.MMKV;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
@@ -330,10 +331,10 @@ public class CameraFragment extends BaseFragment {
         try {
             // 从SharedPreferences拿到用户给我们授权访问的目录的Uri，作为照片存储目录
             // Get gallery URI granted by user for the save destination
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            String uriStr = sp.getString(SettingsConstants.PREF_GALLERY_ACCESS, "");
+            MMKV kv = MMKV.defaultMMKV();
+            String uriStr = kv.decodeString(SettingsConstants.PREF_GALLERY_ACCESS, "");
             if (uriStr.isEmpty()) {
-                // 如果拿到个空的，说明用户根本没授权啊，要么就是用户趁我不注意偷偷改了SharedPreference
+                // 如果拿到个空的，说明用户根本没授权啊，我用MMKV用户还改我二进制是吧
                 // If URI is empty, that meas user didn't grant access, fuck you user!
                 throw new SecurityException("User didn't grant access to any folder for saving files");
             }

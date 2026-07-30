@@ -392,6 +392,20 @@ public class MusicPlayerFragment extends BaseFragment {
      */
     private List<MediaItem> buildPlaylist(android.content.Context ctx, List<Uri> uris) {
         List<MediaItem> playlist = new ArrayList<>();
+
+        // 2 internal musics
+        // 两首内置的歌
+        Uri u = new Uri.Builder()
+                .scheme("android.resource")
+                .path(String.valueOf(R.raw.haoyunlai))
+                .build();
+        playlist.add(MediaItem.fromUri(u));
+        u = new Uri.Builder()
+                .scheme("android.resource")
+                .path(String.valueOf(R.raw.xilenianhua))
+                .build();
+        playlist.add(MediaItem.fromUri(u));
+
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         for (Uri uri : uris) {
             try {

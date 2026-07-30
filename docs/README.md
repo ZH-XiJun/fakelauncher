@@ -90,7 +90,7 @@ CI build version: [![GitHub Actions Workflow Status](https://img.shields.io/gith
 
 ## TO-DO
 
-- [x] Release v1.0
+- [ ] Release v1.0
 - [x] Release v0.3
 - [ ] Add Media Player (MP3) UI style
 - [x] Complete Contacts page

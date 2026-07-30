@@ -2,13 +2,13 @@ package com.wtbruh.fakelauncher;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.tencent.mmkv.MMKV;
 import com.rosan.dhizuku.api.Dhizuku;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.service.NotificationListenerService;
@@ -29,8 +30,6 @@ import java.lang.ref.WeakReference;
 public class ApplicationHelper extends Application {
 
     public static String topActivity;
-    public static volatile boolean dialing = false;
-    public static volatile String fakeCallNumber = "";
     private final static String TAG = ApplicationHelper.class.getSimpleName();
     /** 当前前台 Activity（WeakReference 避免泄漏）*/
     private static WeakReference<Activity> sCurrentActivity = new WeakReference<>(null);
@@ -80,7 +79,6 @@ public class ApplicationHelper extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         // 初始化设备管理权限
         initDeviceOwner();
 
@@ -88,18 +86,26 @@ public class ApplicationHelper extends Application {
         getContentResolver().registerContentObserver(
                 ContentProvider.CONTENT_URI, true, mLockTaskObserver);
 
-        // 生命周期回调：追踪前台 Activity
+        // MMKV init
+        MMKV.initialize(this);
+
+        Log.d(TAG, "Application onCreate. My package name: "+ BuildConfig.APPLICATION_ID);
+
+        // startAllServices();
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
-            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {}
+            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+
+            }
 
             @Override
-            public void onActivityStarted(@NonNull Activity activity) {}
+            public void onActivityStarted(@NonNull Activity activity) {
+
+            }
 
             @Override
             public void onActivityResumed(@NonNull Activity activity) {
                 topActivity = activity.toString();
-                sCurrentActivity = new WeakReference<>(activity);
             }
 
             @Override
@@ -108,10 +114,14 @@ public class ApplicationHelper extends Application {
             }
 
             @Override
-            public void onActivityStopped(@NonNull Activity activity) {}
+            public void onActivityStopped(@NonNull Activity activity) {
+
+            }
 
             @Override
-            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {}
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+
+            }
 
             @Override
             public void onActivityDestroyed(@NonNull Activity activity) {}
@@ -142,8 +152,6 @@ public class ApplicationHelper extends Application {
             default -> null;
         };
     }
-
-    // ── Services ──────────────────────────────────────────────────────────────────────────────────────────
 
     /**
      * 启动所有服务。 Start all services.

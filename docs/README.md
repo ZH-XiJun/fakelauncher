@@ -12,17 +12,29 @@
 我是[中国人](README-ZH.md)
 
 > [!Caution]
-> **DON'T USE THE APP ON YOUR SMARTPHONE BECAUSE EXIT THE APP REQUIRES HARDWARE KEYS**
+> **THE APP IS NOT DESIGNED FOR NORMAL SMARTPHONE**
 > 
-> **I AM NOT RESPONSIBLE FOR ANY DAMAGE TO YOUR PHONE**
+> **I AM NOT RESPONSIBLE FOR ANY INCONVENIENCE OR DAMAGE TO YOUR PHONE**
 
 ## Description
 
 Disguise your feature-phone-like smartphone (feature phone style but uses Android system) as a real feature phone.
 
-Once you open it, you will be brought to a feature phone UI and not able to open any apps. Status bar will disabled. Touchscreen operation is not allowed, only keys take effect. Thus achieving a disguise effect.
+Once you open it, you will be brought to a feature phone UI, hiding Android UI characteristics and preventing from opening any Apps. Touchscreen operation is not allowed, only hardware keys take effect. Thus achieving a disguise effect.
 
-So, when do you need the App? What kinds of devices are suitable for the App? I'll give an example.
+So, when do you need the App? What kinds of devices are suitable for the App? I'll give an [example](#what-kind-of-devices-is-suitable-for-the-app).
+
+## Internal Apps Status
+
+| App | Status |
+| --- | --- |
+| Music Player | Fully working. Note: It can not only play local songs but also control 3rd party music players |
+| Camera | Fully working |
+| Gallery | Fully working |
+| Contacts | Initially working |
+| Call | Not working |
+| Message | Not working |
+| Settings | Not working |
 
 ## What kind of devices is suitable for the App?
 
@@ -78,12 +90,10 @@ CI build version: [![GitHub Actions Workflow Status](https://img.shields.io/gith
 
 ## TO-DO
 
-- [ ] Release v0.3
-- [x] Support for old Android (Tested on Android 5.1, Android 13)
-- [x] Disable touch at system level (Software level at present, preventing touchable elements from appearing) (thx maidang2233)
+- [x] Release v1.0
+- [x] Release v0.3
 - [ ] Add Media Player (MP3) UI style
 - [x] ~~Add stroke text~~ Resizable text stroke width
-- [x] Resizable elements of main UI
 - [ ] Complete Contacts page
 - [ ] Add Message page
 - [ ] ~~Video progress bar~~, select file in fullscreen photo view, ~~option menu~~ (Gallery)

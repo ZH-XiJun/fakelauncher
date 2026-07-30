@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,9 +15,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
@@ -51,11 +46,14 @@ public class ContactsFragment extends BaseFragment {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         // This device maps the upper-left soft key to MENU. Keep it available
         // even when the list is empty, and use it to open the add-contact page.
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            requireSubActivity().fragmentStarter(AddContactFragment.newInstance());
-            return true;
+
+        if (adapter == null || adapter.getItemCount() == 0) {
+            if (keyCode == KeyEvent.KEYCODE_MENU) {
+                requireSubActivity().fragmentStarter(AddContactFragment.newInstance());
+                return true;
+            }
+            return false;
         }
-        if (adapter == null || adapter.getItemCount() == 0) return false;
         int position = adapter.getSelectedPosition();
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP -> {
@@ -72,7 +70,7 @@ public class ContactsFragment extends BaseFragment {
                 }
                 return true;
             }
-            case KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER -> {
+            case KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER -> {
                 showOptionMenu();
                 return true;
             }
@@ -99,16 +97,24 @@ public class ContactsFragment extends BaseFragment {
         contactsView.setItemAnimator(null);
         adapter = new SingleTextviewAdapter(displayData);
         contactsView.setAdapter(adapter);
-        setFooterBar(L_ADD, R_DEFAULT);
+        refreshUI();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void refreshUI() {
+        adapter.notifyDataSetChanged();
+        if (adapter == null || adapter.getItemCount() == 0) {
+            setFooterBar(L_ADD, R_DEFAULT);
+        } else setFooterBar(L_OPTION, R_DEFAULT);
     }
 
     private void showOptionMenu() {
         int selected = adapter.getSelectedPosition();
         if (selected < 0 || selected >= contacts.size()) return;
         ContactEntry contact = contacts.get(selected);
-        final int CALL = 0, DETAIL = 1, DELETE = 2;
+        final int CALL = 0, DETAIL = 1, DELETE = 2, ADD = 3;
         String[] selections = {getString(R.string.option_call), getString(R.string.option_detail),
-                getString(R.string.option_delete)};
+                getString(R.string.option_delete), getString(R.string.option_add)};
         requireSubActivity().showOptionMenu(selections, (keyCode, event, position, tv) -> {
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
                 requireSubActivity().closeOptionMenu();
@@ -117,6 +123,7 @@ public class ContactsFragment extends BaseFragment {
                     case DETAIL -> requireSubActivity().fragmentStarter(
                             ContactDetailFragment.newInstance(contact.name, contact.number));
                     case DELETE -> deleteContact(contact);
+                    case ADD -> requireSubActivity().fragmentStarter(AddContactFragment.newInstance());
                 }
             }
             return true;
@@ -128,7 +135,6 @@ public class ContactsFragment extends BaseFragment {
         CallHelper.placeCall(requireContext(), contact.number);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void deleteContact(ContactEntry contact) {
         if (!PrivilegeProvider.checkPermission(requireContext(), Manifest.permission.WRITE_CONTACTS)) return;
         try {
@@ -139,7 +145,7 @@ public class ContactsFragment extends BaseFragment {
                 int position = contacts.indexOf(contact);
                 contacts.remove(position);
                 displayData.remove(position);
-                adapter.notifyDataSetChanged();
+                refreshUI();
                 if (contacts.isEmpty()) noContact();
                 else adapter.setSelectedPosition(Math.min(position, contacts.size() - 1));
             }
@@ -184,11 +190,6 @@ public class ContactsFragment extends BaseFragment {
         return !contacts.isEmpty();
     }
 
-    private static class ContactEntry {
-        final long contactId;
-        final String lookupKey, name, number;
-        ContactEntry(long id, String lookupKey, String name, String number) {
-            this.contactId = id; this.lookupKey = lookupKey; this.name = name; this.number = number;
-        }
+    private record ContactEntry(long contactId, String lookupKey, String name, String number) {
     }
 }

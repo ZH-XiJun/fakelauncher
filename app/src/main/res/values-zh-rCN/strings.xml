@@ -14,9 +14,11 @@
     <string name="unlock_leftButton">解锁</string>
     <string name="common_leftButton">确定</string>
     <string name="save_leftButton">保存</string>
+    <string name="add_leftButton">添加</string>
     <!-- 右键 -->
     <string name="common_rightButton">返回</string>
     <string name="edittext_rightButton">删除</string>
+    <string name="endcall_rightButton">挂断</string>
     <!-- 中键 -->
     <string name="play_centerButton">播放</string>
     <string name="pause_centerButton">暂停</string>
@@ -24,6 +26,11 @@
     <string name="stop_centerButton">停止</string>
     <string name="shoot_centerButton">拍照</string>
     <string name="record_centerButton">录像</string>
+    <!-- 通用文字 -->
+    <string name="loading">加载中</string>
+    <string name="load_failed">加载失败</string>
+    <string name="success">操作成功</string>
+    <string name="failed">操作失败</string>
     <!-- 菜单文字 -->
     <string name="menu_call">电话</string>
     <string name="menu_camera">相机</string>
@@ -54,15 +61,21 @@
     <string name="dialog_save_success">保存成功</string>
     <!-- 相册界面文字提示 -->
     <string name="gallery_no_photo">无照片</string>
-    <string name="gallery_loading">加载中</string>
-    <string name="gallery_load_failed">加载失败</string>
-    <string name="gallery_success">操作成功</string>
-    <string name="gallery_fail">操作失败</string>
     <string name="gallery_detail">%s\n日期：%s\n宽度：%d\n高度：%d</string>
     <!-- 短信界面文字提示 -->
     <string name="message_empty">无信息</string>
+    <!-- Fake in-call UI -->
+    <string name="fake_incall_status">通话中</string>
+    <string name="fake_incall_unknown">未知号码</string>
+    <string name="fake_incall_end_call">已挂断</string>
     <!-- 联系人界面文字提示 -->
     <string name="contacts_empty">无联系人</string>
+    <string name="contact_add_title">添加联系人</string>
+    <string name="contact_name_label">姓名</string>
+    <string name="contact_number_label">电话号码</string>
+    <string name="contact_input_required">请输入姓名和电话号码</string>
+    <string name="contact_save_failed">保存失败</string>
+    <string name="contact_save_success">已保存</string>
     <!-- 音乐播放器文字提示 -->
     <string name="music_no_track">无曲目</string>
     <string name="music_unknown_title">未知标题</string>
@@ -86,6 +99,7 @@
     <string name="option_switch_camera">切换到%s置摄像头</string>
     <string name="front">前</string>
     <string name="back">后</string>
+    <string name="option_add">添加</string>
     <!-- 软件设置文字提示 -->
     <string name="pref_tap_me">戳我！</string>
     <string name="pref_caution">慎用，该功能在真老人机中并不常见</string>
@@ -161,6 +175,11 @@
     <string name="pref_self_destroy_summary">在极端情况下毁掉你的手机。仅在极端情况下使用！！</string>
     <string name="pref_self_destroy_config">自毁功能配置</string>
 
+    <string name="pref_page_debug">调试</string>
+    <string name="pref_page_debug_summary">开发调试用功能。请不要在日常使用中启用它们！！！</string>
+    <string name="pref_crash_show_log">应用崩溃时展示崩溃日志</string>
+    <string name="pref_crash_show_log_summary">只用于调试，会严重影响伪装效果</string>
+
     <string name="pref_page_about">关于</string>
     <string name="pref_page_about_summary">屎山代码作者：what_the_bruhhhh</string>
     <string name="pref_jump_to_github">跳转至GitHub</string>
@@ -192,4 +211,14 @@
     <string name="dialog_message_enhance_touch_blocking">这个功能仍处于实验阶段。\n打开它之后，不要在使用伪装界面时强制停止程序，否则触控将不会恢复。\n如果这种情况发生了，打开设置你就能看到恢复按钮了，否则你需要重启手机才能恢复</string>
     <string name="dialog_message_self_destroy">这个功能会使你的手机变砖！！！\n打开这里的开关后，你可以使用短信（远程控制）或拨号盘代码（本地控制）来激活自毁程序。激活后，软件会擦除一个分区（默认是boot），这样你的手机重启就会变砖，无法正常开机\n激活该功能之前，请确保你有救砖的能力，且备份好所有的分区\n该功能仅在极端情况下激活，请不要把它当儿戏！</string>
     <string name="dialog_btn_understand">了解</string>
+
+    <!-- Crash log -->
+    <string name="crash_title">OOPS</string>
+    <string name="crash_subtitle">程序崩溃咯！这是你要的日志喵</string>
+    <string name="crash_placeholder">加载崩溃日志…</string>
+    <string name="crash_no_log">没有日志？这也是个Bug吧</string>
+    <string name="crash_restart">重启App</string>
+    <string name="crash_copy">复制</string>
+    <string name="crash_exit">退出</string>
+    <string name="crash_copied">帮你甩进剪贴板了喵</string>
 </resources>

@@ -98,7 +98,6 @@ public class MenuFragment extends BaseFragment {
             }
             @Override
             public boolean onFling(MotionEvent e1, @NonNull MotionEvent e2, float velocityX, float velocityY) {
-                Log.d(TAG, "onFling: e1=" + e1.getX() + ", e2=" + e2.getX() + ", velocityX=" + velocityX);
                 if (e1.getX() - e2.getX() > 100) {
                     // Swipe left
                     if (mNumber == mAppList.length - 1) {

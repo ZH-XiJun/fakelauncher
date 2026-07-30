@@ -5,10 +5,6 @@ import static com.wtbruh.fakelauncher.utils.PrivilegeProvider.PERMISSION_REQUEST
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -30,7 +26,6 @@ import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -62,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
     public void openSubSettings(String page) {
         if (page.contains(SettingsFragment.FUN)) {
             switch (page) {
-                case SettingsFragment.FUN_OPEN_FAKEUI -> UIHelper.intentStarter(this, SplashActivity.class);
+                case SettingsFragment.FUN_OPEN_FAKEUI -> UIHelper.startIntent(this, SplashActivity.class);
                 case SettingsFragment.FUN_TOUCH -> UIHelper.setTouchscreenState(true, this);
             }
             return;

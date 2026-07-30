@@ -20,7 +20,7 @@ import com.wtbruh.fakelauncher.ui.fragment.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
-import com.wtbruh.fakelauncherconstants.SettingsConstants;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
@@ -56,8 +56,6 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     private final static String TAG = SubActivity.class.getSimpleName();
 
     private Fragment mCurrentFragment;
-    // 真实通话界面已覆盖本 Activity；作为电话状态广播的兜底返回依据。
-    private boolean mCallUiOpened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,16 +68,6 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
                     .add(R.id.container, mCurrentFragment)
                     .commitNow();
         }
-    }
-
-    /**
-     * 打开 FakeLauncher 电话应用时，按增强版设置执行一次底层触摸禁用。
-     */
-    private void disableTouchForDialer(Fragment fragment) {
-        //if (fragment instanceof DialerFragment) {
-        //    UIHelper.setTouchscreenState(false, this);
-        // }
-        return;
     }
 
     /**

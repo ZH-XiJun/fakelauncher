@@ -148,7 +148,7 @@ public class GalleryFragment extends BaseFragment {
 
     private void videoLoadFailed() {
         textHint.setVisibility(VISIBLE);
-        textHint.setText(R.string.gallery_load_failed);
+        textHint.setText(R.string.load_failed);
     }
 
     private void showDetail(HashMap<String, Uri> uriHashMap) {
@@ -290,7 +290,7 @@ public class GalleryFragment extends BaseFragment {
             galleryView.setVisibility(VISIBLE);
             return true;
         } else if (videoLayout.getVisibility() == VISIBLE ||
-                (textHint.getVisibility() == VISIBLE && textHint.getText().equals(getString(R.string.gallery_load_failed)))) {
+                (textHint.getVisibility() == VISIBLE && textHint.getText().equals(getString(R.string.load_failed)))) {
             closeVideoInterface();
             setFooterBar();
             return true;
@@ -325,7 +325,7 @@ public class GalleryFragment extends BaseFragment {
                                     mPhotoUriList.remove(uriHashMap);
                                     adapter.notifyItemRemoved(selectedPosition);
                                     backToGalleryInterface();
-                                    UIHelper.showCustomDialog(requireContext(), R.string.gallery_success, null);
+                                    UIHelper.showCustomDialog(requireContext(), R.string.success, null);
 
                                 }
                                 case OPTION_DETAIL -> showDetail(uriHashMap);

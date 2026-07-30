@@ -89,7 +89,7 @@ public class PasswordFragment extends BaseFragment {
         TextView error = rootView.findViewById(R.id.passwdError);
         if (passwd.equals("5418814250")) {
             error.setVisibility(View.INVISIBLE);
-            UIHelper.intentStarter(requireActivity(), SettingsActivity.class);
+            UIHelper.startIntent(requireActivity(), SettingsActivity.class);
         } else if (passwd.isEmpty()) {
             error.setText(R.string.password_empty);
             error.setVisibility(View.VISIBLE);

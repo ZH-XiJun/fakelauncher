@@ -72,7 +72,7 @@
         android:gravity="center"
         android:maxLines="1"
         android:padding="50dp"
-        android:text="@string/gallery_loading"
+        android:text="@string/loading"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:visibility="visible"

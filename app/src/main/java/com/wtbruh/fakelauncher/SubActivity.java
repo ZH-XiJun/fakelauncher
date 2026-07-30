@@ -162,6 +162,7 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
         ft.replace(R.id.optionMenu, f);
         ft.commit();
         mCurrentFragment = f;
+        setFooterBar(BaseFragment.L_DEFAULT);
     }
 
     public void closeOptionMenu() {
@@ -171,6 +172,7 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
             ft.remove(mCurrentFragment);
             ft.commit();
             mCurrentFragment = fm.findFragmentById(R.id.container);
+            setFooterBar(BaseFragment.L_OPTION);
         }
     }
 

@@ -97,14 +97,6 @@
             android:name=".SubActivity"
             android:exported="false"
             android:theme="@style/Theme.FakeLauncher" />
-        <activity
-            android:name=".FakeInCallActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleTop"
-            android:showWhenLocked="true"
-            android:theme="@style/Theme.FakeLauncher"
-            android:turnScreenOn="true" />
 
         <service
             android:name=".service.NotificationListenerService"

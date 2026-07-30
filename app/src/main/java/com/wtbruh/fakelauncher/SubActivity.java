@@ -103,11 +103,8 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     @Override
     protected void onResume() {
         super.onResume();
-        // 通话结束后的返回由 MainActivity 的电话状态广播统一处理。
-        // 这里不能清除 dialing，否则 SubActivity 先恢复时会让广播失去返回标记。
-        if (ApplicationHelper.dialing) {
-            ContentProvider.setTaskId(this, getTaskId());
-        }
+        // Restore pin for key operations
+        UIHelper.setLockApp(this, getTaskId());
     }
 
     /**

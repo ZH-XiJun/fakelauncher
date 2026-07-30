@@ -2,6 +2,7 @@ package com.wtbruh.fakelauncher;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -106,6 +107,7 @@ public class ApplicationHelper extends Application {
             @Override
             public void onActivityResumed(@NonNull Activity activity) {
                 topActivity = activity.toString();
+                sCurrentActivity = new WeakReference<>(activity);
             }
 
             @Override

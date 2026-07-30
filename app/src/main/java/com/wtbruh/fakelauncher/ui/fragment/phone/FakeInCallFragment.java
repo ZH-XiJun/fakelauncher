@@ -29,8 +29,6 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import com.wtbruh.fakelauncher.ApplicationHelper;
-import com.wtbruh.fakelauncher.FakeInCallActivity;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
@@ -41,7 +39,7 @@ import com.wtbruh.fakelauncher.utils.UIHelper;
 public class FakeInCallFragment extends BaseFragment {
     public static final String ARG_NUMBER = "number";
     public static final String ACTION_END = "com.wtbruh.fakelauncher.action.FAKE_INCALL_END";
-    private static final String TAG = FakeInCallActivity.class.getSimpleName();
+    private static final String TAG = FakeInCallFragment.class.getSimpleName();
 
     private TextView numberView;
     private TextView durationView;
@@ -133,9 +131,6 @@ public class FakeInCallFragment extends BaseFragment {
         numberView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         numberView.setSingleLine(true);
         numberView.setSelected(true);
-        if (!getString(R.string.fake_incall_unknown).equals(number)) {
-            ApplicationHelper.fakeCallNumber = number;
-        }
     }
 
     private void startTimerIfNeeded() {

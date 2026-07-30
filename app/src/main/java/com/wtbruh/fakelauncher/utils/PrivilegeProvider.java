@@ -30,7 +30,7 @@ import com.rosan.dhizuku.api.Dhizuku;
 import com.rosan.dhizuku.api.DhizukuBinderWrapper;
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener;
 import com.wtbruh.fakelauncher.IUserService;
-import com.wtbruh.fakelauncher.MainActivity;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.service.UserService;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
@@ -362,7 +362,7 @@ public class PrivilegeProvider {
             Log.d(TAG, "Requesting dhizuku");
             if (!Dhizuku.init(context)) return DEACTIVATED;
             if (Dhizuku.isPermissionGranted()) return DHIZUKU;
-            if (MainActivity.getLockApp(context) != -1 ) {
+            if (UIHelper.getLockApp(context) != -1 ) {
                 Toast.makeText(context, R.string.toast_open_settings_from_launcher, Toast.LENGTH_LONG).show();
                 return DEACTIVATED;
             }

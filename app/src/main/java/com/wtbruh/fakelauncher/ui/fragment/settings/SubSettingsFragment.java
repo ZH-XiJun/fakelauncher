@@ -33,6 +33,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
+import com.wtbruh.fakelauncher.ApplicationHelper;
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
@@ -119,6 +120,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             xml = switch (page) {
                 case SettingsFragment.PAGE_BEHAVIOUR -> R.xml.preference_behaviour;
                 case SettingsFragment.PAGE_VIEW -> R.xml.preference_view;
+                case SettingsFragment.PAGE_DEBUG -> R.xml.preference_debug;
                 // If argument invalid, fallback to permission page
                 // 如果乱传参数，默认也是打开权限页面
                 default -> R.xml.preference_permission;
@@ -210,6 +212,9 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         SettingsConstants.PREF_SELF_DESTROY
                 };
                 titleResId = R.string.pref_page_behaviour;
+                break;
+            case SettingsFragment.PAGE_DEBUG:
+                titleResId = R.string.pref_page_debug;
                 break;
         }
         // Init of clickable preferences
@@ -317,7 +322,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 pref.setVisible(value.equals(valueArray[0]));
             }
             case SettingsConstants.PREF_CHECK_XPOSED -> {
-                if (MainActivity.isXposedModuleActivated()) {
+                if (ApplicationHelper.isXposedModuleActivated()) {
                     pref.setSummary(R.string.pref_xposed_activated);
                 } else {
                     pref.setSummary(R.string.pref_xposed_not_activated);
@@ -488,7 +493,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             }
             case SettingsConstants.PREF_CHECK_DEVICE_ADMIN -> prefSetup(pref);
             case SettingsConstants.PREF_PERMISSION_GRANT_STATUS ->
-                    UIHelper.intentStarter(requireActivity(), SettingsActivity.PermissionStatus.class);
+                    UIHelper.startIntent(requireActivity(), SettingsActivity.PermissionStatus.class);
             case SettingsConstants.PREF_GRANT_ALL_PERMISSIONS -> {
                 value = sp.getString(SettingsConstants.PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {

@@ -15,10 +15,11 @@
     <string name="unlock_leftButton">Unlock</string>
     <string name="common_leftButton">OK</string>
     <string name="save_leftButton">Save</string>
-    <string name="add_leftButton">新增</string>
+    <string name="add_leftButton">Add</string>
     <!-- Right btn -->
     <string name="common_rightButton">Back</string>
     <string name="edittext_rightButton">Delete</string>
+    <string name="endcall_rightButton">End Call</string>
     <!-- Center btn -->
     <string name="play_centerButton">Play</string>
     <string name="pause_centerButton">Pause</string>
@@ -26,6 +27,11 @@
     <string name="stop_centerButton">Stop</string>
     <string name="shoot_centerButton">Shoot</string>
     <string name="record_centerButton">Record</string>
+    <!-- General UI texts -->
+    <string name="loading">Loading</string>
+    <string name="load_failed">Failed to load</string>
+    <string name="success">Success</string>
+    <string name="failed">Failed</string>
     <!-- Menu items -->
     <string name="menu_call">Call</string>
     <string name="menu_camera">Camera</string>
@@ -59,16 +65,13 @@
 
     <!-- Gallery UI hint -->
     <string name="gallery_no_photo">No photo</string>
-    <string name="gallery_loading">Loading</string>
-    <string name="gallery_load_failed">Load failed</string>
-    <string name="gallery_success">Success</string>
-    <string name="gallery_fail">Failed</string>
     <string name="gallery_detail">%s\nDate: %s\nWidth: %d\nHeight: %d</string>
     <!-- Message UI hint -->
     <string name="message_empty">No message</string>
     <!-- Fake in-call UI -->
     <string name="fake_incall_status">Calling</string>
     <string name="fake_incall_unknown">Unknown Number</string>
+    <string name="fake_incall_end_call">Ended call</string>
     <!-- Contacts UI hint -->
     <string name="contacts_empty">No contact</string>
     <string name="contact_add_title">Add</string>
@@ -100,6 +103,7 @@
     <string name="option_switch_camera">Switch to %s camera</string>
     <string name="front">front</string>
     <string name="back">back</string>
+    <string name="option_add">Add</string>
     <!-- Preferences -->
     <string name="pref_tap_me">Tap me!</string>
     <string name="pref_caution">Be careful as the feature you\'ve enabled is not common in real feature phones</string>
@@ -110,6 +114,7 @@
 
     <string name="pref_page_permissions">Permissions and privileges</string>
     <string name="pref_page_permissions_summary">Program needs them to run normally</string>
+    <string name="pref_permissions_not_granted_hint">Hey!!!! You still have ungranted permissions!!!</string>
     <string name="pref_category_permissions">Permissions</string>
     <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
     <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
@@ -175,6 +180,11 @@
     <string name="pref_self_destroy">Self destroy</string>
     <string name="pref_self_destroy_summary">Destroy your phone in extreme situation. ONLY EXTREME SITUATION!</string>
     <string name="pref_self_destroy_config">Self destroy configuration</string>
+    
+    <string name="pref_page_debug">Debug</string>
+    <string name="pref_page_debug_summary">Debugging features. DO NOT USE THEM IN DAILY USE!</string>
+    <string name="pref_crash_show_log">Show crash log when crashed.</string>
+    <string name="pref_crash_show_log_summary">Only for debug. Extremely affecting the disguise effect.</string>
 
     <string name="pref_page_about">About</string>
     <string name="pref_page_about_summary">Author of the mountain of shit: what_the_bruhhhh</string>
@@ -207,6 +217,17 @@
     <string name="dialog_message_enhance_touch_blocking">The function is still experimental.\nAfter checking it, do not force stop the program while using fake UI, or touchscreen will not be restored.\nIf the situation happened, open the settings and you will see the restore button, or you might need a reboot to make touchscreen work</string>
     <string name="dialog_message_self_destroy">THIS FUNCTION WILL BRICK YOUR DEVICE!\nAfter enabling the function, you have 2 methods to activate it: dialer code and SMS.\nOnce activated, it will erase a partition (default is "boot"), making your phone unable to boot.\nMake sure you have the ability of rescuing brick devices and have all partitions backup before activating this function!\nThe function is designed for extreme situations only. Do NOT activate it casually!</string>
     <string name="dialog_btn_understand">Understand</string>
+
+    <!-- Crash log -->
+    <string name="crash_title">OOPS</string>
+    <string name="crash_subtitle">App crashed unexpectedly. Here\'s the log.</string>
+    <string name="crash_placeholder">Loading crash log…</string>
+    <string name="crash_no_log">No crash log available. Maybe another bug?</string>
+    <string name="crash_restart">Restart</string>
+    <string name="crash_copy">Copy</string>
+    <string name="crash_exit">Exit</string>
+    <string name="crash_copied">Copied to clipboard</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

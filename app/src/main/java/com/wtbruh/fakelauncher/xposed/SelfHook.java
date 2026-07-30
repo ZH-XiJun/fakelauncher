@@ -8,7 +8,7 @@ public class SelfHook extends HookHelper {
     @Override
     public void init() {
         // Hook myself if I'm activated
-        findAndHookMethod("com.wtbruh.fakelauncher.MainActivity", "isXposedModuleActivated", new HookAction() {
+        findAndHookMethod("com.wtbruh.fakelauncher.ApplicationHelper", "isXposedModuleActivated", new HookAction() {
             @Override
             protected void before(MethodHookParam param) {
                 super.before(param);

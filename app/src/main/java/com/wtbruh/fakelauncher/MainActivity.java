@@ -101,7 +101,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         startActivity(launcherIntent);
         // Restore pin to MainActivity task so UI accepts input again.
         if (!ApplicationHelper.dialing) {
-            setLockApp(MainActivity.this, getTaskId());
+            UIHelper.setLockApp(MainActivity.this, getTaskId());
         }
     };
     private final BroadcastReceiver mPhoneStateReceiver = new BroadcastReceiver() {
@@ -208,7 +208,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             // Device owner init
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
-            setLockApp(MainActivity.this, getTaskId());
+            UIHelper.setLockApp(MainActivity.this, getTaskId());
 
             // key action init
             if (UIHelper.checkExitMethod(this, UIHelper.EXIT_METHOD_DPAD)) {
@@ -308,7 +308,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mTimer != null) mTimer.cancel();
         // Disable pin mode
         // 关闭屏幕固定
-        setLockApp(this, -1);
+        UIHelper.setLockApp(this, -1);
         // Wait for pin mode disabled, or finishAffinity() won't work
         // 等待屏幕固定被关闭，不然finishAffinity()没用
         try {
@@ -327,7 +327,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     protected void onDestroy() {
-        if (getLockApp(MainActivity.this) != -1) setLockApp(MainActivity.this, -1);
+        if (UIHelper.getLockApp(MainActivity.this) != -1) UIHelper.setLockApp(MainActivity.this, -1);
         // Unregister the receiver on destroy
         // 关掉app时注销掉接收器
         receiverRegister(false);
@@ -361,7 +361,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             ApplicationHelper.fakeCallNumber = "";
         }
         // After call session ends, keep pin on MainActivity so keys work again.
-        setLockApp(this, getTaskId());
+        UIHelper.setLockApp(this, getTaskId());
     }
 
     @Override
@@ -457,7 +457,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 }
                 // Open menu UI
                 // 打开菜单界面
-                UIHelper.intentStarter(MainActivity.this, SubActivity.class);
+                UIHelper.startIntent(MainActivity.this, SubActivity.class);
 
             } else if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
                 // Simulate the logic of the elders' phone: Pressing the number keys on the main UI will open the dialer
@@ -514,14 +514,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             case PrivilegeProvider.DEVICE_OWNER -> ContextCompat.getSystemService(this, DevicePolicyManager.class);
             default -> null;
         };
-    }
-
-    /**
-     * Xposed 模块自检测
-     * @return 如果已激活，返回结果会被hook修改为true
-     */
-    public static boolean isXposedModuleActivated() {
-        return false;
     }
 
     /**
@@ -827,42 +819,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             exit();
         }
         Log.d(TAG,"counter(): validKeyCount="+ mKeyCount);
-    }
-
-    /**
-     * Trigger screen pinning<br>
-     * 启用屏幕固定
-     * @param activity 应用Activity对象
-     * @param id 当前TaskId（-1为关闭屏幕固定）
-     */
-    public void setLockApp(Activity activity, int id) {
-        // 新方案，用ContentProvider存储taskId，无需操作Settings数据库
-        if (isXposedModuleActivated()) {
-            Log.d(TAG, "Xposed module enabled, putting taskId into ContentProvider");
-            ContentProvider.setTaskId(activity, id);
-            return;
-        }
-        new Thread(() -> {
-            ComponentName receiver = switch (mDeviceAdminType) {
-                case PrivilegeProvider.DHIZUKU -> Dhizuku.getOwnerComponent();
-                default -> new ComponentName(this, DeviceAdminReceiver.class);
-            };
-            // Check device admin permission
-            if (mDpm != null) mDpm.setLockTaskPackages(receiver, new String[]{getPackageName()});
-            if (id != -1) {
-                activity.startLockTask();
-            } else {
-                activity.stopLockTask();
-            }
-        }).start();
-    }
-
-    /**
-     * Read TaskId from settings database to confirm if pin mode is triggered<br>
-     * 读取设置数据库中的TaskId以确定屏幕固定状态
-     */
-    public static int getLockApp(Context context) {
-        return ContentProvider.getTaskId(context);
     }
 
 }

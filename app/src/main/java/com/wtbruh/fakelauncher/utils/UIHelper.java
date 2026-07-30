@@ -53,7 +53,7 @@ public class UIHelper {
     public final static String APP_ICON_RES = "iconRes";
     public final static String TARGET_FRAGMENT = "target_fragment";
     public static Bundle[] getInternalAppList(String uiType) {
-        if (uiType.equals(UIHelper.STYLE_PHONE)) {
+        if (uiType.equals(STYLE_PHONE)) {
             return new Bundle[] {
                     createAppListBundle(R.string.menu_call, R.drawable.ic_menu_call, DialerFragment.class.getName()),
                     createAppListBundle(R.string.menu_contact, R.drawable.ic_menu_contact, ContactsFragment.class.getName()),
@@ -62,7 +62,7 @@ public class UIHelper {
                     createAppListBundle(R.string.menu_gallery, R.drawable.ic_menu_gallery, GalleryFragment.class.getName()),
                     createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName()),
             };
-        } else if (uiType.equals(UIHelper.STYLE_PLAYER)) {
+        } else if (uiType.equals(STYLE_PLAYER)) {
             return new Bundle[] {
                     createAppListBundle(R.string.menu_media, R.drawable.ic_menu_media, MusicPlayerFragment.class.getName()),
                     createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName()),
@@ -81,17 +81,31 @@ public class UIHelper {
         return bundle;
     }
 
+    /**
+     * Find fragment by its class name<br>
+     * 通过类名查找Fragment
+     * @param fragmentName Fragment的类名 | the class name of the fragment
+     * @return Fragment对象 | Fragment object
+     */
     public static Fragment findFragmentByName(String fragmentName) {
         return findFragmentByName(fragmentName, null);
     }
 
+    /**
+     * Find fragment which accepts args by its class name<br>
+     * 通过类名查找支持传入参数的Fragment
+     * @param fragmentName Fragment的类名 | the class name of the fragment
+     * @param args 传入的参数 | the arguments you wanna pass to the fragment
+     * @return Fragment对象 | Fragment object
+     */
     public static Fragment findFragmentByName(String fragmentName, Bundle args) {
         Class<?> fragmentClass = null;
         if (fragmentName != null &&! fragmentName.isEmpty()) {
-            // Get newInstance(Bundle args) method
             try {
                 fragmentClass = Class.forName(fragmentName);
                 if (args != null && Fragment.class.isAssignableFrom(fragmentClass)) {
+                    // Get newInstance(Bundle args) method
+                    // 尝试获取newInstance(Bundle args)方法
                     Method newInstance = fragmentClass.getMethod("newInstance", Bundle.class);
                     newInstance.setAccessible(true);
                     return (Fragment) newInstance.invoke(fragmentClass, args);
@@ -106,6 +120,7 @@ public class UIHelper {
                 return null;
             }
             // Get newInstance() method
+            // 尝试获取newInstance()方法
             try {
                 return (Fragment) fragmentClass.newInstance();
             } catch (Exception e) {
@@ -177,7 +192,7 @@ public class UIHelper {
      * @param activity 你的Activity对象 | the current activity
      * @param cls 要启动的Activity的class | the class object of the activity you wanna launch
      */
-    public static void intentStarter(Activity activity, Class<?> cls) {
+    public static void startIntent(Activity activity, Class<?> cls) {
         if (intentStarterDebounce(cls)) return;
         activity.startActivity(makeIntent(activity, cls));
         // Disable transition anim
@@ -245,7 +260,7 @@ public class UIHelper {
     }
 
     /**
-     * <h3>Intent Starter Debounce<br>
+     * <h3>Debounce for Intent Starter<br>
      * Intent启动器 防抖机制</h3>
      * <p>Prevent calling intentStarter too frequently<br>
      * 防止过于频繁地调用intentStarter</p>
@@ -349,6 +364,36 @@ public class UIHelper {
      */
     public static boolean getTouchscreenState(Context context) {
         return !new File(context.getFilesDir().getAbsoluteFile(), "input").exists();
+    }
+
+    /**
+     * Write taskId to ContentProvider to request screen pinning lock/unlock.
+     * 向ContentProvider写入taskId以请求锁定/解锁屏幕固定。
+     * <p>
+     * On Xposed-enabled devices, {@code PinningHook} intercepts the ContentProvider
+     * change and triggers {@code startSystemLockTaskMode}.<br>
+     * 在已激活Xposed的设备上，PinningHook拦截ContentProvider变化并触发startSystemLockTaskMode。
+     * <p>
+     * On non-Xposed devices, {@link ApplicationHelper} has a ContentObserver that
+     * calls the native {@code startLockTask()}/{@code stopLockTask()} APIs.<br>
+     * 在无Xposed的设备上，ApplicationHelper的ContentObserver会调用原生startLockTask/stopLockTask。
+     *
+     * @param context Context
+     * @param taskId  -1 to unlock, or the taskId to lock | -1解锁，其他值锁定
+     */
+    public static void setLockApp(Context context, int taskId) {
+        ContentProvider.setTaskId(context, taskId);
+    }
+
+    /**
+     * Read the current lock taskId from ContentProvider.
+     * 从ContentProvider读取当前锁定的taskId。
+     *
+     * @param context Context
+     * @return -1 if not locked, otherwise the pinned taskId | -1表示未锁定，其他值表示已锁定
+     */
+    public static int getLockApp(Context context) {
+        return ContentProvider.getTaskId(context);
     }
 
 }

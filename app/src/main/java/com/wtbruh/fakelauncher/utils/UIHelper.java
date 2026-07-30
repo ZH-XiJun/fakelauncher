@@ -60,6 +60,7 @@ public class UIHelper {
                     createAppListBundle(R.string.menu_sms, R.drawable.ic_menu_sms, MessageFragment.class.getName()),
                     createAppListBundle(R.string.menu_camera, R.drawable.ic_menu_camera, CameraFragment.class.getName()),
                     createAppListBundle(R.string.menu_gallery, R.drawable.ic_menu_gallery, GalleryFragment.class.getName()),
+                    createAppListBundle(R.string.menu_media, R.drawable.ic_menu_media, MusicPlayerFragment.class.getName()),
                     createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName()),
             };
         } else if (uiType.equals(STYLE_PLAYER)) {

@@ -1,13 +1,16 @@
 package com.wtbruh.fakelauncher.ui.fragment.player;
 
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,11 +34,13 @@ import androidx.preference.PreferenceManager;
 import com.bumptech.glide.Glide;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import com.tencent.mmkv.MMKV;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.service.MusicService;
 import com.wtbruh.fakelauncher.service.NotificationListenerService;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,7 +63,7 @@ public class MusicPlayerFragment extends BaseFragment {
     // UI
     private ImageView mAlbumArt;
     private TextView mTrackTitle, mTrackArtist, mAlbum;
-    private TextView mTrackProgress, mTrackStatus, mTrackCount;
+    private TextView mTrackProgress, mTrackStatus;
     private ImageView mBtnPrev, mBtnPlayPause, mBtnNext;
 
     private List<MediaItem> mPlaylist;
@@ -84,7 +89,6 @@ public class MusicPlayerFragment extends BaseFragment {
         mAlbum = view.findViewById(R.id.album);
         mTrackProgress = view.findViewById(R.id.trackProgress);
         mTrackStatus = view.findViewById(R.id.trackStatus);
-        mTrackCount = view.findViewById(R.id.trackCount);
 
         // Touch control buttons
         mBtnPrev = view.findViewById(R.id.btnPrev);
@@ -102,6 +106,18 @@ public class MusicPlayerFragment extends BaseFragment {
         mBtnNext.setOnClickListener(v -> {
             if (mController != null) mController.seekToNextMediaItem();
         });
+
+        // Set initial footer
+        setFooterBar(
+                L_EMPTY,
+                C_PLAY,
+                R_DEFAULT
+        );
+
+        // Don't show touchable control buttons on feature phone UI
+        if (UIHelper.getCurrentUIType(requireContext()).equals(UIHelper.STYLE_PHONE)) {
+            view.findViewById(R.id.controlButtons).setVisibility(View.GONE);
+        }
 
         return view;
     }
@@ -132,23 +148,21 @@ public class MusicPlayerFragment extends BaseFragment {
         if (mController == null) return false;
 
         // CENTER button → Play/Pause
-        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-                || keyCode == KeyEvent.KEYCODE_ENTER
-                || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
-            togglePlayPause();
-            return true;
-        }
-        // Previous track
-        if (keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS
-                || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            mController.seekToPreviousMediaItem();
-            return true;
-        }
-        // Next track
-        if (keyCode == KeyEvent.KEYCODE_MEDIA_NEXT
-                || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            mController.seekToNextMediaItem();
-            return true;
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                togglePlayPause();
+                return true;
+            }
+            // Previous track
+            case KeyEvent.KEYCODE_DPAD_LEFT -> {
+                mController.seekToPreviousMediaItem();
+                return true;
+            }
+            // Next track
+            case KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                mController.seekToNextMediaItem();
+                return true;
+            }
         }
         return false;
     }
@@ -265,13 +279,6 @@ public class MusicPlayerFragment extends BaseFragment {
             }
         });
 
-        // Set initial footer
-        setFooterBar(
-                R_EMPTY.length > 0 ? R_EMPTY : L_DEFAULT,
-                C_PLAY,
-                R_DEFAULT
-        );
-
         // Only load our own playlist when connected to MusicService.
         // External controllers manage their own media items.
         if (!mIsExternalController) {
@@ -296,36 +303,84 @@ public class MusicPlayerFragment extends BaseFragment {
     private void loadMediaItems() {
         // Never load our own playlist into an external controller
         if (mIsExternalController) return;
+
         mHandler.post(() -> {
             if (mController == null || mController.isPlaying() || mController.getMediaItemCount() > 0) return;
+
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            String mediaUri = sp.getString(SettingsConstants.PREF_MUSIC_ACCESS_SAF, "");
-            ArrayList<Uri> mMusicUriList = new ArrayList<>();
-            if (!mediaUri.isEmpty()) {
-                DocumentFile dir = DocumentFile.fromTreeUri(requireContext(), Uri.parse(mediaUri));
-                if (dir != null && dir.exists() && dir.isDirectory()) {
-                    DocumentFile[] files = dir.listFiles();
-                    for (DocumentFile file : files) {
-                        Uri fileUri = file.getUri();
-                        String mimeType = file.getType();
-                        if (mimeType != null && mimeType.startsWith(MIME_AUDIO))
-                            mMusicUriList.add(fileUri);
+            String type = sp.getString(SettingsConstants.PREF_MUSIC_ACCESS_TYPE, getString(R.string.pref_music_access_type_default));
+
+            if (type.equals("custom_dir")) {
+                MMKV kv = MMKV.defaultMMKV();
+                String mediaUri = kv.decodeString(SettingsConstants.PREF_MUSIC_ACCESS_SAF, "");
+                ArrayList<Uri> mMusicUriList = new ArrayList<>();
+                if (!mediaUri.isEmpty()) {
+                    DocumentFile dir = DocumentFile.fromTreeUri(requireContext(), Uri.parse(mediaUri));
+                    if (dir != null && dir.exists() && dir.isDirectory()) {
+                        DocumentFile[] files = dir.listFiles();
+                        for (DocumentFile file : files) {
+                            Uri fileUri = file.getUri();
+                            String mimeType = file.getType();
+                            if (mimeType != null && mimeType.startsWith(MIME_AUDIO))
+                                mMusicUriList.add(fileUri);
+                        }
+                    }
+                    if (!mMusicUriList.isEmpty()) {
+                        // Extract metadata in background — MediaMetadataRetriever does I/O
+                        final ArrayList<Uri> uriList = new ArrayList<>(mMusicUriList);
+                        final android.content.Context ctx = requireContext();
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            mPlaylist = buildPlaylist(ctx, uriList);
+                            mHandler.post(() -> {
+                                if (mController != null) {
+                                    mController.setMediaItems(mPlaylist);
+                                    mController.prepare();
+                                }
+                            });
+                        });
                     }
                 }
-                if (!mMusicUriList.isEmpty()) {
-                    // Extract metadata in background — MediaMetadataRetriever does I/O
-                    final ArrayList<Uri> uriList = new ArrayList<>(mMusicUriList);
-                    final android.content.Context ctx = requireContext();
-                    Executors.newSingleThreadExecutor().execute(() -> {
-                        mPlaylist = buildPlaylist(ctx, uriList);
+            } else if (type.equals("auto_search")) {
+                final android.content.Context ctx = requireContext();
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    ArrayList<Uri> uris = new ArrayList<>();
+                    ContentResolver resolver = ctx.getContentResolver();
+
+                    String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+                    String sortOrder = MediaStore.Audio.Media.DISPLAY_NAME + " ASC";
+
+                    try (Cursor cursor = resolver.query(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            new String[]{MediaStore.Audio.Media._ID},
+                            selection,
+                            null,
+                            sortOrder)) {
+
+                        if (cursor != null && cursor.moveToFirst()) {
+                            int idCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
+                            do {
+                                long id = cursor.getLong(idCol);
+                                Uri contentUri = ContentUris.withAppendedId(
+                                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                                uris.add(contentUri);
+                            } while (cursor.moveToNext());
+                        }
+                    } catch (SecurityException e) {
+                        Log.w(TAG, "MediaStore query denied (missing READ_MEDIA_AUDIO?)", e);
+                    } catch (Exception e) {
+                        Log.e(TAG, "MediaStore query failed", e);
+                    }
+
+                    if (!uris.isEmpty()) {
+                        mPlaylist = buildPlaylist(ctx, uris);
                         mHandler.post(() -> {
                             if (mController != null) {
                                 mController.setMediaItems(mPlaylist);
                                 mController.prepare();
                             }
                         });
-                    });
-                }
+                    }
+                });
             }
         });
 
@@ -440,7 +495,6 @@ public class MusicPlayerFragment extends BaseFragment {
                 mTrackArtist.setText("");
                 mAlbum.setText("");
                 mAlbumArt.setImageResource(R.drawable.ic_music_note);
-                mTrackCount.setText("");
                 mTrackStatus.setText(R.string.music_no_track);
             });
             return;
@@ -483,11 +537,6 @@ public class MusicPlayerFragment extends BaseFragment {
                         .into(mAlbumArt);
             } else {
                 mAlbumArt.setImageResource(R.drawable.ic_music_note);
-            }
-
-            // Track count
-            if (mPlaylist != null && mCurrentIndex >= 0) {
-                mTrackCount.setText(getString(R.string.music_track_count_fmt, mCurrentIndex + 1, mPlaylist.size()));
             }
 
             updatePlaybackUI();

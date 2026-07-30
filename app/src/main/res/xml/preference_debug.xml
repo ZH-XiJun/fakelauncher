@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="crash_show_log"
+        android:defaultValue="false"
+        android:title="@string/pref_crash_show_log"
+        android:summary="@string/pref_crash_show_log_summary" />
+</androidx.preference.PreferenceScreen>

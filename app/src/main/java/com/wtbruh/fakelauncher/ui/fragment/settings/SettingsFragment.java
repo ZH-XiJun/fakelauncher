@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.wtbruh.fakelauncher.BuildConfig;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -20,6 +21,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     public final static String PAGE_PERMISSION = "page_permission";
     public final static String PAGE_VIEW = "page_view";
     public final static String PAGE_BEHAVIOUR = "page_behaviour";
+    public final static String PAGE_DEBUG = "page_debug";
     public final static String PAGE_ABOUT = "page_about";
     public final static String FUN_OPEN_FAKEUI = "fun_fakeui";
     public final static String FUN_TOUCH = "fun_touch";
@@ -34,10 +36,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 PAGE_PERMISSION,
                 PAGE_VIEW,
                 PAGE_BEHAVIOUR,
+                PAGE_DEBUG,
                 PAGE_ABOUT
         };
         Preference pref = findPreference(FUN_TOUCH);
         if (pref != null) pref.setVisible(!UIHelper.getTouchscreenState(requireContext()));
+        pref = findPreference(PAGE_DEBUG);
+        if (pref != null) pref.setVisible(BuildConfig.DEBUG);
         for (String page : pages) {
             if ((pref = findPreference(page)) != null) pref.setOnPreferenceClickListener(this);
         }

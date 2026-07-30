@@ -32,4 +32,5 @@ public final class SettingsConstants {
     public static final String PREF_MUSIC_ACCESS_TYPE = "music_access_type";
     public static final String PREF_MUSIC_ACCESS_SAF = "music_access_saf";
     public static final String PREF_MUSIC_ITEMS = "music_items";
+    public static final String PREF_CRASH_SHOW_LOG = "crash_show_log";
 }

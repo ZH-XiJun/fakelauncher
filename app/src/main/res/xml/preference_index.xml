@@ -23,6 +23,11 @@
         android:title="@string/pref_page_behaviour"
         android:summary="@string/pref_page_behaviour_summary"/>
     <Preference
+        android:key="page_debug"
+        android:title="@string/pref_page_debug"
+        android:summary="@string/pref_page_debug_summary"
+        app:isPreferenceVisible="false"/>
+    <Preference
         android:key="page_about"
         android:title="@string/pref_page_about"
         android:summary="@string/pref_page_about_summary"/>

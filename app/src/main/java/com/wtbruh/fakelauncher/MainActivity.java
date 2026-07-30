@@ -209,6 +209,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     UIHelper.resizeView(mScale, view);
                 }
             }
+            // 下面的自缩放屎山代码实则少一条都不行，能用就别动了
 
             TelephonyHelper mTelHelper = new TelephonyHelper(this);
             FitTextView

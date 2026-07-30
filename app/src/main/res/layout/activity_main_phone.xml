@@ -172,10 +172,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="我是你爸"
                 android:textAlignment="viewStart"
                 android:textColor="@color/white"
                 android:textStyle="bold"
+                android:text="@string/sim_removed"
                 app:autoSizeTextType="uniform"
                 app:strokeTextColor="@color/black"
                 app:strokeTextWidth="3" />

@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import com.tencent.mmkv.MMKV;
+import com.wtbruh.fakelauncher.BuildConfig;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.service.MusicService;
@@ -390,24 +391,25 @@ public class MusicPlayerFragment extends BaseFragment {
      * Builds a playlist from URIs, extracting embedded MP3 metadata (title, artist,
      * album, album art) via MediaMetadataRetriever. Runs on a background thread.
      */
-    private List<MediaItem> buildPlaylist(android.content.Context ctx, List<Uri> uris) {
-        List<MediaItem> playlist = new ArrayList<>();
+    private List<MediaItem> buildPlaylist(Context ctx, List<Uri> uris) {
+        List<Uri> allUris = new ArrayList<>();
 
-        // 2 internal musics
-        // 两首内置的歌
-        Uri u = new Uri.Builder()
+        // 内置歌曲：正确的 raw resource URI 必须是 android.resource://包名/资源ID
+        allUris.add(new Uri.Builder()
                 .scheme("android.resource")
+                .authority(BuildConfig.APPLICATION_ID)
                 .path(String.valueOf(R.raw.haoyunlai))
-                .build();
-        playlist.add(MediaItem.fromUri(u));
-        u = new Uri.Builder()
+                .build());
+        allUris.add(new Uri.Builder()
                 .scheme("android.resource")
+                .authority(BuildConfig.APPLICATION_ID)
                 .path(String.valueOf(R.raw.xilenianhua))
-                .build();
-        playlist.add(MediaItem.fromUri(u));
+                .build());
+        allUris.addAll(uris);
 
+        List<MediaItem> playlist = new ArrayList<>();
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        for (Uri uri : uris) {
+        for (Uri uri : allUris) {
             try {
                 mmr.setDataSource(ctx, uri);
 

@@ -1,9 +1,11 @@
 package com.wtbruh.fakelauncher.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -12,8 +14,11 @@ import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.preference.PreferenceManager;
 
 import com.wtbruh.fakelauncher.R;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class VolumeActivity extends BaseAppCompatActivity {
     private AudioManager mAudioManager;
@@ -37,21 +42,28 @@ public class VolumeActivity extends BaseAppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode){
+        return switch (keyCode) {
             // Volume key interruption
             // 音量键拦截
-            case KeyEvent.KEYCODE_VOLUME_UP:
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN -> {
                 adjustVolume(keyCode);
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
+                yield true;
+            }
+            default -> super.onKeyDown(keyCode, event);
+        };
     }
 
     /**
      * Init of volume data 初始化音量相关
      */
     private void init() {
+        // 自动调整大小
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        float scale = (float) sp.getInt(SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE, 10) / 10;
+        if (scale > 0 && scale != 1.0) {
+            View view = findViewById(R.id.volume_ActionBar);
+            UIHelper.resizeView(scale, view);
+        }
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         bar = findViewById(R.id.volumeBar);
         icon = findViewById(R.id.volume_logo);

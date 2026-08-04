@@ -446,8 +446,9 @@ public class GalleryFragment extends BaseFragment {
                             setFooterBar(L_OPTION);
                         }
                     });
-                } catch (IllegalStateException e) {
+                } catch (IllegalStateException ignore) {
                     // 如果用户在加载图片时点返回了，不要抛出错误
+                    // The exception usually occurs while user leaves the fragment during loading. Just ignore it.
                     Log.w(TAG, "User closed gallery during loading");
                 }
             } else {

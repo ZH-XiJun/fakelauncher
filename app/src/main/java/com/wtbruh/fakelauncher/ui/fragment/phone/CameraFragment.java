@@ -102,6 +102,7 @@ public class CameraFragment extends BaseFragment {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (isCapturing) return true;
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP -> {
                 if (nowCamera == CameraSelector.DEFAULT_BACK_CAMERA)

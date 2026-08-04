@@ -12,11 +12,11 @@
     <TextView
         android:id="@+id/volume_adjust"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:text="@string/volume_adjust"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="60sp" />
+        app:autoSizeTextType="uniform" />
 
     <ImageView
         android:id="@+id/volume_logo"
@@ -52,20 +52,17 @@
     <LinearLayout
         android:id="@+id/volume_ActionBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="72dp"
         android:orientation="horizontal">
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/volume_rightButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:text="@string/common_rightButton"
             android:textColor="@color/white"
-            android:textSize="48sp" />
+            android:textAlignment="textEnd"
+            app:autoSizeTextType="uniform" />
     </LinearLayout>
 </LinearLayout>

@@ -1,5 +1,9 @@
 package com.wtbruh.fakelauncher;
 
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -7,7 +11,6 @@ import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.wtbruh.fakelauncher.ui.StatusBarOverlay;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
@@ -46,6 +50,8 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     // Is action bar going to hide 操作栏是否要被隐藏（MP3UI需要隐藏）
     public final static String HIDE_ACTION_BAR = "actionbar";
 
+    private StatusBarOverlay mStatusBarOverlay;
+
     public final static int
             LEFT_BUTTON = R.id.leftButton,
             CENTER_BUTTON = R.id.centerButton,
@@ -60,7 +66,15 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_fragment);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
         if (savedInstanceState == null) {
             init();
             if (mCurrentFragment == null) mCurrentFragment = MenuFragment.newInstance();
@@ -81,8 +95,6 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
             View view = findViewById(R.id.actionBar);
             UIHelper.resizeView(scale, view);
         }
-        // 设置状态栏颜色为黑色
-        getWindow().setStatusBarColor(Color.BLACK);
         // 设置底部状态栏为默认状态
         setFooterBar(BaseFragment.L_DEFAULT, BaseFragment.R_DEFAULT);
         // 获取附加数据
@@ -97,6 +109,9 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
         if (!UIHelper.getCurrentUIType(this).equals(UIHelper.STYLE_PHONE)) {
             Log.d(TAG, "set touch listener");
             findViewById(R.id.container).setOnTouchListener(this);
+        } else {
+            mStatusBarOverlay = new StatusBarOverlay(findViewById(R.id.Main));
+            mStatusBarOverlay.start();
         }
     }
 
@@ -105,6 +120,24 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
         super.onResume();
         // Restore pin for key operations
         UIHelper.setLockApp(this, getTaskId());
+        if (mStatusBarOverlay != null) {
+            mStatusBarOverlay.start();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mStatusBarOverlay != null) {
+            mStatusBarOverlay.stop();
+        }
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        if (mStatusBarOverlay != null) {
+            mStatusBarOverlay.stop();
+        }
     }
 
     /**
@@ -117,7 +150,7 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (UIHelper.debounce(lastTriggerTime, 50)) return true;
+        if (UIHelper.debounce(lastTriggerTime, 100)) return true;
         lastTriggerTime = System.currentTimeMillis();
         if (((BaseFragment) mCurrentFragment).onKeyUp(keyCode, event)) return true;
         return super.onKeyUp(keyCode, event);

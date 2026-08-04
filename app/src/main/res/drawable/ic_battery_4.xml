@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 电量 76-100%：4 格绿色（3x 尺寸适配现代屏幕） -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:width="45dp" android:height="27dp" android:gravity="center_vertical|left">
+        <shape android:shape="rectangle">
+            <stroke android:width="2dp" android:color="#FFFFFF"/>
+            <corners android:radius="2dp"/>
+            <solid android:color="#00000000"/>
+        </shape>
+    </item>
+    <!-- 第 1 格 -->
+    <item android:width="6dp" android:height="15dp" android:gravity="top|left" android:left="6dp" android:top="6dp">
+        <shape android:shape="rectangle"><solid android:color="#4CAF50"/></shape>
+    </item>
+    <!-- 第 2 格 -->
+    <item android:width="6dp" android:height="15dp" android:gravity="top|left" android:left="15dp" android:top="6dp">
+        <shape android:shape="rectangle"><solid android:color="#4CAF50"/></shape>
+    </item>
+    <!-- 第 3 格 -->
+    <item android:width="6dp" android:height="15dp" android:gravity="top|left" android:left="24dp" android:top="6dp">
+        <shape android:shape="rectangle"><solid android:color="#4CAF50"/></shape>
+    </item>
+    <!-- 第 4 格 -->
+    <item android:width="6dp" android:height="15dp" android:gravity="top|left" android:left="33dp" android:top="6dp">
+        <shape android:shape="rectangle"><solid android:color="#4CAF50"/></shape>
+    </item>
+    <!-- 电池帽 -->
+    <item android:width="9dp" android:height="15dp" android:gravity="top|left" android:left="45dp" android:top="6dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/>
+            <corners android:radius="2dp"/>
+        </shape>
+    </item>
+</layer-list>

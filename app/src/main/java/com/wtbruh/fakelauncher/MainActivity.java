@@ -34,6 +34,7 @@ import androidx.preference.PreferenceManager;
 import com.rosan.dhizuku.api.Dhizuku;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
+import com.wtbruh.fakelauncher.ui.StatusBarOverlay;
 import com.wtbruh.fakelauncher.ui.fragment.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.player.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
@@ -69,15 +70,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     private final static int TIME = 0, DATE = 1, WEEK = 2;
 
     // battery
-    private int mBatteryLevel = 4;
-    private final static int[] batteryIcons = {
-            R.drawable.ic_battery_1,
-            R.drawable.ic_battery_2,
-            R.drawable.ic_battery_3,
-            R.drawable.ic_battery_4
-    };
+    private StatusBarOverlay mStatusBarOverlay;
     private boolean mCharging = false, mShowAccurateBattery = false;
-    private Timer mBatteryChargingAnimTimer;
 
     // 广播接收器 Broadcast receiver
     private final PowerConnectionReceiver mReceiver = new PowerConnectionReceiver();
@@ -95,7 +89,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     // Regularly refresh data
     // 计时任务
     private String mPreviousDate, previousTime;
-    private int mPreviousBattery;
     private Timer mTimer;
 
     // key detection 按键检测相关
@@ -229,6 +222,10 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     findViewById(R.id.statusBar),
                     findViewById(R.id.connection),
                     findViewById(R.id.battery));
+
+            // Overlay 状态栏（电池图标等）
+            mStatusBarOverlay = new StatusBarOverlay(findViewById(R.id.Main));
+            mStatusBarOverlay.start();
         }
         // Common init 通用初始化代码
         // 时间字体大小自适应适配
@@ -287,10 +284,11 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     protected void onDestroy() {
         if (UIHelper.getLockApp(MainActivity.this) != -1) UIHelper.setLockApp(MainActivity.this, -1);
         // Unregister the receiver on destroy
-        // 关掉app时注销掉接收器
         receiverRegister(false);
         // 停止计时任务 Stop timer
         if (mTimer != null) mTimer.cancel();
+        // 清理 overlay
+        if (mStatusBarOverlay != null) mStatusBarOverlay.destroy();
         super.onDestroy();
         // Enable touch screen
         UIHelper.setTouchscreenState(true, this);
@@ -300,8 +298,17 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     public void onResume() {
         super.onResume();
         batteryAccurate();
+        // 恢复 overlay 轮询
+        if (mStatusBarOverlay != null && !mShowAccurateBattery) mStatusBarOverlay.start();
         // After call session ends, keep pin on MainActivity so keys work again.
         UIHelper.setLockApp(this, getTaskId());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // 暂停 overlay 轮询（省电）
+        if (mStatusBarOverlay != null) mStatusBarOverlay.stop();
     }
 
     @Override
@@ -532,7 +539,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                             weekView = UIHelper.STYLE_PLAYER.equals(mStyle) ? findViewById(R.id.week) : null;
                     String time = getTime(TIME),
                             date = getTime(DATE);
-                    int battery = getBattery();
                     if (!time.equals(previousTime)) {
                         timeView.setText(time);
                         previousTime = time;
@@ -542,9 +548,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                         if (lunarView != null) lunarView.setText(LunarCalender.getLunarString(LunarCalender.getDateArray()));
                         dateView.setText(date);
                         mPreviousDate = date;
-                    }
-                    if (battery != mPreviousBattery) {
-                        setBattery(battery);
                     }
                 });
             }
@@ -561,14 +564,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 TextView battery_view = findViewById(R.id.battery);
                 battery_view.setText(battery+"%");
             } else {
-                if (battery >= 75) mBatteryLevel = 3;
-                else if (battery >= 50) mBatteryLevel = 2;
-                else if (battery >= 25) mBatteryLevel = 1;
-                else mBatteryLevel = 0;
-                setBatteryIcons(mBatteryLevel);
+                if (mStatusBarOverlay != null) mStatusBarOverlay.setBattery(battery);
             }
         }
-        mPreviousBattery = battery;
     }
 
     private void setBattery() {
@@ -640,49 +638,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             TextView connection_view = findViewById(R.id.connection);
             if (mCharging) {
                 if (mShowAccurateBattery) connection_view.setText(R.string.charging);
-                else {
-                    mBatteryChargingAnimTimer = new Timer();
-                    mBatteryChargingAnimTimer.schedule(new TimerTask() {
-                        int i = mBatteryLevel;
-                        @Override
-                        public void run() {
-                            if (i < batteryIcons.length - 1) {
-                                i += 1;
-                            } else {
-                                i = mBatteryLevel;
-                            }
-                            setBatteryIcons(i);
-                        }
-                    },0,1000);
-                }
+                else if (mStatusBarOverlay != null) mStatusBarOverlay.setCharging(true);
 
             } else {
                 if (mShowAccurateBattery) connection_view.setText(R.string.not_charging);
-                else {
-                    if (mBatteryChargingAnimTimer != null) mBatteryChargingAnimTimer.cancel();
-                    mBatteryChargingAnimTimer = null;
-                    setBatteryIcons(mBatteryLevel);
-                }
+                else if (mStatusBarOverlay != null) mStatusBarOverlay.setCharging(false);
             }
         }
-    }
-
-    private void setBatteryIcons(int level) {
-        View main = findViewById(R.id.Main);
-        main.post( () -> {
-            Drawable overlay;
-            try {
-                overlay = ContextCompat.getDrawable(this, batteryIcons[level]);
-            } catch (IndexOutOfBoundsException e) {
-                overlay = null;
-            }
-            if (overlay != null) {
-                int screenWidth = main.getWidth(), margin = 10, scale = (int) (4 / mScale);
-                overlay.setBounds(screenWidth - margin - overlay.getIntrinsicWidth() / scale, margin, screenWidth - margin, margin + overlay.getIntrinsicHeight() / scale);
-                main.getOverlay().clear();
-                main.getOverlay().add(overlay);
-            }
-        });
     }
 
     /**

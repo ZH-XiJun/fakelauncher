@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 电量 0-10%：红框无格，告急状态 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 电池外框（红色描边） -->
+    <item android:width="45dp" android:height="27dp" android:gravity="center_vertical|left">
+        <shape android:shape="rectangle">
+            <stroke android:width="2dp" android:color="#F44336"/>
+            <corners android:radius="2dp"/>
+            <solid android:color="#00000000"/>
+        </shape>
+    </item>
+    <!-- 电池帽（红色） -->
+    <item android:width="9dp" android:height="15dp" android:gravity="top|left" android:left="45dp" android:top="6dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#F44336"/>
+            <corners android:radius="2dp"/>
+        </shape>
+    </item>
+</layer-list>

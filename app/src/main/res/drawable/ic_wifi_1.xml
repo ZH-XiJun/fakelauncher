@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WiFi 1 级：圆点 + 内弧亮，其余灰 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="12dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#5A5A5A"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M2.5 9 C6 6 9 4.5 12 4.5 S18 6 21.5 9" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#5A5A5A"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M5.5 12 C8 10 9.8 9 12 9 S16 10 18.5 12" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M8.5 15 C10 14 11 13.5 12 13.5 S14 14 15.5 15" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12 17.5 m-1.6 0 a1.6 1.6 0 1 0 3.2 0 a1.6 1.6 0 1 0 -3.2 0" />
+</vector>

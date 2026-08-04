@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 信号强度 4 级：4 格全亮（满格） -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:width="3dp" android:height="4dp" android:gravity="bottom|left">
+        <shape android:shape="rectangle"><solid android:color="#FFFFFF" /></shape>
+    </item>
+    <item android:width="3dp" android:height="5dp" android:gravity="bottom|left" android:left="4dp">
+        <shape android:shape="rectangle"><solid android:color="#FFFFFF" /></shape>
+    </item>
+    <item android:width="3dp" android:height="6dp" android:gravity="bottom|left" android:left="8dp">
+        <shape android:shape="rectangle"><solid android:color="#FFFFFF" /></shape>
+    </item>
+    <item android:width="3dp" android:height="7dp" android:gravity="bottom|left" android:left="12dp">
+        <shape android:shape="rectangle"><solid android:color="#FFFFFF" /></shape>
+    </item>
+</layer-list>

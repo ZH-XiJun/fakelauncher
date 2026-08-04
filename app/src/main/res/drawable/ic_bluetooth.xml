@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 蓝牙图标（矢量），3x 缩放适配 fakelauncher -->
+<!-- 蓝牙图标 — 简洁 BT 符文 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="36dp"
-    android:height="27dp"
+    android:width="30dp"
+    android:height="30dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M17.7,12.7l-5.1,5.1V6.2l5.1,5.1l2.1,-2.1L17.7,3.5L12,9.2V2H10v7.2L4.3,3.5l-1.4,1.4l5.1,5.1L2.9,15.1 l1.4,1.4L10,11.8v7.2h2v-7.2l5.7,5.7l1.4,-1.4L14.3,12.7l5.5,-5.5L17.7,12.7z" />
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M13.4,12.3 l5.8,5.8 l-2.6,2.6 l-6,-6 v7.3 h-2.4 V10.5 l-5.4,5.4 l-1.8,-1.8 l5.8,-5.8 L1.2,2.5 L3.8,-0.1 l6,6 V-1.5 h2.4 v7.3 l4.8,-4.8 l2.6,2.6 L13.4,12.3 z M10.8,6.9 v-4.3 l-2.2,2.2 L10.8,6.9 z M10.8,14.1 v4.2 l2.2,-2.2 L10.8,14.1 z" />
 </vector>

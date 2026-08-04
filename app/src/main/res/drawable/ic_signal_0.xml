@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 信号强度 0 级：4 格全灰（无信号），3x 缩放适配 fakelauncher 电池尺寸 -->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:width="9dp" android:height="12dp" android:gravity="bottom|left">
-        <shape android:shape="rectangle"><solid android:color="#5A5A5A" /></shape>
-    </item>
-    <item android:width="9dp" android:height="15dp" android:gravity="bottom|left" android:left="12dp">
-        <shape android:shape="rectangle"><solid android:color="#5A5A5A" /></shape>
-    </item>
-    <item android:width="9dp" android:height="18dp" android:gravity="bottom|left" android:left="24dp">
-        <shape android:shape="rectangle"><solid android:color="#5A5A5A" /></shape>
-    </item>
-    <item android:width="9dp" android:height="21dp" android:gravity="bottom|left" android:left="36dp">
-        <shape android:shape="rectangle"><solid android:color="#5A5A5A" /></shape>
-    </item>
-</layer-list>
+<!-- 信号 0：四格全灰（无信号），圆角竖条 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="45dp"
+    android:height="24dp"
+    android:viewportWidth="45"
+    android:viewportHeight="24">
+    <!-- 第 1 格 h=8 -->
+    <path android:fillColor="#5A5A5A"
+        android:pathData="M1,16 v-9 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v9 z" />
+    <!-- 第 2 格 h=13 -->
+    <path android:fillColor="#5A5A5A"
+        android:pathData="M12,11 v-14 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v14 z" />
+    <!-- 第 3 格 h=18 -->
+    <path android:fillColor="#5A5A5A"
+        android:pathData="M23,6 v-19 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v19 z" />
+    <!-- 第 4 格 h=23 -->
+    <path android:fillColor="#5A5A5A"
+        android:pathData="M34,1 v-24 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v24 z" />
+</vector>

@@ -38,4 +38,9 @@
     <Preference
         android:key="self_destroy_config"
         android:title="@string/pref_self_destroy_config" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="screenshot_before_fakeui"
+        android:title="@string/pref_screenshot_before_fakeui"
+        android:summary="@string/pref_screenshot_before_fakeui_summary" />
 </PreferenceScreen>

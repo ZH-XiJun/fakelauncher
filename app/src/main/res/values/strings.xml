@@ -178,6 +178,8 @@
     <string name="pref_self_destroy">Self destroy</string>
     <string name="pref_self_destroy_summary">Destroy your phone in extreme situation. ONLY EXTREME SITUATION!</string>
     <string name="pref_self_destroy_config">Self destroy configuration</string>
+    <string name="pref_screenshot_before_fakeui">Take screenshot before launching fake UI</string>
+    <string name="pref_screenshot_before_fakeui_summary">So you can check what teacher saw in gallery and talk your way out</string>
     
     <string name="pref_page_debug">Debug</string>
     <string name="pref_page_debug_summary">Debugging features. DO NOT USE THEM IN DAILY USE!</string>

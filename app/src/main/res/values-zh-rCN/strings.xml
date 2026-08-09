@@ -172,7 +172,9 @@
     <string name="pref_self_destroy">自毁</string>
     <string name="pref_self_destroy_summary">在极端情况下毁掉你的手机。仅在极端情况下使用！！</string>
     <string name="pref_self_destroy_config">自毁功能配置</string>
-
+    <string name="pref_screenshot_before_fakeui">启动伪装界面前截个屏</string>
+    <string name="pref_screenshot_before_fakeui_summary">这样老师看到啥了可以进相册跟他狡辩</string>
+    
     <string name="pref_page_debug">调试</string>
     <string name="pref_page_debug_summary">开发调试用功能。请不要在日常使用中启用它们！！！</string>
     <string name="pref_crash_show_log">应用崩溃时展示崩溃日志</string>

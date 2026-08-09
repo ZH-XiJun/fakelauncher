@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 蓝牙图标 — 简洁 BT 符文 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="30dp"
-    android:height="30dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M13.4,12.3 l5.8,5.8 l-2.6,2.6 l-6,-6 v7.3 h-2.4 V10.5 l-5.4,5.4 l-1.8,-1.8 l5.8,-5.8 L1.2,2.5 L3.8,-0.1 l6,6 V-1.5 h2.4 v7.3 l4.8,-4.8 l2.6,2.6 L13.4,12.3 z M10.8,6.9 v-4.3 l-2.2,2.2 L10.8,6.9 z M10.8,14.1 v4.2 l2.2,-2.2 L10.8,14.1 z" />
+    android:width="15dp"
+    android:height="27dp"
+    android:viewportWidth="15"
+    android:viewportHeight="27">
+
+    <!-- 纯白色蓝牙主体 -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M7.5,0 L7.5,10.8 L12.3,6 L13.8,7.5 L8.7,13.5 L13.8,19.5 L12.3,21 L7.5,16.2 L7.5,27 L6,25.8 L1.2,21 L2.7,19.5 L6.9,15.3 L2.7,11.7 L1.2,10.2 L6,5.4 L7.5,0 Z" />
+
 </vector>

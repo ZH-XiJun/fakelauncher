@@ -17,7 +17,6 @@ import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -61,14 +60,13 @@ public class SplashActivity extends AppCompatActivity {
     /**
      * Take a silent screenshot via root / Shizuku and save to the SAF-authorized
      * gallery directory (PREF_GALLERY_ACCESS). Two-step process:
-     *   1. screencap → /data/local/tmp (filesystem path, writable by root/shizuku)
+     *   1. screencap → cache dir (app-private, writable by root/shizuku)
      *   2. Copy via DocumentFile into the SAF directory
-     *   3. Delete temp file
      */
     private void takeScreenshot() {
         MMKV kv = MMKV.defaultMMKV();
         String uriStr = kv.decodeString(SettingsConstants.PREF_GALLERY_ACCESS, "");
-        if (uriStr.isEmpty()) {
+        if (uriStr == null || uriStr.isEmpty()) {
             Log.w(TAG, "No gallery SAF URI configured, skipping screenshot");
             return;
         }
@@ -76,64 +74,36 @@ public class SplashActivity extends AppCompatActivity {
         int privilege = PrivilegeProvider.getCurrentPrivilegeProvider(this);
         String ts = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
                 .format(new Date());
-        String tmpPath = "/data/local/tmp/screenshot_" + ts + ".png";
+        String tmpPath = getCacheDir().getAbsolutePath() + "/screenshot_" + ts + ".png";
         String filename = "screenshot_" + ts + ".png";
         String cmd = "screencap -p " + tmpPath;
 
-        switch (privilege) {
-            case PrivilegeProvider.PRIVILEGE_ROOT:
-                new Thread(() -> {
-                    try {
-                        execRoot(cmd);
-                        copyToSafDir(uriStr, tmpPath, filename);
-                        execRoot("rm " + tmpPath);
-                        Log.d(TAG, "Screenshot saved (root) to SAF dir");
-                    } catch (Exception e) {
-                        Log.e(TAG, "Screenshot (root) failed", e);
-                    }
-                }, "screenshot-root").start();
-                break;
-
-            case PrivilegeProvider.PRIVILEGE_SHIZUKU:
-                // Shizuku is async via UserService, fire-and-forget.
-                // screencap runs on the service process; we delay the copy
-                // to give it time to finish, then copy via DocumentFile.
+        if (privilege == PrivilegeProvider.PRIVILEGE_ROOT) {
+            // Root: runCommand is synchronous — screencap completes before we copy
+            new Thread(() -> {
                 PrivilegeProvider.runCommand(this,
-                        PrivilegeProvider.PRIVILEGE_SHIZUKU, cmd);
-                new Thread(() -> {
-                    try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
-                    try {
-                        copyToSafDir(uriStr, tmpPath, filename);
-                        Log.d(TAG, "Screenshot saved (shizuku) to SAF dir");
-                    } catch (Exception e) {
-                        Log.e(TAG, "Screenshot (shizuku) copy failed", e);
-                    }
-                }, "screenshot-shizuku").start();
-                break;
+                        PrivilegeProvider.PRIVILEGE_ROOT, cmd);
+                copyToSafDir(uriStr, tmpPath, filename);
+                Log.d(TAG, "Screenshot saved (root) to SAF dir");
+            }, "screenshot-root").start();
 
-            default:
-                Log.d(TAG, "No privilege for silent screenshot, skipping");
-                break;
+        } else if (privilege == PrivilegeProvider.PRIVILEGE_SHIZUKU) {
+            // Shizuku: runCommand is async via UserService; delay copy to wait for screencap
+            PrivilegeProvider.runCommand(this,
+                    PrivilegeProvider.PRIVILEGE_SHIZUKU, cmd);
+            new Thread(() -> {
+                try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
+                copyToSafDir(uriStr, tmpPath, filename);
+                Log.d(TAG, "Screenshot saved (shizuku) to SAF dir");
+            }, "screenshot-shizuku").start();
+
+        } else {
+            Log.d(TAG, "No privilege for silent screenshot, skipping");
         }
-    }
-
-    /** Run a command as root synchronously. */
-    private static void execRoot(String cmd) throws Exception {
-        Process p = Runtime.getRuntime().exec("su");
-        DataOutputStream os = new DataOutputStream(p.getOutputStream());
-        os.writeBytes(cmd + "\n");
-        os.writeBytes("exit\n");
-        os.flush();
-        os.close();
-        p.waitFor();
     }
 
     /**
      * Copy a local file into the SAF-authorized directory using DocumentFile.
-     *
-     * @param safUriStr SAF tree URI string (from PREF_GALLERY_ACCESS)
-     * @param srcPath   absolute filesystem path of the source file
-     * @param destName  destination filename
      */
     private void copyToSafDir(String safUriStr, String srcPath, String destName) {
         try {

@@ -10,15 +10,15 @@
         android:id="@+id/settings_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:titleTextColor="@color/white"
+        android:background="?attr/colorSurface"
+        android:elevation="0dp"
+        android:theme="@style/ThemeOverlay.Material3.ActionBar"
+        app:titleTextColor="?attr/colorOnSurface"
         app:layout_constraintBottom_toTopOf="@+id/settings_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.Material3" />
 
     <FrameLayout
         android:id="@+id/settings_container"

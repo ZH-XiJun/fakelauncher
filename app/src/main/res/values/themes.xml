@@ -10,10 +10,46 @@
     </style>
 
     <style name="Theme.FakeLauncher.Settings" parent="Base.Theme.FakeLauncher">
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="preferenceTheme">@style/ThemeOverlay.FakeLauncher.Preference</item>
     </style>
 
     <style name="Theme.FakeLauncher.Dialog" parent="Theme.Material3.DayNight.Dialog">
         <item name="android:windowBackground">@drawable/dialog_rounded_bg</item>
+    </style>
+
+    <!-- ===================== Material 3 restyle for preference screens ===================== -->
+
+    <!--
+      androidx.preference 的主题叠加。不设置 preferenceTheme 时会落到框架默认布局
+      (res/layout/preference.xml)，这里显式指向 M3 版样式。
+    -->
+    <style name="ThemeOverlay.FakeLauncher.Preference" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceStyle">@style/Preference.FakeLauncher.M3</item>
+        <item name="preferenceCategoryStyle">@style/Preference.FakeLauncher.M3.Category</item>
+        <item name="preferenceCategoryTitleTextAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="preferenceFragmentListStyle">@style/PreferenceFragmentList.FakeLauncher.M3</item>
+    </style>
+
+    <!-- 普通条目：M3 行高/内边距/字阶，布局见 layout/preference_item_m3.xml -->
+    <style name="Preference.FakeLauncher.M3" parent="Preference.Material">
+        <item name="android:layout">@layout/preference_item_m3</item>
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <!-- 分组标题：M3 用间距分组，不要分隔线 -->
+    <style name="Preference.FakeLauncher.M3.Category" parent="Preference.Category.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <!-- 列表容器：去掉 M3 不需要的分隔线 -->
+    <style name="PreferenceFragmentList.FakeLauncher.M3" parent="PreferenceFragmentList.Material">
+        <item name="android:clipToPadding">false</item>
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0dp</item>
     </style>
 </resources>

@@ -51,7 +51,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         // If any permissions are missing, update the page_permission summary as a warning
         Preference permPref = findPreference(PAGE_PERMISSION);
         if (permPref != null && !PrivilegeProvider.checkAllPermissions(requireContext())) {
-            permPref.setSummary(R.string.pref_permissions_not_granted_hint);
+            permPref.setTitle(R.string.pref_permissions_danger);
+            permPref.setSummary(R.string.pref_permissions_danger_summary);
+
         }
     }
 

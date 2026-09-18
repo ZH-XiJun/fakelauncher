@@ -2,6 +2,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+    <com.wtbruh.fakelauncher.ui.preference.PermissionPreference
+        android:key="page_permission" />
     <Preference
         android:key="fun_fakeui"
         android:title="@string/shortcut_name"/>
@@ -10,10 +12,6 @@
         android:title="@string/fun_restore_touch"
         android:summary="@string/fun_restore_touch_summary"
         app:isPreferenceVisible="false"/>
-    <Preference
-        android:key="page_permission"
-        android:title="@string/pref_page_permissions"
-        android:summary="@string/pref_page_permissions_summary"/>
     <Preference
         android:key="page_view"
         android:title="@string/pref_page_view"

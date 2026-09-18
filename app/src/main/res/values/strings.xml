@@ -112,6 +112,12 @@
 
     <string name="pref_page_permissions">Permissions and privileges</string>
     <string name="pref_page_permissions_summary">Program needs them to run normally</string>
+    <string name="pref_permissions_ok">Oll Korrect!</string>
+    <string name="pref_permissions_ok_summary">All required permissions are granted</string>
+    <string name="pref_permissions_warn">Xposed module is not activated</string>
+    <string name="pref_permissions_warn_summary">May not achieve expected disguise effect</string>
+    <string name="pref_permissions_danger">Missing Permissions</string>
+    <string name="pref_permissions_danger_summary">Fake UI wont work properly</string>
     <string name="pref_permissions_not_granted_hint">Hey!!!! You still have ungranted permissions!!!</string>
     <string name="pref_category_permissions">Permissions</string>
     <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>

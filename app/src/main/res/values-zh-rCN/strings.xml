@@ -108,6 +108,12 @@
 
     <string name="pref_page_permissions">权限与特权</string>
     <string name="pref_page_permissions_summary">程序正常运行需要用户提供权限</string>
+    <string name="pref_permissions_ok">Oll Korrect!</string>
+    <string name="pref_permissions_ok_summary">权限OK，可以放心食用</string>
+    <string name="pref_permissions_warn">Xposed模块未激活</string>
+    <string name="pref_permissions_warn_summary">可能无法达到预期伪装效果</string>
+    <string name="pref_permissions_danger">尚未授权</string>
+    <string name="pref_permissions_danger_summary">不授权而强行使用的话等掉吧</string>
     <string name="pref_permissions_not_granted_hint">你还有权限没授权啊喂！！！看过来快看过来QAQ</string>
     <string name="pref_category_permissions">普通权限</string>
     <string name="pref_grant_all_permissions">使用授权器授权所有权限</string>

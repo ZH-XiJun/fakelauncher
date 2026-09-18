@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +43,7 @@ public class ContentProvider extends android.content.ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         if (contentValues != null && contentValues.containsKey(KEY_TASKID)) {
             currentTaskId.set(contentValues.getAsInteger(KEY_TASKID));
-            requireContext().getContentResolver().notifyChange(uri, null);
+            requireContextCompact().getContentResolver().notifyChange(uri, null);
             return uri;
         }
         return null;
@@ -51,7 +52,7 @@ public class ContentProvider extends android.content.ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
         currentTaskId.set(-1);
-        requireContext().getContentResolver().notifyChange(uri, null);
+        requireContextCompact().getContentResolver().notifyChange(uri, null);
         return 1;
     }
 
@@ -59,7 +60,7 @@ public class ContentProvider extends android.content.ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
         if (contentValues != null && contentValues.containsKey(KEY_TASKID)) {
             currentTaskId.set(contentValues.getAsInteger(KEY_TASKID));
-            requireContext().getContentResolver().notifyChange(uri, null);
+            requireContextCompact().getContentResolver().notifyChange(uri, null);
             return 1;
         }
         return 0;
@@ -79,5 +80,9 @@ public class ContentProvider extends android.content.ContentProvider {
             }
         }
         return -1;
+    }
+    
+    private Context requireContextCompact() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R? requireContext() : getContext();
     }
 }

@@ -156,6 +156,13 @@ public class PrivilegeProvider {
                 // Filter out permissions defined by Android, other program defined permissions are not required
                 // 筛选出Android的权限，其他程序定义的权限不需要
                 if (permission.contains("android.permission.")) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        switch (permission) {
+                            case Manifest.permission.READ_MEDIA_AUDIO:
+                            case Manifest.permission.POST_NOTIFICATIONS:
+                                continue;
+                        }
+                    }
                     arrayList.add(permission);
                 }
             }

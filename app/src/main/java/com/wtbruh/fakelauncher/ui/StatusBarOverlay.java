@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 
@@ -100,8 +99,8 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
             R.drawable.ic_wifi_2, R.drawable.ic_wifi_3
     };
     private static final int[] BATTERY_ICONS = {
-            R.drawable.ic_battery_0,  // 0-10%  红色告急
-            R.drawable.ic_battery_1,  // 11-25% 橙色
+            R.drawable.ic_battery_0,  // 0-10%  电量告急，将军救急
+            R.drawable.ic_battery_1,  // 11-25% 还能争
             R.drawable.ic_battery_2,  // 26-50% 2格绿
             R.drawable.ic_battery_3,  // 51-75% 3格绿
             R.drawable.ic_battery_4   // 76-100% 4格绿
@@ -117,12 +116,18 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
     // 生命周期
     // ═══════════════════════════════════════════
 
-    /** 初始同步 + 启动轮询 + 注册系统状态广播。Activity onResume 中调用。 */
+
+    /**
+     * 启动状态栏数据更新，使用默认轮询间隔 3000ms
+     */
     public void start() {
         start(DEFAULT_POLL_MS);
     }
 
-    /** 同 start()，可指定轮询间隔。 */
+    /**
+     * 启动状态栏数据更新
+     * @param pollMs 轮询间隔
+     */
     public void start(long pollMs) {
         // 设备信息（只取一次）
         mDualSim = mTelephonyHelper.getPhoneCount() >= 2;
@@ -398,7 +403,6 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
     // ═══════════════════════════════════════════
 
     private void redrawAll() {
-        Log.d(TAG, "start redraw" + mTarget);
         mTarget.post(() -> {
             int sw = mTarget.getWidth();
             if (sw <= 0) return;

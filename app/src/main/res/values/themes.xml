@@ -29,12 +29,87 @@
         <item name="preferenceCategoryStyle">@style/Preference.FakeLauncher.M3.Category</item>
         <item name="preferenceCategoryTitleTextAppearance">?attr/textAppearanceTitleSmall</item>
         <item name="preferenceFragmentListStyle">@style/PreferenceFragmentList.FakeLauncher.M3</item>
+        <!--
+          每种类型都要单独覆盖：库为每个类型定义了独立的 .Material 样式，
+          且它们之间是兄弟关系（不是继承自 Preference.Material），各自写死了
+          android:layout=@layout/preference_material。只改 preferenceStyle 的话，
+          ListPreference / SwitchPreference / EditTextPreference 等仍会用旧布局，
+          标题副标题就跟 M3 行对不齐。
+        -->
+        <item name="checkBoxPreferenceStyle">@style/Preference.FakeLauncher.M3.CheckBox</item>
+        <item name="switchPreferenceStyle">@style/Preference.FakeLauncher.M3.Switch</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.FakeLauncher.M3.SwitchCompat</item>
+        <item name="dialogPreferenceStyle">@style/Preference.FakeLauncher.M3.Dialog</item>
+        <item name="editTextPreferenceStyle">@style/Preference.FakeLauncher.M3.EditText</item>
+        <item name="dropdownPreferenceStyle">@style/Preference.FakeLauncher.M3.List</item>
+        <item name="seekBarPreferenceStyle">@style/Preference.FakeLauncher.M3.SeekBar</item>
+        <item name="preferenceScreenStyle">@style/Preference.FakeLauncher.M3.Screen</item>
     </style>
 
     <!-- 普通条目：M3 行高/内边距/字阶，布局见 layout/preference_item_m3.xml -->
     <style name="Preference.FakeLauncher.M3" parent="Preference.Material">
         <item name="android:layout">@layout/preference_item_m3</item>
         <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <!-- 各类型：只换 item 布局，其余（widgetLayout / singleLineTitle 等）继承库的 Material 版 -->
+    <style name="Preference.FakeLauncher.M3.CheckBox" parent="Preference.CheckBoxPreference.Material">
+        <item name="android:layout">@layout/preference_item_m3_no_arrow</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <style name="Preference.FakeLauncher.M3.Switch" parent="Preference.SwitchPreference.Material">
+        <item name="android:layout">@layout/preference_item_m3_no_arrow</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <style name="Preference.FakeLauncher.M3.SwitchCompat" parent="Preference.SwitchPreferenceCompat.Material">
+        <item name="android:layout">@layout/preference_item_m3_no_arrow</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <!--
+      注意：dropdownPreferenceStyle 对应的是 DropDownPreference（行内带 Spinner 的那个类，
+      本项目未使用）；ListPreference / MultiSelectListPreference 实际走 dialogPreferenceStyle。
+      DropDownPreference 的行必须保留 Spinner，以后若要用它，别套 preference_item_m3。
+    -->
+    <style name="Preference.FakeLauncher.M3.List" parent="Preference.DropDown.Material">
+        <item name="android:layout">@layout/preference_item_m3_no_arrow</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <style name="Preference.FakeLauncher.M3.Dialog" parent="Preference.DialogPreference.Material">
+        <item name="android:layout">@layout/preference_item_m3_no_arrow</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <style name="Preference.FakeLauncher.M3.EditText" parent="Preference.DialogPreference.EditTextPreference.Material">
+        <item name="android:layout">@layout/preference_item_m3_no_arrow</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <!--
+      SeekBarPreference 特殊：它的 android:layout 指向的是「整行」布局
+      （库为 @layout/preference_widget_seekbar_material），不是普通 item 布局，
+      所以这里不能指向 preference_item_m3，否则行内没有 seekbar/seekbar_value
+      会被库的 onBindViewHolder 直接 NPE。
+    -->
+    <style name="Preference.FakeLauncher.M3.SeekBar" parent="Preference.SeekBarPreference.Material">
+        <item name="android:layout">@layout/preference_item_m3_seekbar</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+
+    <style name="Preference.FakeLauncher.M3.Screen" parent="Preference.PreferenceScreen.Material">
+        <item name="android:layout">@layout/preference_item_m3_no_arrow</item>
         <item name="allowDividerAbove">false</item>
         <item name="allowDividerBelow">false</item>
     </style>

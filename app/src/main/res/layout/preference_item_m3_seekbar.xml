@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Material 3 row for SeekBarPreference.
+
+  ⚠️ 与其它 Preference 类型不同：SeekBarPreference 的「整行」就是一个布局，
+  库的 android:layout 指向 @layout/preference_widget_seekbar_material（该布局里
+  同时含有 title / summary / seekbar / 数值文本），而不是普通的 item 布局。
+  所以这个布局必须保留以下 id，否则 androidx.preference.SeekBarPreference
+  .onBindViewHolder() 会在 findViewById 拿到 null 后 NPE：
+    - @android:id/title / @android:id/summary
+    - @id/seekbar          （库内 id 0x7f0a01e5）
+    - @id/seekbar_value    （库内 id 0x7f0a01e6）
+  注意必须用 @id/ 引用库里已有的 id，不能用 @+id/ 新建，否则库查不到。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="72dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:background="?attr/selectableItemBackground">
+
+    <FrameLayout
+        android:id="@id/icon_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@android:id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@android:id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSurface"
+            android:labelFor="@id/seekbar"
+            android:ellipsize="end"
+            android:maxLines="2" />
+
+        <TextView
+            android:id="@android:id/summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:ellipsize="end"
+            android:maxLines="4" />
+
+        <!-- 滑块区域不把点击交给整行（与库的布局一致） -->
+        <androidx.preference.UnPressableLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <SeekBar
+                android:id="@id/seekbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp" />
+
+            <TextView
+                android:id="@id/seekbar_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:minWidth="36dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+        </androidx.preference.UnPressableLinearLayout>
+    </LinearLayout>
+</LinearLayout>

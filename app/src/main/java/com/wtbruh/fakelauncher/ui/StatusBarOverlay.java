@@ -279,7 +279,11 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
 
     private void syncBluetooth() {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        mBluetoothOn = adapter != null && adapter.isEnabled();
+        try {
+            mBluetoothOn = adapter != null && adapter.isEnabled();
+        } catch (SecurityException ignore) {
+            mBluetoothOn = false;
+        }
     }
 
     // ── WiFi 辅助 ──
@@ -394,6 +398,7 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
     // ═══════════════════════════════════════════
 
     private void redrawAll() {
+        Log.d(TAG, "start redraw" + mTarget);
         mTarget.post(() -> {
             int sw = mTarget.getWidth();
             if (sw <= 0) return;

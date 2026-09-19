@@ -7,8 +7,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import com.wtbruh.fakelauncher.ApplicationHelper;
 import com.wtbruh.fakelauncher.R;
-import com.wtbruh.fakelauncher.utils.UIHelper;
-import com.wtbruh.fakelauncher.xposed.SelfHook;
+import com.wtbruh.fakelauncher.utils.ContentProvider;
 
 public class XposedPreference extends CommonPreference {
 
@@ -38,7 +37,7 @@ public class XposedPreference extends CommonPreference {
             itemView.post(() -> {
                 if (ApplicationHelper.isXposedModuleActivated()) {
                     titleTv.setText(greenStateTitle);
-                    summaryTv.setText(getContext().getString(R.string.pref_xposed_activated_summary, SelfHook.getFrameworkVersion()));
+                    summaryTv.setText(getContext().getString(R.string.pref_xposed_activated_summary, getFrameworkVersion()));
                     itemView.setBackgroundResource(R.drawable.bg_ok_green);
                 } else {
                     titleTv.setText(redStateTitle);
@@ -48,5 +47,12 @@ public class XposedPreference extends CommonPreference {
             });
             super.updateState();
         }
+    }
+
+    /**
+     * 读取Xposed Framework API 版本
+     */
+    private int getFrameworkVersion() {
+        return ContentProvider.getXposedApi(getContext());
     }
 }

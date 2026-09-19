@@ -77,6 +77,10 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     private void restartSilently() {
+        // 重启前先把锁定状态清掉并广播：本进程即将死亡，没人会再替它解锁，
+        // 不清的话 Xposed 侧会一直以为还锁着（导航栏不恢复 + lock task 不解除）。
+        UIHelper.resetLockApp(mContext);
+
         Intent intent = new Intent(mContext, SplashActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);

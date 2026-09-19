@@ -403,4 +403,15 @@ public class UIHelper {
         return ContentProvider.getTaskId(context);
     }
 
+    /**
+     * Reset lock state to unlocked and force-broadcast it.<br>
+     * 重置为未锁定并强制广播：用于进程启动/退出/崩溃重启，
+     * 避免 hook 侧残留上一轮的锁定状态（hook 的状态不会随应用进程消失）。
+     *
+     * @param context Context
+     */
+    public static void resetLockApp(Context context) {
+        ContentProvider.resetTaskId(context);
+    }
+
 }

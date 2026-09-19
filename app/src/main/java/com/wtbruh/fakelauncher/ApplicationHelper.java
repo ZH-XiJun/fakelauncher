@@ -50,21 +50,27 @@ public class ApplicationHelper extends Application {
             int taskId = ContentProvider.getTaskId(ApplicationHelper.this);
             Activity activity = sCurrentActivity.get();
 
-            if (taskId != -1 && activity != null && !activity.isFinishing()) {
+            if (taskId != ContentProvider.NOT_SET && activity != null && !activity.isFinishing()) {
                 // 锁定
-                if (mDpm != null) {
-                    ComponentName receiver = switch (mDeviceAdminType) {
-                        case PrivilegeProvider.DHIZUKU -> Dhizuku.getOwnerComponent();
-                        default -> new ComponentName(ApplicationHelper.this, DeviceAdminReceiver.class);
-                    };
-                    mDpm.setLockTaskPackages(receiver, new String[]{BuildConfig.APPLICATION_ID});
+                try {
+                    if (mDpm != null) {
+                        ComponentName receiver = switch (mDeviceAdminType) {
+                            case PrivilegeProvider.DHIZUKU -> Dhizuku.getOwnerComponent();
+                            default -> new ComponentName(ApplicationHelper.this, DeviceAdminReceiver.class);
+                        };
+                        mDpm.setLockTaskPackages(receiver, new String[]{BuildConfig.APPLICATION_ID});
+                    }
+                } catch (Throwable e) {
+                    // 本方法运行在 ContentResolver.notifyChange 的调用栈里，
+                    // 抛出会把写入方（MainActivity / CrashHandler）一起干掉，必须兜住。
+                    Log.e(TAG, "setLockTaskPackages failed", e);
                 }
                 try {
                     activity.startLockTask();
                 } catch (Exception e) {
                     Log.e(TAG, "startLockTask failed", e);
                 }
-            } else if (taskId == -1 && activity != null && !activity.isFinishing()) {
+            } else if (taskId == ContentProvider.NOT_SET && activity != null && !activity.isFinishing()) {
                 // 解锁
                 try {
                     activity.stopLockTask();
@@ -89,6 +95,11 @@ public class ApplicationHelper extends Application {
 
         // MMKV init
         MMKV.initialize(this);
+
+        // Broadcast a definite state at process start.
+        // 进程启动时广播确定态：新进程必然是未锁定，而 Xposed 侧可能还残留上一轮的旧值
+        // （应用进程死掉时它收不到任何通知），不纠正就会“应用以为没锁、hook 以为锁着”。
+        ContentProvider.resetTaskId(this);
 
         Log.d(TAG, "Application onCreate. My package name: "+ BuildConfig.APPLICATION_ID);
 

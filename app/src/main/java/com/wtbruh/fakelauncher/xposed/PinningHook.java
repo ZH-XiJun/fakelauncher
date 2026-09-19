@@ -52,9 +52,16 @@ public class PinningHook extends HookHelper {
                             @Override
                             public void onChange(boolean selfChange, @Nullable Uri uri, int flags) {
                                 Cursor cursor = finalContext.getContentResolver().query(uri, null, null, null, null);
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    sTaskId = cursor.getInt(0);
-                                    cursor.close();
+                                if (cursor != null) {
+                                    try {
+                                        if (cursor.moveToFirst()) {
+                                            // 按列名取值，不用位置下标（provider 以后加列就取错了）
+                                            int index = cursor.getColumnIndex(ContentProvider.KEY_TASKID);
+                                            if (index >= 0 && !cursor.isNull(index)) sTaskId = cursor.getInt(index);
+                                        }
+                                    } finally {
+                                        cursor.close();
+                                    }
                                 }
                                 logI(TAG, "Got task id: " + sTaskId);
                                 sLock = sTaskId != -1;

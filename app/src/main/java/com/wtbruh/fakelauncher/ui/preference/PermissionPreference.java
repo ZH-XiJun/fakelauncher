@@ -32,12 +32,12 @@ public class PermissionPreference extends CommonPreference {
         if (itemView != null) {
             itemView.post(() -> {
                 if (PrivilegeProvider.checkAllPermissions(getContext())) {
-                    setTitle(greenStateTitle);
-                    setSummary(greenStateSummary);
+                    titleTv.setText(greenStateTitle);
+                    summaryTv.setText(greenStateSummary);
                     itemView.setBackgroundResource(R.drawable.bg_ok_green);
                 } else {
-                    setTitle(redStateTitle);
-                    setSummary(redStateSummary);
+                    titleTv.setText(redStateTitle);
+                    summaryTv.setText(redStateSummary);
                     itemView.setBackgroundResource(R.drawable.bg_error_red);
                 }
             });

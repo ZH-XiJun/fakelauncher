@@ -46,15 +46,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         for (String page : pages) {
             if ((pref = findPreference(page)) != null) pref.setOnPreferenceClickListener(this);
         }
-
-        // 没给全权限我就这样
-        // If any permissions are missing, update the page_permission summary as a warning
-        Preference permPref = findPreference(PAGE_PERMISSION);
-        if (permPref != null && !PrivilegeProvider.checkAllPermissions(requireContext())) {
-            permPref.setTitle(R.string.pref_permissions_danger);
-            permPref.setSummary(R.string.pref_permissions_danger_summary);
-
-        }
     }
 
     @Override

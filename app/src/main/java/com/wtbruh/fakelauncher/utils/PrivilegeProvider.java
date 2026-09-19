@@ -23,7 +23,10 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
+import androidx.media3.common.C;
 import androidx.preference.PreferenceManager;
 
 import com.rosan.dhizuku.api.Dhizuku;
@@ -185,11 +188,23 @@ public class PrivilegeProvider {
             requestPermissions(activity, getAllPermissions(activity), PERMISSION_REQUEST_CODE);
             return;
         }
+        requestAllPermissionsWithPrivilege(activity, method);
+    }
+
+    public static void requestAllPermissions(Fragment fragment, int method) {
+        if (method == PRIVILEGE_NORMAL) {
+            fragment.requestPermissions(getAllPermissions(fragment.requireContext()), PERMISSION_REQUEST_CODE);
+            return;
+        }
+        requestAllPermissionsWithPrivilege(fragment.requireContext(), method);
+    }
+
+    public static void requestAllPermissionsWithPrivilege(Context context, int method) {
         ArrayList<String> arrayList = new ArrayList<>();
-        for (String permission: getAllPermissions(activity)) {
+        for (String permission: getAllPermissions(context)) {
             arrayList.add("pm grant com.wtbruh.fakelauncher " + permission);
         }
-        runCommand(activity, method, arrayList.toArray(new String[0]));
+        runCommand(context, method, arrayList.toArray(new String[0]));
     }
 
     /**

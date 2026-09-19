@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -40,6 +41,7 @@ import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
+import com.wtbruh.fakelauncher.ui.preference.PermissionPreference;
 import com.wtbruh.fakelauncher.ui.preference.SeekBarPreference;
 import com.wtbruh.fakelauncher.ui.widget.StrokeTextView;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
@@ -169,7 +171,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         switch (page) {
             case SettingsFragment.PAGE_PERMISSION:
                 clickablePrefs = new String[]{
-                        SettingsConstants.PREF_CHECK_PRIVILEGE,
                         SettingsConstants.PREF_CHECK_DEVICE_ADMIN,
                         SettingsConstants.PREF_GRANT_ALL_PERMISSIONS,
                         SettingsConstants.PREF_PERMISSION_GRANT_STATUS,
@@ -178,14 +179,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                         SettingsConstants.PREF_MUSIC_ACCESS_SAF
                 };
                 setupPrefs = new String[]{
-                        SettingsConstants.PREF_CHECK_XPOSED,
+                        SettingsConstants.PREF_PRIVILEGE_PROVIDER,
                         SettingsConstants.PREF_CHECK_DEVICE_ADMIN,
                         SettingsConstants.PREF_GALLERY_ACCESS,
                         SettingsConstants.PREF_MUSIC_ACCESS_SAF,
                         SettingsConstants.PREF_MUSIC_ACCESS_TYPE
                 };
                 listPrefs = new String[] {
-                        SettingsConstants.PREF_PRIVILEGE_PROVIDER,
                         SettingsConstants.PREF_MUSIC_ACCESS_TYPE
                 };
                 // titleResId = R.string.pref_page_permissions;
@@ -326,13 +326,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 String value = sp.getString(SettingsConstants.PREF_EXIT_FAKEUI_METHOD, valueArray[0]);
                 pref.setVisible(value.equals(valueArray[0]));
             }
-            case SettingsConstants.PREF_CHECK_XPOSED -> {
-                if (ApplicationHelper.isXposedModuleActivated()) {
-                    pref.setSummary(R.string.pref_xposed_activated);
-                } else {
-                    pref.setSummary(R.string.pref_xposed_not_activated);
-                }
-            }
             case SettingsConstants.PREF_CHECK_DEVICE_ADMIN -> {
                 pref.setEnabled(true);
                 Preference p = findPreference(SettingsConstants.PREF_DEACTIVATE_DEVICE_OWNER);
@@ -423,13 +416,6 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         if (pref == null) return;
 
         switch (key) {
-            case SettingsConstants.PREF_PRIVILEGE_PROVIDER -> {
-                prefSetup(pref);
-                if ((pref = findPreference(SettingsConstants.PREF_CHECK_PRIVILEGE)) != null)
-                    pref.setSummary(R.string.pref_tap_me);
-                Preference p = findPreference(SettingsConstants.PREF_CHECK_DEVICE_ADMIN);
-                if (p != null) p.setSummary(R.string.pref_tap_me);
-            }
             case SettingsConstants.PREF_EXIT_FAKEUI_METHOD -> {
                 EditTextPreference exitFakeuiConfig = findPreference(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD);
                 Preference p = findPreference(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY);
@@ -489,38 +475,14 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         String key = pref.getKey();
         String value;
         switch (key) {
-            case SettingsConstants.PREF_CHECK_PRIVILEGE -> {
-                value = sp.getString(SettingsConstants.PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
-                new Thread(() -> {
-                    if (!"None".equals(value)) {
-                        boolean isGranted = PrivilegeProvider.checkPrivilege(PrivilegeProvider.privilegeToInt(value));
-                        requireActivity().runOnUiThread(() -> {
-                            if (isGranted) {
-                                pref.setSummary(R.string.pref_check_privilege_granted);
-                            } else {
-                                pref.setSummary(R.string.pref_check_privilege_denied);
-                            }
-                        });
-
-                    } else {
-                        requireActivity().runOnUiThread(() -> pref.setSummary(R.string.pref_check_privilege_none));
-                    }
-                }).start();
-            }
             case SettingsConstants.PREF_CHECK_DEVICE_ADMIN -> prefSetup(pref);
             case SettingsConstants.PREF_PERMISSION_GRANT_STATUS ->
                     UIHelper.startIntent(requireActivity(), SettingsActivity.PermissionStatus.class);
             case SettingsConstants.PREF_GRANT_ALL_PERMISSIONS -> {
                 value = sp.getString(SettingsConstants.PREF_PRIVILEGE_PROVIDER, getString(R.string.pref_privilege_provider_default));
                 new Thread(() -> {
-                    PrivilegeProvider.requestAllPermissions(requireActivity(), PrivilegeProvider.privilegeToInt(value));
-                    requireActivity().runOnUiThread(() -> {
-                        pref.setSummary(R.string.pref_operation_completed);
-                        new Handler().postDelayed(() -> pref.setSummary(""), 2000);
-                    });
-
+                    PrivilegeProvider.requestAllPermissions(this, PrivilegeProvider.privilegeToInt(value));
                 }).start();
-
             }
             case SettingsConstants.PREF_DEACTIVATE_DEVICE_OWNER -> {
                 DevicePolicyManager dpm = getSystemService(requireContext(), DevicePolicyManager.class);
@@ -620,5 +582,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             }
         }
         return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PrivilegeProvider.PERMISSION_REQUEST_CODE) {
+            PermissionPreference pref = findPreference(SettingsConstants.PREF_GRANT_ALL_PERMISSIONS);
+            if (pref != null) pref.updateState();
+        }
     }
 }

@@ -143,9 +143,9 @@ public class SettingsActivity extends AppCompatActivity {
             Bundle b = new Bundle();
             b.putString(DualTextviewAdapter.ITEM, permission);
             if (PrivilegeProvider.checkPermission(PermissionStatus.this, permission)) {
-                b.putString(DualTextviewAdapter.SUB_ITEM, getResources().getString(R.string.pref_check_privilege_granted));
+                b.putString(DualTextviewAdapter.SUB_ITEM, getResources().getString(R.string.pref_permissions_granted));
             } else {
-                b.putString(DualTextviewAdapter.SUB_ITEM, getResources().getString(R.string.pref_check_privilege_denied));
+                b.putString(DualTextviewAdapter.SUB_ITEM, getResources().getString(R.string.pref_permissions_danger));
             }
             return b;
         }

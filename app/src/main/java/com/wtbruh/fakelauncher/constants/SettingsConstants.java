@@ -10,7 +10,6 @@ public final class SettingsConstants {
     public static final String PREF_EXIT_FAKEUI_CONFIG_KEY = "exit_fakeui_config_key";
     public static final String PREF_EXIT_FAKEUI_CONFIG_PASSWD = "exit_fakeui_config_passwd";
     public static final String PREF_EXIT_FAKEUI_METHOD = "exit_fakeui_method";
-    public static final String PREF_CHECK_PRIVILEGE = "check_privilege";
     public static final String PREF_CHECK_DEVICE_ADMIN = "check_device_admin";
     public static final String PREF_ENABLE_DHIZUKU = "enable_dhizuku";
     public static final String PREF_PERMISSION_GRANT_STATUS = "permission_grant_status";

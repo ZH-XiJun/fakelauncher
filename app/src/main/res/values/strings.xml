@@ -113,18 +113,21 @@
     <string name="pref_page_permissions">Permissions and privileges</string>
     <string name="pref_page_permissions_summary">Program needs them to run normally</string>
     <string name="pref_permissions_ok">Oll Korrect!</string>
-    <string name="pref_permissions_ok_summary">All required permissions are granted</string>
-    <string name="pref_permissions_warn">Xposed module is not activated</string>
-    <string name="pref_permissions_warn_summary">May not achieve expected disguise effect</string>
+    <string name="pref_permissions_ok_summary">All essential permissions are granted</string>
     <string name="pref_permissions_danger">Missing Permissions</string>
     <string name="pref_permissions_danger_summary">Fake UI wont work properly</string>
     <string name="pref_permissions_not_granted_hint">Hey!!!! You still have ungranted permissions!!!</string>
-    <string name="pref_category_permissions">Permissions</string>
+    <string name="pref_category_permissions">ESSENTIAL PERMISSIONS</string>
+    <string name="pref_permissions_granted">Permission granted</string>
+    <string name="pref_permissions_denied">Permission denied</string>
     <string name="pref_grant_all_permissions">Use privilege provider to grant all permissions</string>
     <string name="pref_grant_all_permissions_summary">Choose a privilege provider first</string>
     <string name="pref_permission_grant_status">Permissions granting status</string>
 
     <string name="pref_category_storage_access">Storage access</string>
+    <string name="pref_file_access_ok">File access permissions enough</string>
+    <string name="pref_file_access_warn">Missing file access permissions</string>
+    <string name="pref_file_access_warn_summary">Gallery, camera, and music player may be affected</string>
     <string name="pref_gallery_access">Choose a path to access pictures for gallery</string>
     <string name="pref_saf_access_summary">Use Storage Access Framework (SAF) to grant permission</string>
     <string name="pref_music_access_type">Type to find music files.</string>
@@ -133,16 +136,22 @@
     <string name="pref_music_access_saf">Choose a path to access musics for music player</string>
 
     <string name="pref_category_privileges">Privileges</string>
-    <string name="pref_check_xposed">Xposed module activation status</string>
-    <string name="pref_xposed_activated">Xposed module is activated! </string>
-    <string name="pref_xposed_not_activated">Xposed module is not activated yet</string>
-    <string name="pref_privilege_provider">Privilege provider</string>
-    <string name="pref_provider_none">None</string>
+    <string name="pref_check_xposed">XPOSED MODULE</string>
+    <string name="activated">Activated</string>
+    <string name="pref_xposed_activated_summary" translatable="false">API %d</string>
+    <string name="not_activated">Not activated yet</string>
+    <string name="pref_xposed_not_activated">Xposed module is not activated</string>
+    <string name="pref_xposed_warn_summary">May not achieve expected disguise effect</string>
+    <string name="pref_privilege_provider">PRIVILEGE PROVIDER</string>
+    <string name="pref_privilege_provider_summary">Short click to choose a privilege provider, long press to request the privilege</string>
+    <string name="pref_check_privilege_granted">Granted - %s</string>
+    <string name="pref_check_privilege_denied">Denied - %s</string>
+    <string name="pref_provider_none">No provider</string>
     <string name="pref_provider_root" translatable="false">Root</string>
     <string name="pref_provider_shizuku" translatable="false">Shizuku</string>
+    <string name="pref_provider_warn">Low Privilege</string>
+    <string name="pref_provider_warn_summary">Better grant root access, or some functions like "Touch blocking +" wont work.</string>
     <string name="pref_check_privilege">Check if privilege has been granted</string>
-    <string name="pref_check_privilege_granted">Granted</string>
-    <string name="pref_check_privilege_denied">Denied</string>
     <string name="pref_check_privilege_none">You have no privilege provider, so why do you tap me?</string>
     <string name="pref_enable_dhizuku">Use Dhizuku</string>
     <string name="pref_check_device_admin">Check device owner</string>
@@ -179,7 +188,7 @@
     <string name="pref_exit_dpad">D-pad keys in MainUI</string>
     <string name="pref_exit_dialer">Dialer secret code</string>
     <string name="pref_exit_password">Custom password while entering Settings in menu</string>
-    <string name="pref_enhanced_touch_blocking">Enhanced touch blocking</string>
+    <string name="pref_enhanced_touch_blocking">Touch blocking +</string>
     <string name="pref_enhanced_touch_blocking_summary">Fully disable the touchscreen. STILL EXPERIMENTAL!</string>
     <string name="pref_self_destroy">Self destroy</string>
     <string name="pref_self_destroy_summary">Destroy your phone in extreme situation. ONLY EXTREME SITUATION!</string>

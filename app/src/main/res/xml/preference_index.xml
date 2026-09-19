@@ -2,8 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <com.wtbruh.fakelauncher.ui.preference.PermissionPreference
-        android:key="page_permission" />
+    <com.wtbruh.fakelauncher.ui.preference.PermissionPagePreference
+        android:key="page_permission"
+        tools:title="@string/pref_permissions_ok"
+        tools:summary="@string/pref_permissions_ok_summary"/>
     <Preference
         android:key="fun_fakeui"
         android:title="@string/shortcut_name"/>

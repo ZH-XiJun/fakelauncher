@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory android:title="@string/pref_category_permissions">
-        <Preference
-            android:key="grant_all_permissions"
-            android:title="@string/pref_grant_all_permissions" />
-        <Preference
-            android:key="permission_grant_status"
-            android:title="@string/pref_permission_grant_status" />
-    </PreferenceCategory>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <com.wtbruh.fakelauncher.ui.preference.XposedPreference
+        android:key="check_xposed"
+        tools:title="@string/not_activated"
+        tools:summary="@string/pref_xposed_warn_summary"/>
+    <com.wtbruh.fakelauncher.ui.preference.PrivilegeProviderPreference
+        android:defaultValue="@string/pref_privilege_provider_default"
+        android:entries="@array/pref_privilege_provider_string"
+        android:entryValues="@array/pref_privilege_provider"
+        android:key="privilege_provider"
+        tools:title="@string/pref_check_privilege_denied"
+        android:summary="@string/pref_privilege_provider_summary" />
+    <com.wtbruh.fakelauncher.ui.preference.PermissionPreference
+        android:key="grant_all_permissions"
+        tools:title="@string/pref_permissions_granted"
+        tools:summary="@string/pref_permissions_ok_summary"/>
+    <Preference
+        android:key="permission_grant_status"
+        android:title="@string/pref_permission_grant_status" />
     <PreferenceCategory android:title="@string/pref_category_storage_access">
         <Preference
             android:key="gallery_access"
@@ -26,19 +37,6 @@
             android:summary="@string/pref_saf_access_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_privileges">
-        <Preference
-            android:key="check_xposed"
-            android:title="@string/pref_check_xposed" />
-        <ListPreference
-            android:defaultValue="@string/pref_privilege_provider_default"
-            android:entries="@array/pref_privilege_provider_string"
-            android:entryValues="@array/pref_privilege_provider"
-            android:key="privilege_provider"
-            android:title="@string/pref_privilege_provider" />
-        <Preference
-            android:key="check_privilege"
-            android:title="@string/pref_check_privilege"
-            android:summary="@string/pref_tap_me" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="enable_dhizuku"

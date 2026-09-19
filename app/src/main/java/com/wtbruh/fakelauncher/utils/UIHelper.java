@@ -44,7 +44,7 @@ public class UIHelper {
             EXIT_METHOD_SETTINGS = 2;
 
     private static long activityLaunchLastTriggerTime = 0;
-    private static final long DEBOUNCE_TIME = 300;
+    public static final long DEBOUNCE_TIME = 300;
 
     public static final String STYLE_PHONE = "phone";
     public static final String STYLE_PLAYER = "player";

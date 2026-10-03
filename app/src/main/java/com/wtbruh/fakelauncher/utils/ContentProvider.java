@@ -81,9 +81,14 @@ public class ContentProvider extends android.content.ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        // 重置为未锁定/未上报，并强制通知：用于进程启动、退出、崩溃重启等需要广播确定态的场景
+        // 重置为未锁定并强制通知：用于进程启动、退出、崩溃重启等需要广播确定态的场景。
+        //
+        // ⚠️ 不要「顺手」把 xposedApi 也清掉：它只在进程启动时由 SelfHook 上报一次，
+        // 而 delete 在 PREF_CRASH_SHOW_LOG=true 的崩溃路径（CrashHandler.showCrashLog →
+        // UIHelper.setLockApp(-1) → resetLockApp）上也会走到 —— 那条路径进程并不死，
+        // 清掉就再也补不回来，应用会一直以为自己未激活。
+        // （provider 与应用同进程，进程真死了静态值自然归零，本来就不需要显式清。）
         currentTaskId.set(NOT_SET);
-        xposedApi.set(NOT_SET);
         notifyChangeSafely(uri);
         return 1;
     }
@@ -131,8 +136,8 @@ public class ContentProvider extends android.content.ContentProvider {
     }
 
     /**
-     * 重置为未锁定并<b>强制</b>广播，用于进程启动/退出/崩溃重启时把确定态同步给 hook 侧。
-     * （hook 侧的状态不会随应用进程消失，必须显式清）
+     * 重置 taskId 为未锁定并<b>强制</b>广播，用于进程启动/退出/崩溃重启时把确定态同步给 hook 侧。
+     * （hook 侧的状态不会随应用进程消失，必须显式清；未上报的 xposedApi 不受影响）
      */
     public static void resetTaskId(Context context) {
         if (context == null) return;

@@ -32,6 +32,11 @@ public class ApplicationHelper extends Application {
 
     public static String topActivity;
     private final static String TAG = ApplicationHelper.class.getSimpleName();
+    /**
+     * 进程内的 Application 单例，供静态方法（{@link #isXposedModuleActivated()}）取 Context 用。
+     * Application context 与应用进程同生命周期，静态持有不会泄漏。
+     */
+    private static volatile ApplicationHelper sInstance;
     /** 当前前台 Activity（WeakReference 避免泄漏）*/
     private static WeakReference<Activity> sCurrentActivity = new WeakReference<>(null);
 
@@ -86,6 +91,7 @@ public class ApplicationHelper extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        sInstance = this;
         // 初始化设备管理权限
         initDeviceOwner();
 
@@ -146,11 +152,22 @@ public class ApplicationHelper extends Application {
     // ── 设备管理权限初始化 ──────────────────────────────────────────────────────────────────────────────────
 
     /**
-     * Xposed 模块自检测
-     * @return 如果已激活，返回结果会被hook修改为true
+     * Xposed 模块自检测。
+     *
+     * <p>数据源是 ContentProvider 的 {@link ContentProvider#KEY_XPOSED_API}：SelfHook 在应用启动时
+     * （{@code ApplicationHelper.onCreate} 的 after）把 {@code XposedBridge.getXposedVersion()}
+     * 上报进去。这样应用侧既不用调用任何 Xposed API，也不用再靠 hook 改本方法的返回值
+     * —— 与 XposedPreference / 权限页天然同源。
+     *
+     * <p>注意：上报发生在 onCreate 返回之后，所以本方法在 onCreate 内部调用会得到 false，
+     * 这是预期行为（那时还没上报）。
+     *
+     * @return 已上报过有效 API 版本（模块已激活）返回 true
      */
     public static boolean isXposedModuleActivated() {
-        return false;
+        ApplicationHelper app = sInstance;
+        if (app == null) return false;
+        return ContentProvider.getXposedApi(app) > 0;
     }
 
     /**

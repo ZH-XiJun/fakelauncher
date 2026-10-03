@@ -12,14 +12,6 @@ public class SelfHook extends HookHelper {
 
     @Override
     public void init() {
-        // Hook myself if I'm activated
-        findAndHookMethod("com.wtbruh.fakelauncher.ApplicationHelper", "isXposedModuleActivated", new HookAction() {
-            @Override
-            protected void before(MethodHookParam param) {
-                super.before(param);
-                param.setResult(true);
-            }
-        });
 
         // Report the framework API version to the ContentProvider once the app starts,
         // so that both the app and other hooks can tell whether this module is active

@@ -14,7 +14,7 @@
         android:gravity="center"
         android:paddingTop="4dp"
         android:paddingBottom="2dp"
-        android:text="@string/menu_utils"
+        android:text="@string/menu_more_apps"
         android:textColor="@color/white"
         android:textSize="48sp"
         app:layout_constraintTop_toTopOf="parent" />

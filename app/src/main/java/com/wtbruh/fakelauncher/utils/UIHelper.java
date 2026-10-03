@@ -449,7 +449,7 @@ public class UIHelper {
             }
         }
         // 工具箱入口（二级菜单）
-        list.add(createAppListBundle(R.string.menu_utils, R.drawable.ic_toolbox, ToolboxFragment.class.getName()));
+        list.add(createAppListBundle(R.string.menu_more_apps, R.drawable.ic_toolbox, ToolboxFragment.class.getName()));
         // 用户自定义的已安装应用
         list.addAll(getExternalAppBundles(context, SettingsConstants.PREF_MENU_EXTERNAL_APPS));
         // 设置放最后

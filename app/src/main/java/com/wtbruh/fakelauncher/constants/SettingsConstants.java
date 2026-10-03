@@ -36,6 +36,13 @@ public final class SettingsConstants {
     public static final String PREF_CRASH_SHOW_LOG = "crash_show_log";
     public static final String PREF_SCREENSHOT_BEFORE_FAKEUI = "screenshot_before_fakeui";
 
+    /**
+     * 内置应用显示开关（MultiSelectListPreference，存 Set&lt;String&gt;）。
+     * 值为 call / contact / sms / camera / gallery / media / set / more_apps，
+     * 勾选即显示；未勾选的不会出现在主菜单里。
+     */
+    public static final String PREF_CONFIG_INTERNAL_APPS = "config_internal_apps";
+
     /** 主菜单中额外显示的已安装应用（包名，用分号分隔） */
     public static final String PREF_MENU_EXTERNAL_APPS = "menu_external_apps";
     /** 工具箱中显示的已安装应用（包名，用分号分隔） */

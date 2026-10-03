@@ -44,7 +44,6 @@
     <string name="menu_contact">Contacts</string>
     <string name="menu_sms">SMS</string>
     <string name="menu_set">Settings</string>
-    <string name="menu_utils">Utilities</string>
     <string name="menu_more_apps">More Apps</string>
     <string name="menu_media">Music</string>
     <!-- Menu manager (main menu / toolbox customization) -->

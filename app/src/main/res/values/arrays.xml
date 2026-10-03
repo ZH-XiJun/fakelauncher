@@ -4,4 +4,37 @@
         <item>android</item>
         <item>com.android.systemui</item>
     </string-array>
+
+    <!-- 内置应用显示开关（MultiSelectListPreference）：显示名尽量复用各菜单项的已有字符串 -->
+    <string-array name="pref_config_internal_apps_string">
+        <item>@string/menu_call</item>
+        <item>@string/menu_contact</item>
+        <item>@string/menu_sms</item>
+        <item>@string/menu_camera</item>
+        <item>@string/menu_gallery</item>
+        <item>@string/menu_media</item>
+        <item>@string/menu_set</item>
+        <item>@string/menu_more_apps</item>
+    </string-array>
+    <!-- 与上面一一对应的值（写入 SharedPreferences 的标识） -->
+    <string-array name="pref_config_internal_apps">
+        <item>call</item>
+        <item>contact</item>
+        <item>sms</item>
+        <item>camera</item>
+        <item>gallery</item>
+        <item>media</item>
+        <item>set</item>
+        <item>more_apps</item>
+    </string-array>
+    <!-- 默认勾选：除「更多应用」外的全部内置应用 -->
+    <string-array name="pref_config_internal_apps_default">
+        <item>call</item>
+        <item>contact</item>
+        <item>sms</item>
+        <item>camera</item>
+        <item>gallery</item>
+        <item>media</item>
+        <item>set</item>
+    </string-array>
 </resources>

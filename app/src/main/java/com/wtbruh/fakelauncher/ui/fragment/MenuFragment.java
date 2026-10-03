@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import android.util.Log;
 import android.view.GestureDetector;
@@ -17,7 +18,24 @@ import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
+import com.wtbruh.fakelauncher.constants.SettingsConstants;
+import com.wtbruh.fakelauncher.ui.fragment.phone.CameraFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.ContactsFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.GalleryFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.MessageFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.MusicPlayerFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.PasswordFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.ToolboxFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MenuFragment extends BaseFragment {
     private final static String TAG = MenuFragment.class.getSimpleName();
@@ -27,6 +45,22 @@ public class MenuFragment extends BaseFragment {
     private int mNumber = 0;
 
     private Bundle[] mAppList;
+
+    /**
+     * 内置应用标识（写入 PREF_CONFIG_INTERNAL_APPS 的值）→ 对应的 Fragment 类名。
+     * 用户自选的第三方应用不在此表内，始终显示。
+     */
+    private static final Map<String, String> INTERNAL_APP_KEY_BY_FRAGMENT = new HashMap<>();
+    static {
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(DialerFragment.class.getName(), "call");
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(ContactsFragment.class.getName(), "contact");
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(MessageFragment.class.getName(), "sms");
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(CameraFragment.class.getName(), "camera");
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(GalleryFragment.class.getName(), "gallery");
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(MusicPlayerFragment.class.getName(), "media");
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(PasswordFragment.class.getName(), "set");
+        INTERNAL_APP_KEY_BY_FRAGMENT.put(ToolboxFragment.class.getName(), "more_apps");
+    }
 
     public MenuFragment() {
         // Required empty public constructor
@@ -52,10 +86,8 @@ public class MenuFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // 重新读取菜单列表：菜单管理配置可能已变更
-        Bundle[] newList = UIHelper.getMainMenuAppList(requireContext());
-        boolean changed = newList.length != (mAppList == null ? 0 : mAppList.length);
-        mAppList = newList;
+        // 重新读取菜单列表：菜单管理 /「配置内部应用」可能已变更
+        mAppList = filterByConfig(UIHelper.getMainMenuAppList(requireContext()));
         if (mNumber >= mAppList.length) mNumber = 0;
         switchSection(mNumber);
         setFooterBar(L_DEFAULT, R_DEFAULT);
@@ -63,6 +95,7 @@ public class MenuFragment extends BaseFragment {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (mAppList == null || mAppList.length == 0) return false;
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -92,7 +125,7 @@ public class MenuFragment extends BaseFragment {
     }
 
     private void init() {
-        mAppList = UIHelper.getMainMenuAppList(requireContext());
+        mAppList = filterByConfig(UIHelper.getMainMenuAppList(requireContext()));
         switchSection(mNumber);
         setFooterBar(L_DEFAULT, R_DEFAULT);
         mGesture = new GestureDetector(requireContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -104,6 +137,7 @@ public class MenuFragment extends BaseFragment {
             }
             @Override
             public boolean onFling(MotionEvent e1, @NonNull MotionEvent e2, float velocityX, float velocityY) {
+                if (mAppList == null || mAppList.length == 0) return false;
                 if (e1.getX() - e2.getX() > 100) {
                     // Swipe left
                     if (mNumber == mAppList.length - 1) {
@@ -164,6 +198,29 @@ public class MenuFragment extends BaseFragment {
         } catch (IndexOutOfBoundsException | NullPointerException e) {
             Log.e(TAG, "WTF is going on? Got null mAppList!", e);
         }
+    }
+
+    /**
+     * 按「配置内部应用」偏好过滤菜单：只有勾选的内置应用才显示；
+     * 用户自选的第三方应用与无法识别的项一律保留。
+     * 未设置过时回退到 @array/pref_config_internal_apps_default。
+     */
+    private Bundle[] filterByConfig(Bundle[] list) {
+        Set<String> fallback = new HashSet<>(Arrays.asList(
+                getResources().getStringArray(R.array.pref_config_internal_apps_default)));
+        Set<String> enabled = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getStringSet(SettingsConstants.PREF_CONFIG_INTERNAL_APPS, fallback);
+        if (enabled == null) enabled = fallback;
+        List<Bundle> result = new ArrayList<>(list.length);
+        for (Bundle app : list) {
+            if (UIHelper.isExternalApp(app)) {
+                result.add(app);
+                continue;
+            }
+            String key = INTERNAL_APP_KEY_BY_FRAGMENT.get(app.getString(UIHelper.TARGET_FRAGMENT));
+            if (key == null || enabled.contains(key)) result.add(app);
+        }
+        return result.toArray(new Bundle[0]);
     }
 
     /**

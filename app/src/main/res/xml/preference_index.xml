@@ -15,10 +15,6 @@
         android:summary="@string/fun_restore_touch_summary"
         app:isPreferenceVisible="false"/>
     <Preference
-        android:key="fun_exit"
-        android:title="@string/fun_exit"
-        android:summary="@string/fun_exit_summary"/>
-    <Preference
         android:key="page_view"
         android:title="@string/pref_page_view"
         android:summary="@string/pref_page_view_summary"/>

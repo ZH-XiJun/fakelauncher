@@ -31,7 +31,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     public final static String PAGE_HOTKEY = "page_hotkey";
     public final static String FUN_OPEN_FAKEUI = "fun_fakeui";
     public final static String FUN_TOUCH = "fun_touch";
-    public final static String FUN_EXIT = "fun_exit";
     public final static String FUN_SHORTCUT_DESKTOP = "fun_shortcut_desktop";
     public final static String FUN_HOTKEY = "fun_hotkey";
 
@@ -42,7 +41,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         String[] pages = {
                 FUN_OPEN_FAKEUI,
                 FUN_TOUCH,
-                FUN_EXIT,
                 FUN_SHORTCUT_DESKTOP,
                 FUN_HOTKEY,
                 PAGE_PERMISSION,
@@ -66,11 +64,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         if (PAGE_MENU.equals(preference.getKey())) {
             // 菜单管理：独立老人机风格界面
             requireActivity().startActivity(new Intent(requireContext(), com.wtbruh.fakelauncher.MenuManagerActivity.class));
-            return true;
-        }
-        if (FUN_EXIT.equals(preference.getKey())) {
-            // 一键退出伪装界面（兜底退出入口）
-            UIHelper.doExit(requireActivity());
             return true;
         }
         if (FUN_SHORTCUT_DESKTOP.equals(preference.getKey())) {

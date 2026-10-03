@@ -274,8 +274,6 @@
     <string name="incoming_ignore_hint">按任意键忽略</string>
 
     <!-- 退出入口 -->
-    <string name="fun_exit">退出伪装界面</string>
-    <string name="fun_exit_summary">立即退出伪装界面，回到桌面</string>
     <string name="incoming_end_hint">按任意键挂断</string>
     <string name="incoming_answer_fail">接听失败，请按任意键挂断</string>
     <string name="incoming_answer">接听</string>

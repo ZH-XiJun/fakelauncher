@@ -242,8 +242,6 @@
 
     <string name="fun_restore_touch">Restore touchscreen</string>
     <string name="fun_restore_touch_summary">It seems that the touchscreen is still disabled outside the fake UI. Click to restore it.</string>
-    <string name="fun_exit">Exit Fake UI</string>
-    <string name="fun_exit_summary">Exit the fake UI immediately</string>
 
     <!-- Toast message -->
     <string name="toast_open_settings_from_launcher">Please open settings from launcher to grant Dhizuku.</string>

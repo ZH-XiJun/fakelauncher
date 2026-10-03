@@ -9,5 +9,6 @@
     android:layout_height="70dp"
     android:text="ABCabc123"
     android:textColor="@color/white"
-    app:autoSizeTextType="uniform"
+    android:textSize="22sp"
+    android:gravity="center_vertical"
     tools:ignore="HardcodedText" />

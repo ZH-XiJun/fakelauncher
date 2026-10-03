@@ -34,6 +34,9 @@ public class DualTextviewAdapter extends BaseAdapter{
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.dual_textview_item, parent, false);
+        // 禁止条目获得触摸焦点：触摸后物理键（确定/方向）仍由 Activity 分发，不会被条目消费
+        view.setFocusable(false);
+        view.setClickable(false);
         return new ViewHolder(view);
     }
 

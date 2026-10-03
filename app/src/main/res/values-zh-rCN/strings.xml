@@ -15,11 +15,16 @@
     <string name="common_leftButton">确定</string>
     <string name="save_leftButton">保存</string>
     <string name="add_leftButton">添加</string>
+    <string name="reply_leftButton">回复</string>
+    <string name="write_leftButton">写信</string>
+    <string name="call_leftButton">拨打</string>
     <!-- 右键 -->
     <string name="common_rightButton">返回</string>
     <string name="edittext_rightButton">删除</string>
     <string name="endcall_rightButton">挂断</string>
-    <!-- 中键 -->
+
+    <string name="speaker_off">手机</string>
+    <string name="speaker_on">免提</string>    <!-- 中键 -->
     <string name="play_centerButton">播放</string>
     <string name="pause_centerButton">暂停</string>
     <string name="resume_centerButton">继续</string>
@@ -38,8 +43,8 @@
     <string name="menu_contact">联系人</string>
     <string name="menu_sms">短信</string>
     <string name="menu_set">设置</string>
-    <string name="menu_utils">工具</string>
-    <string name="menu_media">多媒体</string>
+    <string name="menu_utils">工具箱</string>
+    <string name="menu_media">音乐</string>
     <!-- 主界面文字 -->
     <string name="sim_inserted">已插入</string>
     <string name="sim_removed">未插入</string>
@@ -66,6 +71,7 @@
     <string name="message_empty">无信息</string>
     <!-- Fake in-call UI -->
     <string name="fake_incall_status">通话中</string>
+    <string name="fake_incall_dialing">拨号中</string>
     <string name="fake_incall_unknown">未知号码</string>
     <string name="fake_incall_end_call">已挂断</string>
     <!-- 联系人界面文字提示 -->
@@ -94,7 +100,7 @@
     <string name="option_mode">切换%s</string>
     <string name="record">录像</string>
     <string name="shoot">拍照</string>
-    <string name="option_switch_camera">切换到%s置摄像头</string>
+    <string name="option_switch_camera">切换%s置</string>
     <string name="front">前</string>
     <string name="back">后</string>
     <string name="option_add">添加</string>
@@ -195,8 +201,9 @@
     <string name="pref_crash_show_log_summary">只用于调试，会严重影响伪装效果</string>
 
     <string name="pref_page_about">关于</string>
-    <string name="pref_page_about_summary">屎山代码作者：what_the_bruhhhh</string>
-    <string name="pref_jump_to_github">跳转至GitHub</string>
+    <string name="pref_page_about_summary">原作者what_the_bruhhhh\n修改作者：败亡D假期</string>
+    <string name="pref_jump_to_github">跳转原作者 GitHub</string>
+    <string name="pref_about_declaration">声明</string>
     <string name="pref_debug_variant">正在运行Debug版，开发人员功能已启用</string>
 
     <string name="fun_restore_touch">恢复触控</string>
@@ -235,4 +242,132 @@
     <string name="crash_copy">复制</string>
     <string name="crash_exit">退出</string>
     <string name="crash_copied">帮你甩进剪贴板了喵</string>
+
+    <!-- 菜单管理（Menu Manager） -->
+    <string name="menu_manager_title">菜单管理</string>
+    <string name="menu_manager_mode_main">主菜单</string>
+    <string name="menu_manager_mode_toolbox">工具箱</string>
+    <string name="menu_manager_added">已添加</string>
+    <string name="menu_manager_not_added">未添加</string>
+    <string name="menu_manager_other">在其他菜单</string>
+    <string name="menu_manager_footer">◀ ▶ 切换　确定 添加/移除　返回 保存</string>
+    <string name="app_not_found">未找到该应用</string>
+    <string name="toolbox_empty">这里还没有应用&#10;请到设置中添加</string>
+
+    <!-- 短信 -->
+    <string name="sms_out_prefix">[发送] </string>
+    <string name="sms_in_prefix">[接收] </string>
+    <string name="sms_conv_title">会话</string>
+    <string name="sms_conv_empty">该会话暂无消息</string>
+    <string name="sms_compose_hint">输入短信内容</string>
+    <string name="sms_empty_body">请输入短信内容</string>
+    <string name="sms_no_address">没有收件号码</string>
+    <string name="sms_no_permission">没有短信权限</string>
+    <string name="sms_sent">短信已发送</string>
+    <string name="sms_send_fail">短信发送失败</string>
+
+    <!-- 拨号 -->
+    <string name="dialer_call_fail">呼叫失败</string>
+    <string name="fake_incall_end_fail">未能自动挂断，请到系统通话界面挂断</string>
+
+    <!-- 来电显示 -->
+    <string name="incoming_call_title">来电</string>
+    <string name="incoming_ignore_hint">按任意键忽略</string>
+
+    <!-- 退出入口 -->
+    <string name="fun_exit">退出伪装界面</string>
+    <string name="fun_exit_summary">立即退出伪装界面，回到桌面</string>
+    <string name="incoming_end_hint">按任意键挂断</string>
+    <string name="incoming_answer_fail">接听失败，请按任意键挂断</string>
+    <string name="incoming_answer">接听</string>
+    <string name="incoming_ignore">忽略</string>
+    <string name="incoming_hangup">挂断</string>
+    <string name="incoming_active_hint">通话中   按任意键挂断</string>
+    <string name="write_settings_prompt">真正息屏需要开启「修改系统设置」权限。是否前往开启？</string>
+        <!-- 音乐播放器扩展 -->
+    <string name="music_option_list">列表</string>
+    <string name="music_option_mode">模式</string>
+    <string name="music_option_timer">定时</string>
+    <string name="music_mode_list_loop">列表循环</string>
+    <string name="music_mode_single_loop">单曲循环</string>
+    <string name="music_timer_title">定时关闭</string>
+    <string name="music_timer_unit">min</string>
+    <string name="music_timer_confirm">确定</string>
+    <string name="music_timer_cancel">取消</string>
+    <string name="music_timer_hint">输入分钟</string>
+    <string name="music_btn_up">上移</string>
+    <string name="music_btn_play_pause">播放/暂停</string>
+    <string name="music_playlist_empty">播放列表为空</string>
+    <string name="music_timer_set">定时关闭已开启</string>
+    <string name="menu_manager_mode_preview">预览</string>
+    <string name="menu_manager_preview_footer">◀ ▶ 切换　确定 操作　返回 退出</string>
+    <string name="menu_manager_preview_empty">工具箱暂无应用&#10;先切换到“工具箱”添加</string>
+    <string name="menu_manager_opt_rename">重命名</string>
+    <string name="menu_manager_opt_up">上移</string>
+    <string name="menu_manager_opt_down">下移</string>
+    <string name="menu_manager_rename_title">重命名应用</string>
+    <string name="menu_manager_rename_hint">输入在伪装界面显示的名称</string>
+    <string name="menu_manager_rename_clear">清除重命名</string>
+    <string name="menu_manager_rename_done">重命名已保存</string>
+    <string name="menu_manager_rename_removed">已恢复原名称</string>
+    <string name="pref_shortcut_desktop">添加启动伪装到桌面</string>
+    <string name="pref_shortcut_desktop_summary">在系统桌面创建“启动伪装”快捷方式</string>
+    <string name="pref_shortcut_desktop_done">已在桌面创建快捷方式，请查看</string>
+    <string name="pref_shortcut_desktop_failed">创建快捷方式失败，请检查桌面是否允许</string>
+    <string name="pref_shortcut_not_supported">当前桌面不支持添加快捷方式</string>
+    <string name="pref_shortcut_desktop_confirm">请在弹窗中确认添加</string>
+    <string name="pref_hotkey">设置启动快捷键</string>
+    <string name="pref_hotkey_summary">设置按键快速启动伪装</string>
+    <string name="pref_hotkey_key">快捷键按键</string>
+    <string name="pref_hotkey_method">触发方式</string>
+    <string name="pref_hotkey_guide">无障碍服务</string>
+    <string name="pref_hotkey_guide_summary">需在系统设置-无障碍中开启本应用服务后生效</string>
+    <string name="pref_hotkey_guide_btn">去开启</string>
+    <string name="pref_hotkey_none">不设置</string>
+    <string name="pref_hotkey_volume_up">音量上键</string>
+    <string name="pref_hotkey_volume_down">音量下键</string>
+    <string name="pref_hotkey_star">*键</string>
+    <string name="pref_hotkey_hash">#键</string>
+    <string name="pref_hotkey_menu">菜单键</string>
+    <string name="pref_hotkey_custom">自定义按键</string>
+    <string name="hotkey_capture_hint">请按下要录入的目标按键</string>
+    <string name="hotkey_captured">已录入按键（键码 %1$d）</string>
+    <string name="hotkey_custom_summary">自定义按键（键码 %1$d）</string>
+    <string name="pref_hotkey_back">返回键</string>
+    <string name="pref_hotkey_long_press">长按</string>
+    <string name="pref_hotkey_double_press">连按两下</string>
+    <string name="pref_hotkey_triple_press">连按三下</string>
+    <string name="accessibility_service_description">用于监听启动快捷键，快速进入伪装界面</string>
+
+    <!-- 伪装设置二级菜单 -->
+    <string name="fake_settings_title">伪装设置</string>
+    <string name="fake_settings_scene">情景模式</string>
+    <string name="fake_settings_volume">音量调节</string>
+    <string name="fake_settings_brightness">亮度调节</string>
+    <string name="fake_settings_full">完整设置</string>
+    <!-- 情景模式选项 -->
+    <string name="scene_ring_vibrate">响铃并振动</string>
+    <string name="scene_vibrate_only">仅振动</string>
+    <string name="scene_silent">静音</string>
+    <!-- 亮度调节 -->
+    <string name="brightness_title">亮度调节</string>
+    <string name="brightness_hint">上下键调节亮度，确定键返回</string>
+    <string name="brightness_auto_on">自动亮度</string>
+    <!-- 密码界面提示 -->
+    <string name="password_hint_fake">0000进入伪装设置，输入退出密码退出伪装</string>
+    <!-- 退出密码禁用0000提示 -->
+    <string name="exit_passwd_reject_0000">0000是伪装设置二级菜单密码，退出密码请设置其他数字</string>
+    <!-- 熄屏设置 -->
+    <string name="fake_settings_screen_timeout">熄屏设置</string>
+    <string name="screen_timeout_30s">30秒</string>
+    <string name="screen_timeout_1m">1分钟</string>
+    <string name="screen_timeout_3m">3分钟</string>
+    <string name="screen_timeout_5m">5分钟</string>
+    <string name="screen_timeout_10m">10分钟</string>
+    <string name="screen_timeout_always">常亮</string>
+    <!-- 伪关机弹窗 -->
+    <string name="shutdown_title">关机</string>
+    <string name="shutdown_power_off">关机</string>
+    <string name="shutdown_reboot">重启</string>
+    <string name="shutdown_hint">上下选择 确定执行 返回取消</string>
 </resources>

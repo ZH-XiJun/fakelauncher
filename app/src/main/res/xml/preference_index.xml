@@ -15,9 +15,25 @@
         android:summary="@string/fun_restore_touch_summary"
         app:isPreferenceVisible="false"/>
     <Preference
+        android:key="fun_exit"
+        android:title="@string/fun_exit"
+        android:summary="@string/fun_exit_summary"/>
+    <Preference
         android:key="page_view"
         android:title="@string/pref_page_view"
         android:summary="@string/pref_page_view_summary"/>
+    <Preference
+        android:key="page_menu"
+        android:title="@string/menu_manager_title"
+        android:summary="@string/menu_manager_footer"/>
+    <Preference
+        android:key="fun_shortcut_desktop"
+        android:title="@string/pref_shortcut_desktop"
+        android:summary="@string/pref_shortcut_desktop_summary"/>
+    <Preference
+        android:key="fun_hotkey"
+        android:title="@string/pref_hotkey"
+        android:summary="@string/pref_hotkey_summary"/>
     <Preference
         android:key="page_behaviour"
         android:title="@string/pref_page_behaviour"

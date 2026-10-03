@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="hotkey_key"
+        android:title="@string/pref_hotkey_key"
+        android:entries="@array/pref_hotkey_key_string"
+        android:entryValues="@array/pref_hotkey_key"
+        android:defaultValue="@string/pref_hotkey_key_default" />
+    <ListPreference
+        android:key="hotkey_method"
+        android:title="@string/pref_hotkey_method"
+        android:entries="@array/pref_hotkey_method_string"
+        android:entryValues="@array/pref_hotkey_method"
+        android:defaultValue="@string/pref_hotkey_method_default" />
+    <Preference
+        android:key="hotkey_guide"
+        android:title="@string/pref_hotkey_guide"
+        android:summary="@string/pref_hotkey_guide_summary" />
+    <Preference
+        android:key="hotkey_enable_accessibility"
+        android:title="@string/pref_hotkey_enable_accessibility"
+        android:summary="@string/pref_hotkey_enable_accessibility_summary" />
+</PreferenceScreen>

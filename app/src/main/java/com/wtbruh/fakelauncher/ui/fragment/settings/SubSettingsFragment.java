@@ -9,9 +9,11 @@ import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
@@ -37,6 +39,8 @@ import androidx.preference.SwitchPreference;
 
 import com.wtbruh.fakelauncher.ApplicationHelper;
 import com.tencent.mmkv.MMKV;
+import android.widget.Toast;
+
 import com.wtbruh.fakelauncher.MainActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
@@ -57,6 +61,15 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
 
     private ActivityResultLauncher<Intent> gallery_saf = null;
     private ActivityResultLauncher<Intent> music_saf = null;
+    private final BroadcastReceiver hotkeyCapturedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int kc = intent.getIntExtra("keycode", -1);
+            Toast.makeText(context, getString(R.string.hotkey_captured, kc), Toast.LENGTH_LONG).show();
+            ListPreference lp = findPreference(SettingsConstants.PREF_HOTKEY_KEY);
+            if (lp != null) setListPrefSummary(lp);
+        }
+    };
 
     public SubSettingsFragment() {
     }
@@ -125,6 +138,7 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                 case SettingsFragment.PAGE_BEHAVIOUR -> R.xml.preference_behaviour;
                 case SettingsFragment.PAGE_VIEW -> R.xml.preference_view;
                 case SettingsFragment.PAGE_DEBUG -> R.xml.preference_debug;
+                case SettingsFragment.PAGE_HOTKEY -> R.xml.preference_hotkey;
                 // If argument invalid, fallback to permission page
                 // 如果乱传参数，默认也是打开权限页面
                 default -> R.xml.preference_permission;
@@ -141,6 +155,21 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         // 注册检测SharedPreference变化的监听器
         // Objects.requireNonNull(getPreferenceScreen().getSharedPreferences()).registerOnSharedPreferenceChangeListener(this);
         PreferenceManager.getDefaultSharedPreferences(requireContext()).registerOnSharedPreferenceChangeListener(this);
+        // 自定义快捷键录入结果广播
+        if (getArguments() != null && SettingsFragment.PAGE_HOTKEY.equals(getArguments().getString(ARG_PAGE))) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requireContext().registerReceiver(hotkeyCapturedReceiver,
+                            new IntentFilter("com.wtbruh.fakelauncher.HOTKEY_CAPTURED"),
+                            Context.RECEIVER_NOT_EXPORTED);
+                } else {
+                    requireContext().registerReceiver(hotkeyCapturedReceiver,
+                            new IntentFilter("com.wtbruh.fakelauncher.HOTKEY_CAPTURED"));
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "register receiver err", e);
+            }
+        }
     }
 
     @Override
@@ -150,6 +179,13 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         // 注销检测SharedPreference变化的监听器
         // Objects.requireNonNull(getPreferenceScreen().getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this);
         PreferenceManager.getDefaultSharedPreferences(requireContext()).unregisterOnSharedPreferenceChangeListener(this);
+        try {
+            requireContext().unregisterReceiver(hotkeyCapturedReceiver);
+        } catch (Exception ignored) {
+        }
+        // 离开设置页：若仍在录入状态则取消，避免误录
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .edit().putBoolean(SettingsConstants.PREF_HOTKEY_CAPTURE, false).apply();
     }
 
     /**
@@ -221,6 +257,17 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case SettingsFragment.PAGE_DEBUG:
                 titleResId = R.string.pref_page_debug;
                 break;
+            case SettingsFragment.PAGE_HOTKEY:
+                clickablePrefs = new String[]{
+                        SettingsConstants.PREF_HOTKEY_GUIDE,
+                        SettingsConstants.PREF_HOTKEY_ENABLE_ACCESSIBILITY
+                };
+                listPrefs = new String[]{
+                        SettingsConstants.PREF_HOTKEY_KEY,
+                        SettingsConstants.PREF_HOTKEY_METHOD
+                };
+                titleResId = R.string.pref_hotkey;
+                break;
         }
         // Init of clickable preferences
         for (String key : clickablePrefs) {
@@ -233,12 +280,33 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
         for (String key : requireRootAccessPrefs) {
             if ((pref = findPreference(key)) != null) rootCheck(pref);
         }
+        // 退出密码禁止设置为 0000（0000 为伪装设置二级菜单密码，防止冲突）
+        EditTextPreference exitPwd = findPreference(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD);
+        if (exitPwd != null) {
+            exitPwd.setOnPreferenceChangeListener((preference, newValue) -> {
+                String v = String.valueOf(newValue);
+                if ("0000".equals(v)) {
+                    Toast.makeText(requireContext(), R.string.exit_passwd_reject_0000,
+                            Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                return true;
+            });
+        }
         ListPreference lpref;
         for (String key : listPrefs) {
             if ((lpref = findPreference(key)) != null) {
                 setListPrefSummary(lpref);
+                final String pKey = key;
                 lpref.setOnPreferenceChangeListener((preference, newValue) -> {
-                    setListPrefSummary((ListPreference) preference, (String) newValue);
+                    String v = (String) newValue;
+                    if (SettingsConstants.PREF_HOTKEY_KEY.equals(pKey) && "custom".equals(v)) {
+                        // 进入自定义按键录入：请用户按下目标键
+                        PreferenceManager.getDefaultSharedPreferences(requireContext())
+                                .edit().putBoolean(SettingsConstants.PREF_HOTKEY_CAPTURE, true).apply();
+                        Toast.makeText(requireContext(), R.string.hotkey_capture_hint, Toast.LENGTH_LONG).show();
+                    }
+                    setListPrefSummary((ListPreference) preference, v);
                     return true;
                 });
             }
@@ -264,6 +332,14 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
     }
 
     private void setListPrefSummary(ListPreference pref, String value){
+        // 自定义按键：summary 显示已录入键码
+        if (SettingsConstants.PREF_HOTKEY_KEY.equals(pref.getKey()) && "custom".equals(value)) {
+            int kc = getDefaultSharedPreferences(requireContext())
+                    .getInt(SettingsConstants.PREF_HOTKEY_CUSTOM_KEY, -1);
+            pref.setSummary(kc <= 0 ? getString(R.string.pref_hotkey_custom)
+                    : getString(R.string.hotkey_custom_summary, kc));
+            return;
+        }
         CharSequence[] valueArray = pref.getEntryValues();
         CharSequence[] valueToStringArray = pref.getEntries();
         int index = Arrays.asList(valueArray).indexOf(value);
@@ -537,6 +613,25 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     UIHelper.makeIntent(requireActivity(), MainActivity.class)
                             .putExtra(MainActivity.EXTRA_PREVIEW, true)
             );
+            case SettingsConstants.PREF_HOTKEY_GUIDE ->
+                    requireActivity().startActivity(
+                            new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            case SettingsConstants.PREF_HOTKEY_ENABLE_ACCESSIBILITY -> {
+                // 受限制设置下无法手动开启无障碍，通过 Shizuku 以 shell 身份写入开关（与装机 adb 命令一致）
+                if (!PrivilegeProvider.checkPrivilege(PrivilegeProvider.PRIVILEGE_SHIZUKU)) {
+                    Toast.makeText(requireContext(), R.string.hotkey_enable_accessibility_noshizuku, Toast.LENGTH_LONG).show();
+                    break;
+                }
+                Bundle accResult = PrivilegeProvider.runCommand(requireContext(), PrivilegeProvider.PRIVILEGE_SHIZUKU,
+                        "settings put secure enabled_accessibility_services com.wtbruh.fakelauncher/.service.HotkeyAccessibilityService",
+                        "settings put secure accessibility_enabled 1");
+                if (accResult != null && accResult.getInt(PrivilegeProvider.CMD_RESULT_CODE, -1) == 0) {
+                    Toast.makeText(requireContext(), R.string.hotkey_enable_accessibility_ok, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(requireContext(), R.string.hotkey_enable_accessibility_fail, Toast.LENGTH_LONG).show();
+                }
+            }
             case SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_KEY -> {
                 if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_DPAD)) {
                     View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.preference_dialog_edittext, null, false);

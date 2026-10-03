@@ -53,6 +53,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     // ── 异常处理 ────────────────────────────────────────────────────────────────────
 
     private void handleException(@NonNull Thread thread, @NonNull Throwable throwable) {
+        Log.e(TAG, "HANDLE EXCEPTION thread=" + thread.getName() + " msg=" + throwable.getMessage(), throwable);
         if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(SettingsConstants.PREF_CRASH_SHOW_LOG, false)) {
             showCrashLog(thread, throwable);
         } else {

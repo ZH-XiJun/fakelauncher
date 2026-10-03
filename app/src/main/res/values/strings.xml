@@ -16,11 +16,16 @@
     <string name="common_leftButton">OK</string>
     <string name="save_leftButton">Save</string>
     <string name="add_leftButton">Add</string>
+    <string name="reply_leftButton">Reply</string>
+    <string name="write_leftButton">Write</string>
+    <string name="call_leftButton">Call</string>
     <!-- Right btn -->
     <string name="common_rightButton">Back</string>
     <string name="edittext_rightButton">Delete</string>
     <string name="endcall_rightButton">End Call</string>
-    <!-- Center btn -->
+
+    <string name="speaker_off">Earpiece</string>
+    <string name="speaker_on">Speaker</string>    <!-- Center btn -->
     <string name="play_centerButton">Play</string>
     <string name="pause_centerButton">Pause</string>
     <string name="resume_centerButton">Resume</string>
@@ -40,7 +45,18 @@
     <string name="menu_sms">SMS</string>
     <string name="menu_set">Settings</string>
     <string name="menu_utils">Utilities</string>
-    <string name="menu_media">MultiMedia</string>
+    <string name="menu_media">Music</string>
+    <!-- Menu manager (main menu / toolbox customization) -->
+    <string name="menu_manager_title">Menu Manager</string>
+    <string name="menu_manager_mode_main">Main Menu</string>
+    <string name="menu_manager_mode_toolbox">Toolbox</string>
+    <string name="menu_manager_added">Added</string>
+    <string name="menu_manager_not_added">Not Added</string>
+    <string name="menu_manager_other">In Other Menu</string>
+    <string name="menu_manager_footer">◀ ▶ Switch   OK Add/Remove   Back Save</string>
+    <string name="app_not_found">App not found</string>
+    <!-- Toolbox -->
+    <string name="toolbox_empty">No app here.\nAdd apps in Settings</string>
     <!-- Main UI hint -->
     <string name="sim_inserted">Inserted</string>
     <string name="sim_removed">Removed</string>
@@ -68,10 +84,27 @@
     <string name="gallery_detail">%s\nDate: %s\nWidth: %d\nHeight: %d</string>
     <!-- Message UI hint -->
     <string name="message_empty">No message</string>
+    <!-- SMS -->
+    <string name="sms_out_prefix">[Sent] </string>
+    <string name="sms_in_prefix">[Received] </string>
+    <string name="sms_conv_title">Conversation</string>
+    <string name="sms_conv_empty">No message in this conversation</string>
+    <string name="sms_compose_hint">Input SMS content</string>
+    <string name="sms_empty_body">Please input SMS content</string>
+    <string name="sms_no_address">No recipient number</string>
+    <string name="sms_no_permission">No SMS permission</string>
+    <string name="sms_sent">SMS sent</string>
+    <string name="sms_send_fail">Failed to send SMS</string>
+    <string name="dialer_call_fail">Call failed</string>
+    <!-- Incoming call -->
+    <string name="incoming_call_title">Incoming Call</string>
+    <string name="incoming_ignore_hint">Press any key to ignore</string>
     <!-- Fake in-call UI -->
     <string name="fake_incall_status">Calling</string>
+    <string name="fake_incall_dialing">Dialing</string>
     <string name="fake_incall_unknown">Unknown Number</string>
     <string name="fake_incall_end_call">Ended call</string>
+    <string name="fake_incall_end_fail">Cannot end call automatically, please end it in the system call screen</string>
     <!-- Contacts UI hint -->
     <string name="contacts_empty">No contact</string>
     <string name="contact_add_title">Add</string>
@@ -83,6 +116,7 @@
     <string name="music_unknown_title">Unknown Title</string>
     <string name="music_unknown_artist">Unknown Artist</string>
     <string name="music_connection_failed">Connection failed</string>
+    <string name="music_loading">歌曲加载中</string>
     <string name="music_status_buffering">Buffering…</string>
     <string name="music_track_count_fmt">%1$d / %2$d</string>
     <string name="music_album_art">Album art</string>
@@ -98,7 +132,7 @@
     <string name="option_mode">Switch to %s</string>
     <string name="record">recording</string>
     <string name="shoot">capturing</string>
-    <string name="option_switch_camera">Switch to %s camera</string>
+    <string name="option_switch_camera">Switch %s</string>
     <string name="front">front</string>
     <string name="back">back</string>
     <string name="option_add">Add</string>
@@ -204,10 +238,13 @@
     <string name="pref_page_about">About</string>
     <string name="pref_page_about_summary">Author of the mountain of shit: what_the_bruhhhh</string>
     <string name="pref_jump_to_github">Jump to GitHub</string>
+    <string name="pref_about_declaration">Declaration</string>
     <string name="pref_debug_variant">Debug version. Developer features have been enabled.</string>
 
     <string name="fun_restore_touch">Restore touchscreen</string>
     <string name="fun_restore_touch_summary">It seems that the touchscreen is still disabled outside the fake UI. Click to restore it.</string>
+    <string name="fun_exit">Exit Fake UI</string>
+    <string name="fun_exit_summary">Exit the fake UI immediately</string>
 
     <!-- Toast message -->
     <string name="toast_open_settings_from_launcher">Please open settings from launcher to grant Dhizuku.</string>
@@ -245,4 +282,97 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="incoming_end_hint">Press any key to hang up</string>
+    <string name="incoming_answer_fail">Answer failed, press any key to hang up</string>
+    <string name="incoming_answer">Answer</string>
+    <string name="incoming_ignore">Ignore</string>
+    <string name="incoming_hangup">Hang up</string>
+    <string name="incoming_active_hint">In call   Press any key to hang up</string>
+    <string name="write_settings_prompt">True screen off needs the \"Modify system settings\" permission. Go to enable it?</string>
+        <!-- Music player extension -->
+    <string name="music_option_list">List</string>
+    <string name="music_option_mode">Mode</string>
+    <string name="music_option_timer">Timer</string>
+    <string name="music_mode_list_loop">List loop</string>
+    <string name="music_mode_single_loop">Single loop</string>
+    <string name="music_timer_title">Timer off</string>
+    <string name="music_timer_unit">min</string>
+    <string name="music_timer_confirm">OK</string>
+    <string name="music_timer_cancel">Cancel</string>
+    <string name="music_timer_hint">Enter minutes</string>
+    <string name="music_btn_up">Up</string>
+    <string name="music_btn_play_pause">Play/Pause</string>
+    <string name="music_playlist_empty">Playlist empty</string>
+    <string name="music_timer_set">Timer set</string>
+    <string name="menu_manager_mode_preview">Preview</string>
+    <string name="menu_manager_preview_footer">◀ ▶ Switch  OK Action  Back Exit</string>
+    <string name="menu_manager_preview_empty">Toolbox is empty&#10;Add apps in Toolbox tab</string>
+    <string name="menu_manager_opt_rename">Rename</string>
+    <string name="menu_manager_opt_up">Move Up</string>
+    <string name="menu_manager_opt_down">Move Down</string>
+    <string name="menu_manager_rename_title">Rename App</string>
+    <string name="menu_manager_rename_hint">Name shown in fake UI</string>
+    <string name="menu_manager_rename_clear">Clear Rename</string>
+    <string name="menu_manager_rename_done">Rename saved</string>
+    <string name="menu_manager_rename_removed">Original name restored</string>
+    <string name="pref_shortcut_desktop">Add launcher shortcut</string>
+    <string name="pref_shortcut_desktop_summary">Create a shortcut to open fake UI on home screen</string>
+    <string name="pref_shortcut_desktop_done">Shortcut created on home screen</string>
+    <string name="pref_shortcut_desktop_failed">Failed to create shortcut</string>
+    <string name="pref_shortcut_not_supported">This launcher does not support adding shortcuts</string>
+    <string name="pref_shortcut_desktop_confirm">Please confirm in the popup to add</string>
+    <string name="pref_hotkey">Set launch hotkey</string>
+    <string name="pref_hotkey_summary">Quickly launch fake UI with a key combo</string>
+    <string name="pref_hotkey_key">Hotkey</string>
+    <string name="pref_hotkey_method">Trigger method</string>
+    <string name="pref_hotkey_guide">Accessibility service</string>
+    <string name="pref_hotkey_guide_summary">Enable the accessibility service of this app in system settings</string>
+    <string name="pref_hotkey_guide_btn">Open</string>
+    <string name="pref_hotkey_none">Disabled</string>
+    <string name="pref_hotkey_volume_up">Volume Up</string>
+    <string name="pref_hotkey_volume_down">Volume Down</string>
+    <string name="pref_hotkey_star">* key</string>
+    <string name="pref_hotkey_hash"># key</string>
+    <string name="pref_hotkey_menu">Menu key</string>
+    <string name="pref_hotkey_custom">Custom key</string>
+    <string name="hotkey_capture_hint">Press the target key now</string>
+    <string name="hotkey_captured">Captured key (code %1$d)</string>
+    <string name="hotkey_custom_summary">Custom key (code %1$d)</string>
+    <string name="pref_hotkey_enable_accessibility">一键开启无障碍</string>
+    <string name="pref_hotkey_enable_accessibility_summary">受限制设置无法手动开启，点此通过 Shizuku 一键开启</string>
+    <string name="hotkey_enable_accessibility_ok">已执行开启指令，请到无障碍设置确认已开启</string>
+    <string name="hotkey_enable_accessibility_fail">执行失败，请确认 Shizuku 已启动并已授权</string>
+    <string name="hotkey_enable_accessibility_noshizuku">请先启动 Shizuku 并完成授权</string>
+    <string name="pref_hotkey_back">Back key</string>
+    <string name="pref_hotkey_long_press">Long press</string>
+    <string name="pref_hotkey_double_press">Press twice</string>
+    <string name="pref_hotkey_triple_press">Press three times</string>
+    <string name="accessibility_service_description">Listens for launch hotkey to open fake UI</string>
+
+    <!-- Fake settings submenu (used by layouts; zh-rCN has Chinese) -->
+    <string name="fake_settings_title">Fake Settings</string>
+    <string name="fake_settings_scene">Scene Mode</string>
+    <string name="fake_settings_volume">Volume</string>
+    <string name="fake_settings_brightness">Brightness</string>
+    <string name="fake_settings_full">Full Settings</string>
+    <string name="scene_ring_vibrate">Ring &amp; Vibrate</string>
+    <string name="scene_vibrate_only">Vibrate Only</string>
+    <string name="scene_silent">Silent</string>
+    <string name="brightness_title">Brightness</string>
+    <string name="brightness_hint">Use D-pad to adjust, OK to exit</string>
+    <string name="password_hint_fake">0000 for fake settings, exit password to exit</string>
+    <string name="exit_passwd_reject_0000">0000 is the fake-settings password, please choose another</string>
+    <!-- Screen timeout (fake UI) -->
+    <string name="fake_settings_screen_timeout">Screen Timeout</string>
+    <string name="screen_timeout_30s">30 sec</string>
+    <string name="screen_timeout_1m">1 min</string>
+    <string name="screen_timeout_3m">3 min</string>
+    <string name="screen_timeout_5m">5 min</string>
+    <string name="screen_timeout_10m">10 min</string>
+    <string name="screen_timeout_always">Always On</string>
+    <!-- Fake power menu -->
+    <string name="shutdown_title">Power Off</string>
+    <string name="shutdown_power_off">Power Off</string>
+    <string name="shutdown_reboot">Reboot</string>
+    <string name="shutdown_hint">D-pad to choose  OK to confirm  Back to cancel</string>
 </resources>

@@ -32,6 +32,8 @@ public class BaseAppCompatActivity extends AppCompatActivity {
         super.onPause();
     }
 
+
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return switch (keyCode) {

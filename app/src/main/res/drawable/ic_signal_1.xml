@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 信号 1：第 1 格亮，其余灰 -->
+<!-- ic_signal_1 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="45dp"
-    android:height="24dp"
-    android:viewportWidth="45"
-    android:viewportHeight="24">
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M1,16 v-9 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v9 z" />
-    <path android:fillColor="#5A5A5A"
-        android:pathData="M12,11 v-14 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v14 z" />
-    <path android:fillColor="#5A5A5A"
-        android:pathData="M23,6 v-19 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v19 z" />
-    <path android:fillColor="#5A5A5A"
-        android:pathData="M34,1 v-24 a1,1 0,0,1 1,-1 h6 a1,1 0,0,1 1,1 v24 z" />
+    android:width="31dp"
+    android:height="31dp"
+    android:viewportWidth="31"
+    android:viewportHeight="31">
+    <path android:fillColor="#FFFFFF" android:pathData="M1.0,18.5 h4.0 a1.0,1.0 0 0 1 1.0,1.0 v8.0 a1.0,1.0 0 0 1 -1.0,1.0 h-4.0 a1.0,1.0 0 0 1 -1.0,-1.0 v-8.0 a1.0,1.0 0 0 1 1.0,-1.0 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M9.0,25.5 h4.0 a1.0,1.0 0 0 1 1.0,1.0 v1.0 a1.0,1.0 0 0 1 -1.0,1.0 h-4.0 a1.0,1.0 0 0 1 -1.0,-1.0 v-1.0 a1.0,1.0 0 0 1 1.0,-1.0 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M17.0,25.5 h4.0 a1.0,1.0 0 0 1 1.0,1.0 v1.0 a1.0,1.0 0 0 1 -1.0,1.0 h-4.0 a1.0,1.0 0 0 1 -1.0,-1.0 v-1.0 a1.0,1.0 0 0 1 1.0,-1.0 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M25.0,25.5 h4.0 a1.0,1.0 0 0 1 1.0,1.0 v1.0 a1.0,1.0 0 0 1 -1.0,1.0 h-4.0 a1.0,1.0 0 0 1 -1.0,-1.0 v-1.0 a1.0,1.0 0 0 1 1.0,-1.0 z" />
 </vector>

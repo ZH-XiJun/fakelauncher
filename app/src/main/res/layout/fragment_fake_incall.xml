@@ -7,8 +7,9 @@
     android:background="@color/black"
     android:padding="24dp">
 
+    <!-- 状态大字：拨号中 / 通话中 -->
     <TextView
-        android:id="@+id/fake_incall_number"
+        android:id="@+id/fake_incall_status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="marquee"
@@ -17,39 +18,61 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
+        android:text="@string/fake_incall_dialing"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="42sp"
-        app:layout_constraintBottom_toTopOf="@id/fake_incall_duration"
+        android:textSize="44sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/fake_incall_number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
+    <!-- 号码小字 -->
     <TextView
-        android:id="@+id/fake_incall_duration"
-        android:layout_width="wrap_content"
+        android:id="@+id/fake_incall_number"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="00:00"
+        android:layout_marginTop="12dp"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="@string/fake_incall_unknown"
+        android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="56sp"
-        app:layout_constraintBottom_toTopOf="@id/fake_incall_status"
+        android:textSize="26sp"
+        android:alpha="0.8"
+        app:layout_constraintBottom_toTopOf="@id/fake_incall_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fake_incall_status" />
+
+    <!-- 通话图标 -->
+    <ImageView
+        android:id="@+id/fake_incall_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="28dp"
+        android:contentDescription="@string/fake_incall_status"
+        android:src="@drawable/ic_menu_call"
+        app:layout_constraintBottom_toTopOf="@id/fake_incall_duration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/fake_incall_number" />
 
+    <!-- 通话计时（接通后显示） -->
     <TextView
-        android:id="@+id/fake_incall_status"
+        android:id="@+id/fake_incall_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="@string/fake_incall_status"
+        android:layout_marginTop="20dp"
+        android:text="00:00"
         android:textColor="@color/white"
         android:textSize="36sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fake_incall_duration" />
+        app:layout_constraintTop_toBottomOf="@id/fake_incall_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

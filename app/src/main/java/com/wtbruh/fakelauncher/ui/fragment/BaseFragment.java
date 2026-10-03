@@ -20,10 +20,14 @@ public abstract class BaseFragment extends Fragment {
     public final static String[] L_OPTION = {LEFT_BTN, String.valueOf(R.string.option_leftButton)};
     public final static String[] L_SAVE = {LEFT_BTN, String.valueOf(R.string.save_leftButton)};
     public final static String[] L_ADD = {LEFT_BTN, String.valueOf(R.string.add_leftButton)};
+    public final static String[] L_CALL = {LEFT_BTN, String.valueOf(R.string.call_leftButton)};
+    public final static String[] L_WRITE = {LEFT_BTN, String.valueOf(R.string.write_leftButton)};
+    public final static String[] L_REPLY = {LEFT_BTN, String.valueOf(R.string.reply_leftButton)};
     public final static String[] R_DEFAULT = {RIGHT_BTN, String.valueOf(R.string.common_rightButton)};
     public final static String[] R_EDITTEXT = {RIGHT_BTN, String.valueOf(R.string.edittext_rightButton)};
     public final static String[] R_EMPTY = {RIGHT_BTN, "-1"};
     public final static String[] R_END_CALL = {RIGHT_BTN, String.valueOf(R.string.endcall_rightButton)};
+    public final static String[] C_EMPTY = {CENTER_BTN, "-1"};
     public final static String[] C_PLAY = {CENTER_BTN, String.valueOf(R.string.play_centerButton)};
     public final static String[] C_PAUSE = {CENTER_BTN, String.valueOf(R.string.pause_centerButton)};
     public final static String[] C_RESUME = {CENTER_BTN, String.valueOf(R.string.resume_centerButton)};
@@ -37,6 +41,7 @@ public abstract class BaseFragment extends Fragment {
     public boolean onTouchEvent(MotionEvent event) {return false;}
 
     public void setFooterBar(String[]... texts) {
+        if (!isAdded()) return; // 已从 Activity 分离（如播放瞬间界面切换）时跳过，避免 requireActivity 崩溃
         requireSubActivity().setFooterBar(texts);
     }
 

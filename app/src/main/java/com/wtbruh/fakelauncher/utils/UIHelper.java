@@ -6,6 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -17,6 +25,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
@@ -30,11 +39,17 @@ import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.GalleryFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.MessageFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.PasswordFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.ToolboxFragment;
 import com.wtbruh.fakelauncher.ui.fragment.player.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 public class UIHelper {
     private final static String TAG = UIHelper.class.getSimpleName();
@@ -412,6 +427,234 @@ public class UIHelper {
      */
     public static void resetLockApp(Context context) {
         ContentProvider.resetTaskId(context);
+    }
+
+    // ── 主菜单 / 工具箱自定义（已安装应用） ──────────────────────────────────────────
+
+    public final static String EXT_APP_PKG = "pkg";
+    public final static String EXT_APP_LABEL = "label";
+    public final static String EXT_APP_ICON = "icon";
+
+    /** 内置功能 + 工具箱入口 + 用户勾选的已安装应用（主菜单完整列表），设置始终排在最后 */
+    public static Bundle[] getMainMenuAppList(Context context) {
+        List<Bundle> list = new ArrayList<>();
+        String uiType = getCurrentUIType(context);
+        Bundle settingsBundle = null;
+        for (Bundle b : getInternalAppList(uiType)) {
+            // 抽出“设置”，最后追加，保证无论添加多少应用设置都在最后一个
+            if (PasswordFragment.class.getName().equals(b.getString(TARGET_FRAGMENT))) {
+                settingsBundle = b;
+            } else {
+                list.add(b);
+            }
+        }
+        // 工具箱入口（二级菜单）
+        list.add(createAppListBundle(R.string.menu_utils, R.drawable.ic_toolbox, ToolboxFragment.class.getName()));
+        // 用户自定义的已安装应用
+        list.addAll(getExternalAppBundles(context, SettingsConstants.PREF_MENU_EXTERNAL_APPS));
+        // 设置放最后
+        if (settingsBundle != null) list.add(settingsBundle);
+        return list.toArray(new Bundle[0]);
+    }
+
+    /** 工具箱二级菜单：用户勾选的已安装应用 */
+    public static Bundle[] getToolboxAppList(Context context) {
+        List<Bundle> list = getExternalAppBundles(context, SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS);
+        return list.toArray(new Bundle[0]);
+    }
+
+    /** 读取工具箱应用的重命名（pkg=新名; 格式）；无重命名返回 null */
+    public static String getToolboxDisplayName(Context context, String pkg) {
+        if (pkg == null || pkg.isEmpty()) return null;
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String raw = sp.getString(SettingsConstants.PREF_TOOLBOX_DISPLAY_NAMES, "");
+        if (raw == null) return null;
+        for (String pair : raw.split(";")) {
+            int eq = pair.indexOf('=');
+            if (eq > 0 && pair.substring(0, eq).equals(pkg)) {
+                return pair.substring(eq + 1);
+            }
+        }
+        return null;
+    }
+
+    /** 保存/清除工具箱应用重命名（name 为空则清除） */
+    public static void setToolboxDisplayName(Context context, String pkg, String name) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        Map<String, String> map = new LinkedHashMap<>();
+        String raw = sp.getString(SettingsConstants.PREF_TOOLBOX_DISPLAY_NAMES, "");
+        if (raw != null) {
+            for (String pair : raw.split(";")) {
+                int eq = pair.indexOf('=');
+                if (eq > 0) map.put(pair.substring(0, eq), pair.substring(eq + 1));
+            }
+        }
+        if (name == null || name.trim().isEmpty()) map.remove(pkg);
+        else map.put(pkg, name.trim());
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> e : map.entrySet()) {
+            if (sb.length() > 0) sb.append(";");
+            sb.append(e.getKey()).append('=').append(e.getValue());
+        }
+        sp.edit().putString(SettingsConstants.PREF_TOOLBOX_DISPLAY_NAMES, sb.toString()).apply();
+    }
+
+    /** 保存工具箱应用完整顺序（排序后调用） */
+    public static void saveToolboxOrder(Context context, List<String> orderedPkgs) {
+        saveAppSelection(context, SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS, orderedPkgs);
+    }
+
+    /** 从 SharedPreferences 读取用户勾选的外部应用，组装成菜单 Bundle 列表 */
+    private static List<Bundle> getExternalAppBundles(Context context, String prefKey) {
+        List<Bundle> result = new ArrayList<>();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String raw = sp.getString(prefKey, "");
+        if (raw == null || raw.isEmpty()) return result;
+        PackageManager pm = context.getPackageManager();
+        for (String pkg : raw.split(";")) {
+            if (pkg == null || pkg.isEmpty()) continue;
+            String label = pkg;
+            try {
+                label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString();
+            } catch (Exception ignored) { }
+            // 重命名覆盖：伪装界面显示用户自定义名称
+            String renamed = getToolboxDisplayName(context, pkg);
+            if (renamed != null && !renamed.isEmpty()) label = renamed;
+            Bundle b = new Bundle();
+            b.putString(EXT_APP_PKG, pkg);
+            b.putString(EXT_APP_LABEL, label);
+            b.putInt(EXT_APP_ICON, getPresetAppIcon(pkg));
+            result.add(b);
+        }
+        return result;
+    }
+
+    /** 列出设备上所有可启动的第三方应用（含名称与预设图标） */
+    public static List<Bundle> getInstalledLauncherApps(Context context) {
+        List<Bundle> result = new ArrayList<>();
+        PackageManager pm = context.getPackageManager();
+        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        try {
+            for (ResolveInfo ri : pm.queryIntentActivities(mainIntent, 0)) {
+                String pkg = ri.activityInfo != null ? ri.activityInfo.packageName : null;
+                if (pkg == null || pkg.isEmpty() || pkg.equals(context.getPackageName())) continue;
+                String label = ri.loadLabel(pm).toString();
+                if (label == null || label.isEmpty()) label = pkg;
+                Bundle b = new Bundle();
+                b.putString(EXT_APP_PKG, pkg);
+                b.putString(EXT_APP_LABEL, label);
+                b.putInt(EXT_APP_ICON, getPresetAppIcon(pkg));
+                result.add(b);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "query launcher apps failed", e);
+        }
+        return result;
+    }
+
+    /** 获取已安装应用的真实图标（高清渲染）；未安装/异常时回退通用图标 */
+    public static Drawable getExternalAppIcon(Context context, String pkg) {
+        try {
+            if (pkg == null) return ContextCompat.getDrawable(context, R.drawable.ic_menu_app_generic);
+            Drawable d = null;
+            // 优先取 xxxhdpi 高清图标源（应用图标按 density 变体存储，getApplicationIcon 只给当前 density）
+            try {
+                ApplicationInfo info = context.getPackageManager().getApplicationInfo(pkg, 0);
+                if (info.icon != 0) {
+                    android.content.res.Resources res =
+                            context.getPackageManager().getResourcesForApplication(info);
+                    d = res.getDrawableForDensity(info.icon, DisplayMetrics.DENSITY_XXXHIGH);
+                }
+            } catch (Exception ignored) { }
+            if (d == null) d = context.getPackageManager().getApplicationIcon(pkg);
+            // 渲染到 120dp 分辨率位图，避免主菜单 200dp 大图标放大模糊
+            int size = (int) (context.getResources().getDisplayMetrics().density * 120);
+            Bitmap bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bmp);
+            d.setBounds(0, 0, size, size);
+            d.draw(canvas);
+            return new BitmapDrawable(context.getResources(), bmp);
+        } catch (Exception e) {
+            Log.e(TAG, "getExternalAppIcon failed: " + pkg, e);
+            return ContextCompat.getDrawable(context, R.drawable.ic_menu_app_generic);
+        }
+    }
+
+    /** 预设功能机风格图标（按常见包名映射，未命中用通用图标） */
+    public static int getPresetAppIcon(String pkg) {
+        if (pkg == null) return R.drawable.ic_menu_app_generic;
+        switch (pkg) {
+            case "com.tencent.mm": return R.drawable.ic_menu_app_wechat;
+            case "com.tencent.mobileqq": return R.drawable.ic_menu_app_qq;
+            case "com.eg.android.AlipayGphone": return R.drawable.ic_menu_app_alipay;
+            case "com.taobao.taobao": return R.drawable.ic_menu_app_taobao;
+            case "com.jingdong.app.mall": return R.drawable.ic_menu_app_jd;
+            case "com.ss.android.ugc.aweme": return R.drawable.ic_menu_app_douyin;
+            case "com.smile.gifmaker": return R.drawable.ic_menu_app_kuaishou;
+            case "com.sina.weibo": return R.drawable.ic_menu_app_weibo;
+            case "com.xunmeng.pinduoduo": return R.drawable.ic_menu_app_pdd;
+            case "com.sankuai.meituan": return R.drawable.ic_menu_app_meituan;
+            case "tv.danmaku.bili": return R.drawable.ic_menu_app_bilibili;
+            case "com.autonavi.minimap": return R.drawable.ic_menu_app_amap;
+            default: return R.drawable.ic_menu_app_generic;
+        }
+    }
+
+    /** 判断一个 Bundle 是否为外部应用（含包名） */
+    public static boolean isExternalApp(Bundle appInfo) {
+        return appInfo != null && appInfo.getString(EXT_APP_PKG) != null;
+    }
+
+    /** 启动外部应用；若处于屏幕固定锁定状态，先解锁再启动 */
+    public static void launchExternalApp(Context context, String pkg) {
+        try {
+            Intent intent = context.getPackageManager().getLaunchIntentForPackage(pkg);
+            if (intent == null) {
+                showCustomDialog(context, R.string.app_not_found, null);
+                return;
+            }
+            if (getLockApp(context) != ContentProvider.NOT_SET) {
+                setLockApp(context, ContentProvider.NOT_SET);
+                // 同步解除屏幕固定：ContentObserver 解除是异步的，若不等它执行完，
+                // 系统仍处于 lock task mode，startActivity 外部应用会被系统拦截
+                // （表现为工具箱"按两下才启动"）。
+                if (context instanceof Activity) {
+                    try {
+                        ((Activity) context).stopLockTask();
+                    } catch (Throwable ignored) {
+                    }
+                }
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "launchExternalApp failed: " + pkg, e);
+        }
+    }
+
+    /** 保存用户勾选的应用包名列表（分号分隔存入偏好） */
+    public static void saveAppSelection(Context context, String prefKey, List<String> pkgs) {
+        StringBuilder sb = new StringBuilder();
+        for (String p : pkgs) {
+            if (p == null || p.isEmpty()) continue;
+            if (sb.length() > 0) sb.append(';');
+            sb.append(p);
+        }
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit().putString(prefKey, sb.toString()).apply();
+    }
+
+    /** 读取用户勾选的应用包名集合（保持添加顺序） */
+    public static LinkedHashSet<String> loadAppSelection(Context context, String prefKey) {
+        LinkedHashSet<String> set = new LinkedHashSet<>();
+        String raw = PreferenceManager.getDefaultSharedPreferences(context).getString(prefKey, "");
+        if (raw != null) {
+            for (String p : raw.split(";")) {
+                if (!p.isEmpty()) set.add(p);
+            }
+        }
+        return set;
     }
 
 }

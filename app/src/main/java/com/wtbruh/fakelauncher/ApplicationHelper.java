@@ -1,18 +1,20 @@
 package com.wtbruh.fakelauncher;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import com.tencent.mmkv.MMKV;
 import com.rosan.dhizuku.api.Dhizuku;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
+import com.wtbruh.fakelauncher.receiver.IncomingCallReceiver;
 import com.wtbruh.fakelauncher.service.NotificationListenerService;
 import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.CrashHandler;
@@ -50,8 +53,10 @@ public class ApplicationHelper extends Application {
     private final ContentObserver mLockTaskObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-            if (isXposedModuleActivated()) return;
-
+            // LSPatch（应用内注入）场景：isXposedModuleActivated() 会被钩为 true，
+            // 但 PinningHook 无法 hook system_server，两条 hook 路径都失效，
+            // 因此这里必须始终执行应用侧原生 startLockTask/stopLockTask（双保险）。
+            // 真 Xposed 场景下重复执行幂等无害（startLockTask 无白名单时失败会被 catch）。
             int taskId = ContentProvider.getTaskId(ApplicationHelper.this);
             Activity activity = sCurrentActivity.get();
 
@@ -70,10 +75,15 @@ public class ApplicationHelper extends Application {
                     // 抛出会把写入方（MainActivity / CrashHandler）一起干掉，必须兜住。
                     Log.e(TAG, "setLockTaskPackages failed", e);
                 }
-                try {
-                    activity.startLockTask();
-                } catch (Exception e) {
-                    Log.e(TAG, "startLockTask failed", e);
+                ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                boolean alreadyPinned = am != null
+                        && am.getLockTaskModeState() != ActivityManager.LOCK_TASK_MODE_NONE;
+                if (!alreadyPinned) {
+                    try {
+                        activity.startLockTask();
+                    } catch (Exception e) {
+                        Log.e(TAG, "startLockTask failed", e);
+                    }
                 }
             } else if (taskId == ContentProvider.NOT_SET && activity != null && !activity.isFinishing()) {
                 // 解锁
@@ -106,6 +116,38 @@ public class ApplicationHelper extends Application {
         // 进程启动时广播确定态：新进程必然是未锁定，而 Xposed 侧可能还残留上一轮的旧值
         // （应用进程死掉时它收不到任何通知），不纠正就会“应用以为没锁、hook 以为锁着”。
         ContentProvider.resetTaskId(this);
+
+        // 注册来电监听：来电时自动亮屏并显示号码（老人机风格来电界面）
+        try {
+            IntentFilter callFilter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+            registerReceiver(new IncomingCallReceiver(), callFilter);
+        } catch (Exception e) {
+            Log.e(TAG, "register incoming call receiver failed", e);
+        }
+
+        // 号码第二通道：部分 ROM（如展锐）的 PHONE_STATE 广播不带 EXTRA_INCOMING_NUMBER，
+        // 但 PhoneStateListener.onCallStateChanged 的 incomingNumber 参数可能带号码。
+        // 收到非空号码就广播给 IncomingCallReceiver 更新界面。
+        try {
+            android.telephony.TelephonyManager tm =
+                    (android.telephony.TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            if (tm != null) {
+                tm.listen(new android.telephony.PhoneStateListener() {
+                    @Override
+                    public void onCallStateChanged(int state, String incomingNumber) {
+                        if (state == android.telephony.TelephonyManager.CALL_STATE_RINGING
+                                && incomingNumber != null && !incomingNumber.isEmpty()) {
+                            Log.d(TAG, "PhoneStateListener incoming number: " + incomingNumber);
+                            sendBroadcast(new Intent(IncomingCallReceiver.ACTION_INCOMING_NUMBER)
+                                    .putExtra(IncomingCallReceiver.EXTRA_NUMBER, incomingNumber)
+                                    .setPackage(getPackageName()));
+                        }
+                    }
+                }, android.telephony.PhoneStateListener.LISTEN_CALL_STATE);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "register phone state listener failed", e);
+        }
 
         Log.d(TAG, "Application onCreate. My package name: "+ BuildConfig.APPLICATION_ID);
 

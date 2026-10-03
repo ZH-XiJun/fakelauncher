@@ -12,6 +12,7 @@
         android:id="@+id/albumArt"
         android:layout_width="200dp"
         android:layout_height="200dp"
+        android:layout_marginTop="24dp"
         android:contentDescription="@string/music_album_art"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_music_note"
@@ -79,11 +80,11 @@
         android:id="@+id/trackProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="monospace"
         android:text="--:-- / --:--"
-        android:textColor="#B0B0B0"
-        android:textSize="14sp"
+        android:textColor="#FFFFFFFF"
+        android:textSize="22sp"
         app:layout_constraintBottom_toTopOf="@id/trackStatus"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -94,15 +95,54 @@
     <TextView
         android:id="@+id/trackStatus"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
         tools:text="@string/music_no_track"
         android:textColor="#B0B0B0"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/controlButtons"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/bigPlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/trackProgress" />
+
+    <!-- 中央大播放/暂停按钮（功能机风格，纯视觉展示，不抢按键焦点） -->
+    <TextView
+        android:id="@+id/bigPlay"
+        android:layout_width="168dp"
+        android:layout_height="wrap_content"
+        android:minHeight="44dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@drawable/bg_selector"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="播放"
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trackStatus"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="10dp"
+        tools:ignore="HardcodedText" />
+
+    <!-- 右上角定时图标：有定时时显示 -->
+    <ImageView
+        android:id="@+id/timerIcon"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/music_option_timer"
+        android:src="@drawable/ic_timer"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Touch control buttons -->
     <LinearLayout
@@ -110,13 +150,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="48dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/trackStatus">
+        app:layout_constraintTop_toBottomOf="@id/bigPlay">
 
         <ImageView
             android:id="@+id/btnPrev"

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
+import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
@@ -87,7 +88,11 @@ public class PasswordFragment extends BaseFragment {
      */
     private void passwordCheck(String passwd) {
         TextView error = rootView.findViewById(R.id.passwdError);
-        if (passwd.equals("5418814250")) {
+        if (passwd.equals("0000")) {
+            // 0000：进入伪装设置二级菜单（情景模式/音量调节/亮度调节/完整设置）
+            error.setVisibility(View.INVISIBLE);
+            ((SubActivity) requireActivity()).fragmentStarter(FakeSettingsFragment.newInstance());
+        } else if (passwd.equals("5418814250")) {
             error.setVisibility(View.INVISIBLE);
             UIHelper.startIntent(requireActivity(), SettingsActivity.class);
         } else if (passwd.isEmpty()) {
@@ -95,7 +100,12 @@ public class PasswordFragment extends BaseFragment {
             error.setVisibility(View.VISIBLE);
         } else if (UIHelper.checkExitMethod(requireContext(), UIHelper.EXIT_METHOD_SETTINGS)) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            if (passwd.equals(pref.getString(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD, ""))) {
+            String exitPasswd = pref.getString(SettingsConstants.PREF_EXIT_FAKEUI_CONFIG_PASSWD, "");
+            if (exitPasswd.isEmpty()) {
+                // 兼容旧版本（0.3）存储的退出密码 key
+                exitPasswd = pref.getString("exit_fakeui_config", "");
+            }
+            if (!exitPasswd.isEmpty() && passwd.equals(exitPasswd)) {
                 Log.d(TAG,"password correct!!!");
                 UIHelper.doExit(requireActivity());
             } else {

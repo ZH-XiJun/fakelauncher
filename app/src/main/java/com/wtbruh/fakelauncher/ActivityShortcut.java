@@ -15,7 +15,8 @@ public class ActivityShortcut extends AppCompatActivity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         if (Objects.equals(getIntent().getAction(), Intent.ACTION_CREATE_SHORTCUT)) {
-            Intent intent = new Intent(this, SplashActivity.class).setAction(Intent.ACTION_MAIN);
+            Intent intent = new Intent(this, SplashActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             setResult(RESULT_OK,
                     ShortcutManagerCompat.createShortcutResultIntent(this,

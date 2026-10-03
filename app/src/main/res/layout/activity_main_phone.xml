@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="144dp"
         android:layout_margin="5dp"
+        android:layout_marginTop="35dp"
         android:gravity="center"
         android:maxLines="1"
         android:text="00:00:00"
@@ -175,8 +176,11 @@
                 android:textAlignment="viewStart"
                 android:textColor="@color/white"
                 android:textStyle="bold"
+                android:textSize="28sp"
                 android:text="@string/sim_removed"
                 app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="24sp"
+                app:autoSizeMaxTextSize="48sp"
                 app:strokeTextColor="@color/black"
                 app:strokeTextWidth="3" />
 
@@ -189,7 +193,10 @@
                 android:textAlignment="viewStart"
                 android:textColor="@color/white"
                 android:textStyle="bold"
+                android:textSize="28sp"
                 app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="24sp"
+                app:autoSizeMaxTextSize="48sp"
                 app:strokeTextColor="@color/black"
                 app:strokeTextWidth="3" />
         </LinearLayout>

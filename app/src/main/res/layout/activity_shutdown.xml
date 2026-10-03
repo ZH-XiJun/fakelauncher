@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- 伪关机弹窗：功能机风格。长按挂机键（电源键）在伪装内弹出 -->
+    <TextView
+        android:id="@+id/shutdown_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="30dp"
+        android:text="@string/shutdown_title"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/shutdown_logo"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:contentDescription="@string/shutdown_title"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shutdown_title"
+        app:srcCompat="@drawable/ic_power" />
+
+    <TextView
+        android:id="@+id/shutdown_power"
+        android:layout_width="200dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/shutdown_btn_bg"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/shutdown_power_off"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shutdown_logo" />
+
+    <TextView
+        android:id="@+id/shutdown_reboot"
+        android:layout_width="200dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/shutdown_btn_bg"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/shutdown_reboot"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shutdown_power" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

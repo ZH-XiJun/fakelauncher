@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context=".ui.fragment.phone.ToolboxFragment">
+
+    <TextView
+        android:id="@+id/toolbox_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="4dp"
+        android:paddingBottom="2dp"
+        android:text="@string/menu_utils"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/toolbox_textHint"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:padding="40dp"
+        android:text="@string/toolbox_empty"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:visibility="invisible"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbox_title" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/toolbox_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/menu_rounded_bg"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbox_title" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
+import com.wtbruh.fakelauncher.utils.CallHelper;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 
 public class ContactDetailFragment extends BaseFragment {
     private static final String ARG_NAME = "name";
@@ -31,10 +33,32 @@ public class ContactDetailFragment extends BaseFragment {
                 args == null ? "" : args.getString(ARG_NAME, ""));
         ((TextView) rootView.findViewById(R.id.contact_number)).setText(
                 args == null ? "" : args.getString(ARG_NUMBER, ""));
-        setFooterBar(L_EMPTY, R_DEFAULT);
+        setFooterBar(L_CALL, R_DEFAULT);
         return rootView;
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) { return false; }
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // 左下角"拨打"：按左软键（MENU）直接呼叫该联系人
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            callCurrent();
+            return true;
+        }
+        return false;
+    }
+
+    private void callCurrent() {
+        Bundle args = getArguments();
+        String number = args == null ? "" : args.getString(ARG_NUMBER, "");
+        if (number == null || number.isEmpty()) return;
+        boolean placed = CallHelper.placeCall(requireContext(), number);
+        if (placed) {
+            android.content.Intent i = new android.content.Intent(requireContext(), com.wtbruh.fakelauncher.OutgoingCallActivity.class)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .putExtra(com.wtbruh.fakelauncher.OutgoingCallActivity.EXTRA_NUMBER, number);
+            requireContext().startActivity(i);
+        } else {
+            UIHelper.showCustomDialog(requireContext(), R.string.dialer_call_fail, null);
+        }
+    }
 }

@@ -102,6 +102,8 @@ public class GalleryFragment extends BaseFragment {
         galleryView.setFocusable(false);
         galleryView.setItemAnimator(null);
         galleryView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        // 彻底禁用触屏：消费所有触摸事件，相册纯物理键操作
+        galleryView.setOnTouchListener((v, e) -> true);
 
         videoLayout = rootView.findViewById(R.id.video);
         bar = rootView.findViewById(R.id.videoProgressBar);
@@ -347,16 +349,24 @@ public class GalleryFragment extends BaseFragment {
                     int spanCount = ((GridLayoutManager) Objects.requireNonNull(galleryView.getLayoutManager())).getSpanCount();
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_UP -> {
+                            // 循环：第一行按上跳到最后一张
                             if (pos >= spanCount) moveFocus(pos - spanCount);
+                            else moveFocus(adapter.getItemCount() - 1);
                         }
                         case KeyEvent.KEYCODE_DPAD_DOWN -> {
+                            // 循环：最后一行按下跳到第一张
                             if (pos < adapter.getItemCount() - spanCount) moveFocus(pos + spanCount);
+                            else moveFocus(0);
                         }
                         case KeyEvent.KEYCODE_DPAD_LEFT -> {
-                            if (pos > 0) moveFocus(pos - 1);
+                            // 循环：第一张按左跳到最后一张
+                            if (pos <= 0) moveFocus(adapter.getItemCount() - 1);
+                            else moveFocus(pos - 1);
                         }
                         case KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                            if (pos < adapter.getItemCount() - 1) moveFocus(pos + 1);
+                            // 循环：最后一张按右跳到第一张
+                            if (pos >= adapter.getItemCount() - 1) moveFocus(0);
+                            else moveFocus(pos + 1);
                         }
                     }
                     return true;

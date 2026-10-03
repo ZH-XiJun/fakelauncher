@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 白色圆底 -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,6 a48,48 0 1,0 0.0001,0 Z" />
+    <!-- 绿色电话听筒 -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M74,58 L66,54 a4,4 0 0,0 -5,1.5 L57,61 a30,30 0 0,1 -10,-10 L51,47 a4,4 0 0,0 1.5,-5 L48.5,34 a4,4 0 0,0 -5.7,-1.6 L36,36 a8,8 0 0,0 -7,8 C32,56 52,76 64,79 a8,8 0 0,0 8,-7 L74,64 a4,4 0 0,0 0,-6 Z" />
+</vector>

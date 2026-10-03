@@ -3,6 +3,7 @@ package com.wtbruh.fakelauncher;
 import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -67,6 +68,9 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        // 隐藏系统状态栏：桌面状态图标由 Overlay（双卡信号+电池）独占，避免与系统图标重叠
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .hide(WindowInsetsCompat.Type.statusBars());
         setContentView(R.layout.activity_fragment);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Main), (v, insets) -> {
@@ -81,6 +85,9 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mCurrentFragment)
                     .commitNow();
+        } else {
+            // 进程重启后恢复：从 FragmentManager 取回当前 Fragment，避免 mCurrentFragment 为 null 导致按键分发崩溃
+            mCurrentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
         }
     }
 
@@ -109,17 +116,20 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
         if (!UIHelper.getCurrentUIType(this).equals(UIHelper.STYLE_PHONE)) {
             Log.d(TAG, "set touch listener");
             findViewById(R.id.container).setOnTouchListener(this);
-        } else {
-            mStatusBarOverlay = new StatusBarOverlay(findViewById(R.id.Main));
-            mStatusBarOverlay.start();
         }
+        // 菜单界面不显示 Overlay 状态栏（状态栏仅桌面显示）
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Restore pin for key operations
-        UIHelper.setLockApp(this, getTaskId());
+        // 延迟 post：等 onActivityResumed 更新 sCurrentActivity 后再锁（否则 startLockTask 不执行）
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            try {
+                UIHelper.setLockApp(this, getTaskId());
+            } catch (Throwable ignored) { }
+        }, 300);
         if (mStatusBarOverlay != null) {
             mStatusBarOverlay.start();
         }
@@ -150,9 +160,12 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.d(TAG, "KEYLOG onKeyUp code=" + keyCode + " name=" + KeyEvent.keyCodeToString(keyCode)
+                + " frag=" + (mCurrentFragment == null ? "null" : mCurrentFragment.getClass().getSimpleName()));
         if (UIHelper.debounce(lastTriggerTime, 100)) return true;
         lastTriggerTime = System.currentTimeMillis();
-        if (((BaseFragment) mCurrentFragment).onKeyUp(keyCode, event)) return true;
+        BaseFragment fragment = (BaseFragment) mCurrentFragment;
+        if (fragment != null && fragment.onKeyUp(keyCode, event)) return true;
         return super.onKeyUp(keyCode, event);
     }
 
@@ -163,8 +176,20 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
         if (fm.getBackStackEntryCount() <= 0) {
-            Log.d(TAG, "do back action");
-            super.onBackPressed();
+            // 主菜单按右软键（返回）：回到伪装锁屏桌面（待机），不退出伪装。
+            // 退出伪装只走设置页输入退出密码这一条路（或显式 exit 指令）。
+            Log.d(TAG, "menu back -> fakeui desktop (lock)");
+            try {
+                UIHelper.setLockApp(this, ContentProvider.NOT_SET);
+            } catch (Throwable ignored) {
+            }
+            try {
+                sendBroadcast(new Intent(MainActivity.ACTION_BACK_FROM_MENU));
+            } catch (Throwable ignored) {
+            }
+            finish();
+            overridePendingTransition(0, 0);
+            return;
         }
         else {
             fm.popBackStackImmediate();
@@ -173,10 +198,23 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     }
 
     /**
+     * 清空 fragment 回退栈（密码/子页面），回到主菜单（MenuFragment 为 add 常驻）。
+     */
+    public void clearBackStackToMenu() {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+        mCurrentFragment = fm.findFragmentById(R.id.container);
+        Log.d(TAG, "clearBackStackToMenu -> " + (mCurrentFragment == null ? "null" : mCurrentFragment.getClass().getSimpleName()));
+    }
+
+    /**
      * Fragment 启动封装
      * @param fragment Fragment对象
      */
     public void fragmentStarter(Fragment fragment) {
+        Log.d(TAG, "fragmentStarter -> " + (fragment == null ? "null" : fragment.getClass().getSimpleName()));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, fragment);
         ft.addToBackStack(null);

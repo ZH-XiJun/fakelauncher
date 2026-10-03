@@ -11,6 +11,8 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
@@ -18,12 +20,15 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission
         android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -31,6 +36,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
 
     <application
         android:name=".ApplicationHelper"
@@ -65,13 +74,15 @@
         </activity>
         <activity
             android:name=".ui.VolumeActivity"
-            android:exported="false"
+            android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.FakeLauncher" />
         <activity
             android:name=".SettingsActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_settings_name"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.FakeLauncher.Settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,9 +106,71 @@
             android:theme="@style/Theme.FakeLauncher" />
         <activity
             android:name=".SubActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FakeLauncher" />
+        <activity
+            android:name=".IncomingCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:theme="@style/Theme.FakeLauncher" />
+        <activity
+            android:name=".OutgoingCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:theme="@style/Theme.FakeLauncher" />
+        <activity
+            android:name=".MenuManagerActivity"
             android:exported="false"
             android:theme="@style/Theme.FakeLauncher" />
+        <activity
+            android:name=".ShutdownActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@style/Theme.FakeLauncher.ShutdownNoAnim" />
+        <activity
+            android:name=".DialerActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.FakeLauncher">
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="tel" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="tel" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.KeyInterceptService"
+            android:exported="false" />
+        <service
+            android:name=".service.HotkeyAccessibilityService"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
         <service
             android:name=".service.NotificationListenerService"
             android:exported="true"
@@ -132,6 +205,9 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".receiver.PinShortcutReceiver"
+            android:exported="false" />
         <receiver
             android:name=".receiver.PowerConnectionReceiver"
             android:exported="true">
@@ -182,5 +258,13 @@
             android:name="xposedsharedprefs"
             android:value="true" />
     </application>
+
+        <!-- Package visibility: Android 11+ requires this to list all installed launcher apps -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
 
 </manifest>

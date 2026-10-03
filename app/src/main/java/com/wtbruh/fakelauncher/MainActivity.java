@@ -5,36 +5,49 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.provider.Settings;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.rosan.dhizuku.api.Dhizuku;
 import com.wtbruh.fakelauncher.receiver.DeviceAdminReceiver;
 import com.wtbruh.fakelauncher.receiver.PowerConnectionReceiver;
+import com.wtbruh.fakelauncher.service.KeyInterceptService;
+import com.wtbruh.fakelauncher.service.MusicService;
 import com.wtbruh.fakelauncher.ui.StatusBarOverlay;
+import com.wtbruh.fakelauncher.ui.VolumeActivity;
 import com.wtbruh.fakelauncher.ui.fragment.MenuFragment;
 import com.wtbruh.fakelauncher.ui.fragment.player.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
@@ -48,6 +61,11 @@ import com.wtbruh.fakelauncher.utils.ScreenObserver;
 import com.wtbruh.fakelauncher.utils.TelephonyHelper;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
+import rikka.shizuku.Shizuku;
+import rikka.shizuku.SystemServiceHelper;
+import rikka.shizuku.ShizukuBinderWrapper;
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -60,7 +78,59 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     public final static String
             EXTRA_PREVIEW = "preview",
             EXTRA_EXIT = "exit";
+    // 主菜单按右软键返回 -> 回到伪装锁屏桌面（待机）
+    public final static String ACTION_BACK_FROM_MENU = "com.wtbruh.fakelauncher.ACTION_BACK_FROM_MENU";
     private String mStyle;
+
+    // 挂机键锁屏息屏
+    private boolean mScreenOff = false;          // 息屏状态标志
+    private int mOrigScreenTimeout = -1;         // 原屏幕超时（用于真息屏）
+    private int mOrigStayOn = -1;                 // 原保持唤醒设置（充电时）
+    private boolean mWriteSettingsPrompted = false;
+    // ROM 电源键短按广播（老人机定制：按挂机键 = 系统发此广播而非直接息屏）
+    private static final String ACTION_POWERKEY_SHORT = "android.powerkey.short-press";
+    private final BroadcastReceiver mPowerKeyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "powerkey short-press received");
+            // 以系统真实屏幕状态为准（mScreenOff 应用标志可能与实际不同步，例如屏幕超时息屏）
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            boolean interactive = pm != null && pm.isInteractive();
+            if (!interactive) {
+                // 系统已息屏：短按电源 = 真亮屏（Shizuku wakeUp）
+                mScreenOff = true;
+                wakeFromSleep();
+                shizukuWake();
+                // 深度休眠后锁任务可能失效：唤醒后拉回伪装桌面并恢复锁任务，防止停在系统锁屏/设置页
+                try {
+                    Intent mi = new Intent(context, MainActivity.class);
+                    mi.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    context.startActivity(mi);
+                } catch (Exception e) {
+                    Log.e(TAG, "bring back main err", e);
+                }
+                int lockedTask = -1;
+                if (context instanceof android.app.Activity) lockedTask = ((android.app.Activity) context).getTaskId();
+                if (lockedTask < 0) lockedTask = UIHelper.getLockApp(context);
+                final int ftask = lockedTask;
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    try {
+                        UIHelper.setLockApp(context, ftask);
+                    } catch (Throwable ignored) { }
+                }, 400);
+                return;
+            }
+            // 系统亮屏：应用标志错位时仅恢复
+            if (mScreenOff) {
+                mScreenOff = false;
+                return;
+            }
+            String top = ApplicationHelper.topActivity;
+            if (top == null || top.contains(MainActivity.class.getSimpleName())) {
+                lockAndSleep();
+            }
+        }
+    };
 
     // UI scale
     private float mScale = 1;
@@ -79,6 +149,18 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     // is screen off 是否熄屏
     private boolean mLocked = false;
+
+    // 主菜单返回标志：为 true 时 onResume 自动回到锁屏待机
+    private boolean mBackFromMenu = false;
+    private final BroadcastReceiver mBackFromMenuReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ACTION_BACK_FROM_MENU.equals(intent.getAction())) {
+                mBackFromMenu = true;
+                Log.d(TAG, "back-from-menu received");
+            }
+        }
+    };
 
     // key long press check 按键长按检查
     private boolean mKeyLongPressed = false;
@@ -114,6 +196,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        // 隐藏系统状态栏：桌面状态图标由 Overlay（双卡信号+电池）独占，避免与系统图标重叠
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .hide(WindowInsetsCompat.Type.statusBars());
 
         // Switch UI style
         mStyle = UIHelper.getCurrentUIType(this);
@@ -128,6 +213,43 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // Android 13 返回键走 OnBackPressedDispatcher，不走 onKeyDown。
+        // 桌面态按右软键 = 上锁 + 息屏；锁屏/伪息屏态 = 亮屏/解锁提示。
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (mScreenOff) {
+                    wakeFromSleep();
+                    return;
+                }
+                if (!mLocked) {
+                    lockAndSleep();
+                    return;
+                }
+                // 锁屏态按返回：显示解锁提示（与原有按键提示一致）
+                setDialog(UIHelper.showCustomDialog(MainActivity.this,
+                        R.string.dialog_press_star_unlock, (dialogInterface, keyCode1, keyEvent) -> {
+                            if (keyCode1 == KeyEvent.KEYCODE_STAR) onUnlocked();
+                            return true;
+                        }));
+            }
+        });
+
+        // 注册挂机键（电源键）短按广播 → 真熄屏
+        try {
+            registerReceiver(mPowerKeyReceiver, new IntentFilter(ACTION_POWERKEY_SHORT));
+        } catch (Exception e) {
+            Log.e(TAG, "register powerkey receiver failed: " + e);
+        }
+        // 注册主菜单返回广播：回到伪装锁屏桌面
+        try {
+            androidx.core.content.ContextCompat.registerReceiver(this, mBackFromMenuReceiver,
+                    new IntentFilter(ACTION_BACK_FROM_MENU),
+                    androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED);
+        } catch (Exception e) {
+            Log.e(TAG, "register back-from-menu receiver failed: " + e);
+        }
+
         // If expected preview, then only initialize UI
         // 如果只需要预览，就只做UI初始化
         if (getIntent().getBooleanExtra(EXTRA_PREVIEW, false)) {
@@ -158,7 +280,13 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             // Device owner init
             initDeviceOwner();
             // Start pin mode 启用屏幕固定
-            UIHelper.setLockApp(MainActivity.this, getTaskId());
+            // 延迟到主线程 post：等 ApplicationHelper.onActivityResumed 更新 sCurrentActivity，
+            // 否则 observer 拿不到 activity，startLockTask 不执行（首次进入常失效 -> 唤醒回原桌面）
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                try {
+                    UIHelper.setLockApp(MainActivity.this, getTaskId());
+                } catch (Throwable ignored) { }
+            }, 300);
 
             // key action init
             if (UIHelper.checkExitMethod(this, UIHelper.EXIT_METHOD_DPAD)) {
@@ -178,6 +306,16 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         }
         // Start timer 启动计时任务
         updateInfo();
+        // 启动按键拦截（0.6.1）：Shizuku 拉起 native grab，物理按键由我们接管
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                startForegroundService(new Intent(this, KeyInterceptService.class));
+            } else {
+                startService(new Intent(this, KeyInterceptService.class));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "start KeyInterceptService failed: " + e);
+        }
     }
 
     /**
@@ -223,7 +361,7 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                     findViewById(R.id.connection),
                     findViewById(R.id.battery));
 
-            // Overlay 状态栏（电池图标等）
+            // Overlay 状态栏：双卡真实信号 + 电池图标（无 WiFi/蓝牙）
             mStatusBarOverlay = new StatusBarOverlay(findViewById(R.id.Main));
             mStatusBarOverlay.start();
         }
@@ -260,19 +398,59 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
      * 调用onDestroy()之前需要执行的代码
      */
     private void exit() {
+        try {
+            PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putBoolean("fakeui_active", false).apply();
+        } catch (Exception e) { }
+        // 退出伪装：停止按键拦截，释放物理按键（0.6.1）
+        try {
+            KeyInterceptService.killNative(this);
+        } catch (Exception e) {
+            Log.e(TAG, "kill native failed: " + e);
+        }
+        try {
+            stopService(new Intent(this, KeyInterceptService.class));
+        } catch (Exception e) {
+            Log.e(TAG, "stop KeyInterceptService failed: " + e);
+        }
+        // 退出伪装：停止音乐播放（0.6.2 音乐回归：退出时音乐随之关闭）
+        try {
+            stopService(new Intent(this, MusicService.class));
+        } catch (Exception e) {
+            Log.e(TAG, "stop MusicService failed: " + e);
+        }
+        // 退出伪装：清空音乐缓存（下次进入重新扫描曲目，发现新增歌曲）
+        try {
+            MusicPlayerFragment.clearCache();
+        } catch (Exception e) {
+            Log.e(TAG, "clear music cache failed: " + e);
+        }
         if (mTimer != null) mTimer.cancel();
         // Disable pin mode
         // 关闭屏幕固定
         UIHelper.setLockApp(this, -1);
+        // 主动调用原生 stopLockTask() 兜底解除屏幕固定（不依赖异步观察者回调）
+        try {
+            stopLockTask();
+        } catch (Exception e) {
+            Log.e(TAG, "stopLockTask failed", e);
+        }
         // Wait for pin mode disabled, or finishAffinity() won't work
         // 等待屏幕固定被关闭，不然finishAffinity()没用
         try {
-            Thread.sleep(500);
+            Thread.sleep(700);
         } catch (InterruptedException e) {
             Log.e(TAG, "An error was occurred while waiting screen pinning to close: ", e);
         }
-        // kill myself
-        finishAffinity();
+        try {
+            finishAffinity();
+        } catch (Exception e) {
+            Log.e(TAG, "finishAffinity failed", e);
+        }
+        // 兜底：若仍处于前台（finishAffinity 被系统拦截），把任务移回桌面，离开伪装界面
+        if (!isFinishing()) {
+            moveTaskToBack(true);
+        }
     }
 
     private void setDialog(Dialog dialog) {
@@ -286,7 +464,21 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         // Unregister the receiver on destroy
         receiverRegister(false);
         // 停止计时任务 Stop timer
+        // 退出伪装：停止音乐播放（0.6.2 音乐回归：退出时音乐随之关闭）
+        try {
+            stopService(new Intent(this, MusicService.class));
+        } catch (Exception e) {
+            Log.e(TAG, "stop MusicService failed: " + e);
+        }
+        // 退出伪装：清空音乐缓存（下次进入重新扫描曲目，发现新增歌曲）
+        try {
+            MusicPlayerFragment.clearCache();
+        } catch (Exception e) {
+            Log.e(TAG, "clear music cache failed: " + e);
+        }
         if (mTimer != null) mTimer.cancel();
+        // 注销电源键广播
+        try { unregisterReceiver(mPowerKeyReceiver); } catch (Exception ignore) { }
         // 清理 overlay
         if (mStatusBarOverlay != null) mStatusBarOverlay.destroy();
         super.onDestroy();
@@ -297,11 +489,31 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     @Override
     public void onResume() {
         super.onResume();
+        try {
+            PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putBoolean("fakeui_active", true).apply();
+
+        } catch (Exception e) { }
+        // 从设置等触屏界面返回主菜单时，恢复伪装禁触（若增强触屏拦截开启）
+        UIHelper.setTouchscreenState(false, this);
+        restoreScreenTimeoutIfClamped();
         batteryAccurate();
         // 恢复 overlay 轮询
         if (mStatusBarOverlay != null && !mShowAccurateBattery) mStatusBarOverlay.start();
         // After call session ends, keep pin on MainActivity so keys work again.
-        UIHelper.setLockApp(this, getTaskId());
+        // 同样延迟 post 再锁（时序：onResume 内 sCurrentActivity 可能未更新）
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try {
+                UIHelper.setLockApp(MainActivity.this, getTaskId());
+            } catch (Throwable ignored) { }
+        }, 300);
+        // 主菜单按右软键返回：直接回到可用桌面，不自动上锁（熄屏后才上锁）
+        if (mBackFromMenu) {
+            mBackFromMenu = false;
+            mLocked = false;
+            setFooterBar(R.string.main_leftButton);
+            Log.d(TAG, "menu back -> desktop (no lock)");
+        }
     }
 
     @Override
@@ -347,6 +559,31 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // 挂机键：桌面态上锁并息屏；伪息屏态任意键亮屏
+        if (keyCode == KeyEvent.KEYCODE_ENDCALL) {
+            if (mScreenOff) {
+                wakeFromSleep();
+                return true;
+            }
+            if (!mLocked) {
+                lockAndSleep();
+                return true;
+            }
+            return true; // 锁屏态下挂机键忽略
+        }
+        // 右软键（返回键）：桌面态按下 = 无操作（空置，不锁屏不息屏，避免执行息屏命令带来的问题）
+        if (!mLocked && keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        if (mScreenOff) {
+            wakeFromSleep();
+            return true;
+        }
+        // 音量键：显示伪装音量界面，阻止系统音量面板
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            UIHelper.startIntent(this, VolumeActivity.class);
+            return true;
+        }
         if (mStyle.equals(UIHelper.STYLE_PHONE)) {
             // Star key long press detection
             // 长按星键检测
@@ -431,12 +668,291 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         return super.onKeyUp(keyCode, event);
     }
 
+    /**
+     * 通过 Shizuku（shell 权限）发送 SLEEP 键（keyevent 223），系统直接休眠（真熄屏）。
+     * 需要 Shizuku 服务运行 + 应用已授权；未授权则请求授权。
+     */
+    private boolean shizukuSleep() {
+        try {
+            if (Shizuku.pingBinder()) {
+                if (Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    android.os.IBinder binder = SystemServiceHelper.getSystemService("power");
+                    if (binder == null) {
+                        Log.d(TAG, "shizuku power binder null");
+                        return false;
+                    }
+                    // 关键：包装为 ShizukuBinderWrapper，调用以 shell 身份执行（有 DEVICE_POWER）
+                    binder = new ShizukuBinderWrapper(binder);
+                    // 隐藏 API 需豁免，否则 Class.forName/getMethod 被拦截
+                    HiddenApiBypass.addHiddenApiExemptions("Landroid/os/IPowerManager;");
+                    Class<?> cls = Class.forName("android.os.IPowerManager$Stub");
+                    Object pm = cls.getMethod("asInterface", android.os.IBinder.class).invoke(null, binder);
+                    Class<?> iface = Class.forName("android.os.IPowerManager");
+                    try {
+                        HiddenApiBypass.getDeclaredMethod(iface, "goToSleep",
+                                long.class, int.class, int.class)
+                                .invoke(pm, SystemClock.uptimeMillis(), 0, 0);
+                    } catch (NoSuchMethodException e) {
+                        HiddenApiBypass.getDeclaredMethod(iface, "goToSleep", long.class)
+                                .invoke(pm, SystemClock.uptimeMillis());
+                    } catch (java.lang.reflect.InvocationTargetException e) {
+                        Log.e(TAG, "goToSleep ITE cause: " + e.getCause());
+                        throw e;
+                    }
+                    Log.d(TAG, "shizuku goToSleep invoked");
+                    return true;
+                } else {
+                    Log.d(TAG, "shizuku not granted, fallback to timeout");
+                    // 未授权时不弹窗打扰，走超时兜底；可在 Shizuku app 里手动授权后自动启用 Shizuku
+                }
+            } else {
+                Log.d(TAG, "shizuku binder not available");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "shizuku sleep failed: " + e);
+        }
+        return false;
+    }
+
+    /**
+     * 通过 Shizuku（shell 权限）调用 IPowerManager.wakeUp，真正亮屏。
+     * 与 shizukuSleep 对称；用于伪装息屏后短按电源键唤醒。
+     */
+    private boolean shizukuWake() {
+        try {
+            if (Shizuku.pingBinder()) {
+                if (Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    android.os.IBinder binder = SystemServiceHelper.getSystemService("power");
+                    if (binder == null) {
+                        Log.d(TAG, "shizuku wake power binder null");
+                        return false;
+                    }
+                    binder = new ShizukuBinderWrapper(binder);
+                    HiddenApiBypass.addHiddenApiExemptions("Landroid/os/IPowerManager;");
+                    Class<?> cls = Class.forName("android.os.IPowerManager$Stub");
+                    Object pm = cls.getMethod("asInterface", android.os.IBinder.class).invoke(null, binder);
+                    Class<?> iface = Class.forName("android.os.IPowerManager");
+                    long now = SystemClock.uptimeMillis();
+                    try {
+                        // Android 12+：wakeUp(long, int, String, int, String, int)
+                        HiddenApiBypass.getDeclaredMethod(iface, "wakeUp",
+                                long.class, int.class, String.class, int.class, String.class, int.class)
+                                .invoke(pm, now, 0, "fakelauncher-wake", 0, "com.wtbruh.fakelauncher", 0);
+                    } catch (NoSuchMethodException e) {
+                        try {
+                            HiddenApiBypass.getDeclaredMethod(iface, "wakeUp",
+                                    long.class, int.class, String.class)
+                                    .invoke(pm, now, 0, "fakelauncher-wake");
+                        } catch (NoSuchMethodException e2) {
+                            HiddenApiBypass.getDeclaredMethod(iface, "wakeUp", long.class, int.class)
+                                    .invoke(pm, now, 0);
+                        }
+                    } catch (java.lang.reflect.InvocationTargetException e) {
+                        Log.e(TAG, "wakeUp ITE cause: " + e.getCause());
+                        throw e;
+                    }
+                    Log.d(TAG, "shizuku wakeUp invoked");
+                    return true;
+                } else {
+                    Log.d(TAG, "shizuku not granted, wake fallback");
+                }
+            } else {
+                Log.d(TAG, "shizuku binder not available for wake");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "shizuku wake failed: " + e);
+            // 兜底：反射失败时通过 Shizuku shell 注入 keyevent 26（adb shell 已验证可亮屏）
+            try {
+                com.wtbruh.fakelauncher.service.KeyInterceptService.shizukuExec(this, "input keyevent 26");
+                Log.d(TAG, "wake fallback: injected keyevent 26");
+                return true;
+            } catch (Throwable t) {
+                Log.e(TAG, "wake fallback input failed: " + t);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 桌面按挂机键：上锁 + 息屏。
+     * 无系统 DEVICE_POWER 权限时降级为全黑覆盖 + 背光最暗（近似息屏）。
+     */
+    private void lockAndSleep() {
+        onLocked();
+        mScreenOff = true;
+        // 真息屏：优先 Shizuku（shell 权限）goToSleep 强制休眠（可靠灭屏）
+        // 注：注入 keyevent 26 只可唤醒不可关屏（系统策略），关屏必须 goToSleep
+        if (shizukuSleep()) {
+            Log.d(TAG, "shizuku real screen off");
+            return;
+        }
+        // 兜底：stay_on_while_plugged_in=0 + screen_off_timeout=1000 仍可灭屏（需修改系统设置权限）
+        // 真息屏：关闭“充电时保持唤醒” + 屏幕超时设为 1 秒（需“修改系统设置”权限）。
+        // 验证：stay_on_while_plugged_in=0 + screen_off_timeout=1000 → 系统 1 秒内真正休眠（背光灭）。
+        try {
+            if (Settings.System.canWrite(this)) {
+                mOrigScreenTimeout = Settings.System.getInt(getContentResolver(),
+                        Settings.System.SCREEN_OFF_TIMEOUT, 30000);
+                try {
+                    mOrigStayOn = Settings.Global.getInt(getContentResolver(),
+                            Settings.Global.STAY_ON_WHILE_PLUGGED_IN, 0);
+                    Settings.Global.putInt(getContentResolver(),
+                            Settings.Global.STAY_ON_WHILE_PLUGGED_IN, 0);
+                } catch (Exception e) {
+                    Log.d(TAG, "global stayOn write skipped: " + e);
+                }
+                Settings.System.putInt(getContentResolver(),
+                        Settings.System.SCREEN_OFF_TIMEOUT, 1000);
+                Log.d(TAG, "real screen off: stayOn=0 timeout=1000");
+                // 触发用户活动，让系统立即检查超时（API33 userActivity 已移除公开签名，用反射兜底）
+                try {
+                    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    java.lang.reflect.Method m = pm.getClass().getMethod(
+                            "userActivity", long.class, boolean.class);
+                    m.invoke(pm, SystemClock.uptimeMillis(), false);
+                } catch (Exception e) {
+                    Log.d(TAG, "userActivity reflect failed: " + e);
+                }
+            } else {
+                Log.d(TAG, "no WRITE_SETTINGS");
+                if (!mWriteSettingsPrompted) {
+                    mWriteSettingsPrompted = true;
+                    setDialog(UIHelper.showCustomDialog(MainActivity.this,
+                            R.string.write_settings_prompt, (dialogInterface, keyCode1, keyEvent) -> {
+                                if (keyCode1 == KeyEvent.KEYCODE_ENTER
+                                        || keyCode1 == KeyEvent.KEYCODE_MENU
+                                        || keyCode1 == KeyEvent.KEYCODE_DPAD_CENTER) {
+                                    try {
+                                        startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                                                Uri.parse("package:" + getPackageName())));
+                                    } catch (Exception ignore) { }
+                                    return true;
+                                }
+                                return true;
+                            }));
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "timeout set failed: " + e);
+        }
+        // 尝试真正息屏（普通应用无 DEVICE_POWER 会被拒，能成功最好）；
+        // Android 13 公开 API 已移除 goToSleep，改用反射避免编译依赖
+        try {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            java.lang.reflect.Method m = pm.getClass().getMethod("goToSleep", long.class);
+            m.invoke(pm, SystemClock.uptimeMillis());
+            Log.d(TAG, "goToSleep reflect OK - real screen off");
+        } catch (Exception e) {
+            Log.e(TAG, "goToSleep reflect failed: " + e);
+        }
+    }
+
+    /**
+     * 兜底：检测屏幕超时是否被"真熄屏超时兜底"钳制为极短值（1000ms）。
+     * 进程重启后内存中的原值丢失、恢复逻辑失效，会卡在 1 秒导致频繁息屏。
+     * 发现残留（<=5000ms 非正常用户设置）就恢复为 30 秒默认。
+     */
+    private void restoreScreenTimeoutIfClamped() {
+        try {
+            if (!Settings.System.canWrite(this)) return;
+            int cur = Settings.System.getInt(getContentResolver(),
+                    Settings.System.SCREEN_OFF_TIMEOUT, -1);
+            if (cur > 0 && cur <= 5000) {
+                Settings.System.putInt(getContentResolver(),
+                        Settings.System.SCREEN_OFF_TIMEOUT, 30000);
+                Log.d(TAG, "restored clamped screen_off_timeout " + cur + " -> 30000");
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "restore check skipped: " + e);
+        }
+    }
+
+    /** 伪装内熄屏时间（秒）；<=0 表示不干预系统设置 */
+    private int getScreenTimeoutPrefSec() {
+        return PreferenceManager.getDefaultSharedPreferences(this)
+                .getInt(SettingsConstants.PREF_FAKEUI_SCREEN_TIMEOUT, 60);
+    }
+
+    /** 将伪装内熄屏时间应用到系统屏幕超时；首次保存系统原值 */
+    private void applyScreenTimeoutToSystem() {
+        int timeout = getScreenTimeoutPrefSec();
+        if (timeout <= 0) return;
+        try {
+            if (!Settings.System.canWrite(this)) return;
+            if (mOrigScreenTimeout < 0) {
+                mOrigScreenTimeout = Settings.System.getInt(getContentResolver(),
+                        Settings.System.SCREEN_OFF_TIMEOUT, 30000);
+            }
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.SCREEN_OFF_TIMEOUT, timeout);
+            Log.d(TAG, "fake screen timeout applied: " + timeout + "ms");
+        } catch (Exception e) {
+            Log.d(TAG, "applyScreenTimeoutToSystem err: " + e);
+        }
+    }
+
+    /** 退出伪装：恢复系统原始屏幕超时与保持唤醒设置 */
+    private void restoreOrigScreenTimeout() {
+        if (mOrigScreenTimeout > 0) {
+            try {
+                Settings.System.putInt(getContentResolver(),
+                        Settings.System.SCREEN_OFF_TIMEOUT, mOrigScreenTimeout);
+            } catch (Exception ignore) { }
+            mOrigScreenTimeout = -1;
+        }
+        if (mOrigStayOn >= 0) {
+            try {
+                Settings.Global.putInt(getContentResolver(),
+                        Settings.Global.STAY_ON_WHILE_PLUGGED_IN, mOrigStayOn);
+            } catch (Exception ignore) { }
+            mOrigStayOn = -1;
+        }
+    }
+
+    /** 亮屏：移除黑屏覆盖并恢复背光。 */
+    private void wakeFromSleep() {
+        mScreenOff = false;
+        restoreScreenTimeoutIfClamped();
+        // 恢复系统屏幕超时 + 保持唤醒
+        if (mOrigScreenTimeout > 0) {
+            try {
+                Settings.System.putInt(getContentResolver(),
+                        Settings.System.SCREEN_OFF_TIMEOUT, mOrigScreenTimeout);
+            } catch (Exception ignore) { }
+            mOrigScreenTimeout = -1;
+        }
+        if (mOrigStayOn >= 0) {
+            try {
+                Settings.Global.putInt(getContentResolver(),
+                        Settings.Global.STAY_ON_WHILE_PLUGGED_IN, mOrigStayOn);
+            } catch (Exception ignore) { }
+            mOrigStayOn = -1;
+        }
+    }
+
     @Override
     public void onScreenOn() {
+        mScreenOff = false; // 系统真实亮屏，同步应用标志
+        restoreScreenTimeoutIfClamped();
+        if (mOrigScreenTimeout > 0) {
+            try {
+                Settings.System.putInt(getContentResolver(),
+                        Settings.System.SCREEN_OFF_TIMEOUT, mOrigScreenTimeout);
+            } catch (Exception ignore) { }
+            mOrigScreenTimeout = -1;
+        }
+        if (mOrigStayOn >= 0) {
+            try {
+                Settings.Global.putInt(getContentResolver(),
+                        Settings.Global.STAY_ON_WHILE_PLUGGED_IN, mOrigStayOn);
+            } catch (Exception ignore) { }
+            mOrigStayOn = -1;
+        }
         onLocked();
     }
     @Override
     public void onScreenOff() {
+        mScreenOff = true; // 系统真实息屏，同步应用标志
         // Clear dialog on screen off
         if (dialog != null && dialog.isShowing()) dialog.dismiss();
         dialog = null;

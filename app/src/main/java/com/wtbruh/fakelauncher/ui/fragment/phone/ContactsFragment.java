@@ -18,8 +18,9 @@ import android.view.ViewGroup;
 
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
-import com.wtbruh.fakelauncher.ui.view.SingleTextviewAdapter;
+import com.wtbruh.fakelauncher.ui.view.TwoLineTextAdapter;
 import com.wtbruh.fakelauncher.utils.CallHelper;
+import com.wtbruh.fakelauncher.utils.UIHelper;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 import java.util.ArrayList;
@@ -29,9 +30,9 @@ import java.util.List;
 public class ContactsFragment extends BaseFragment {
     private static final String TAG = ContactsFragment.class.getSimpleName();
     private RecyclerView contactsView;
-    private SingleTextviewAdapter adapter;
+    private TwoLineTextAdapter adapter;
     private final List<ContactEntry> contacts = new ArrayList<>();
-    private final List<String> displayData = new ArrayList<>();
+    private final List<String[]> displayData = new ArrayList<>();
 
     public static ContactsFragment newInstance() { return new ContactsFragment(); }
 
@@ -57,17 +58,19 @@ public class ContactsFragment extends BaseFragment {
         int position = adapter.getSelectedPosition();
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_UP -> {
-                if (position > 0) {
-                    contactsView.scrollToPosition(position - 1);
-                    adapter.setSelectedPosition(position - 1);
-                }
+                // 循环：到顶后按上跳到最后一个
+                int target = position - 1;
+                if (target < 0) target = adapter.getItemCount() - 1;
+                contactsView.scrollToPosition(target);
+                adapter.setSelectedPosition(target);
                 return true;
             }
             case KeyEvent.KEYCODE_DPAD_DOWN -> {
-                if (position < adapter.getItemCount() - 1) {
-                    contactsView.scrollToPosition(position + 1);
-                    adapter.setSelectedPosition(position + 1);
-                }
+                // 循环：到底后按下跳到第一个
+                int target = position + 1;
+                if (target >= adapter.getItemCount()) target = 0;
+                contactsView.scrollToPosition(target);
+                adapter.setSelectedPosition(target);
                 return true;
             }
             case KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER -> {
@@ -95,7 +98,7 @@ public class ContactsFragment extends BaseFragment {
         contactsView.setLayoutManager(new LinearLayoutManager(requireContext()));
         contactsView.setFocusable(false);
         contactsView.setItemAnimator(null);
-        adapter = new SingleTextviewAdapter(displayData);
+        adapter = new TwoLineTextAdapter(displayData);
         contactsView.setAdapter(adapter);
         refreshUI();
     }
@@ -132,7 +135,15 @@ public class ContactsFragment extends BaseFragment {
 
     private void callContact(ContactEntry contact) {
         if (contact.number == null || contact.number.isEmpty()) return;
-        CallHelper.placeCall(requireContext(), contact.number);
+        boolean placed = CallHelper.placeCall(requireContext(), contact.number);
+        if (placed) {
+            android.content.Intent i = new android.content.Intent(requireContext(), com.wtbruh.fakelauncher.OutgoingCallActivity.class)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .putExtra(com.wtbruh.fakelauncher.OutgoingCallActivity.EXTRA_NUMBER, contact.number);
+            requireContext().startActivity(i);
+        } else {
+            UIHelper.showCustomDialog(requireContext(), R.string.dialer_call_fail, null);
+        }
     }
 
     private void deleteContact(ContactEntry contact) {
@@ -181,7 +192,7 @@ public class ContactsFragment extends BaseFragment {
                 if (n == null || n.trim().isEmpty()) n = p;
                 ContactEntry entry = new ContactEntry(cursor.getLong(id), cursor.getString(lookup), n, p);
                 contacts.add(entry);
-                displayData.add(n + "  " + p);
+                displayData.add(new String[]{n, p});
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to read contacts", e);

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical"
+    tools:context=".ui.fragment.phone.BrightnessFragment">
+
+    <!-- 标题（顶部） -->
+    <TextView
+        android:id="@+id/brightness_title"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/brightness_title"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        app:autoSizeTextType="uniform" />
+
+    <!-- 图标：固定大小，弹性容器使其居中于标题和进度条之间 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/brightness_logo"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:contentDescription="@string/brightness_title"
+            app:srcCompat="@drawable/ic_brightness" />
+    </LinearLayout>
+
+    <!-- 进度条 + 数字（作为一个整体） -->
+    <ProgressBar
+        android:id="@+id/brightness_bar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="50" />
+
+    <TextView
+        android:id="@+id/brightness_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="50"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="42sp" />
+
+    <!-- 数字底部与底部按钮栏顶部的固定间隙（往上一点） -->
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+</LinearLayout>

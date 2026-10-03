@@ -121,7 +121,7 @@ public class TelephonyHelper {
         if (sub == 0) {
             if (mTm1 != null) return mTm1;
             mTm1 = buildTmForSlot(0);
-            return mTm1 != null ? mTm1 : mTelephonyManager;
+            return mTm1;
         }
         if (sub == 1) {
             if (mTm2 != null) return mTm2;
@@ -144,7 +144,8 @@ public class TelephonyHelper {
                 Log.e(TAG, "createForSubscriptionId failed for slot=" + slot, e);
             }
         }
-        return mTelephonyManager;
+        // 该卡槽无 SIM：返回 null，避免误用其他卡槽（默认 TM）的状态
+        return null;
     }
 
     /** 按 SIM 卡槽索引获取 SubscriptionInfo。 */

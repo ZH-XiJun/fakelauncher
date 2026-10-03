@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context=".ui.fragment.phone.SmsComposeFragment">
+
+    <TextView
+        android:id="@+id/sms_compose_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/sms_compose_input"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/menu_rounded_bg"
+        android:gravity="top|start"
+        android:hint="@string/sms_compose_hint"
+        android:inputType="textMultiLine"
+        android:minHeight="160dp"
+        android:padding="16dp"
+        android:textColor="@color/white"
+        android:textColorHint="#88FFFFFF"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sms_compose_title" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,6 +19,8 @@ public final class SettingsConstants {
     public static final String PREF_DPAD_CENTER_OPEN_MENU = "dpad_center_open_menu";
     public static final String PREF_GALLERY_ACCESS = "gallery_access";
     public static final String PREF_VIBRATE_ON_START = "vibrate_on_start";
+    // 情景模式：ring_vibrate=响铃并振动 / vibrate_only=仅振动 / silent=静音
+    public static final String PREF_SCENE_MODE = "scene_mode";
     public static final String PREF_STYLE = "style";
     public static final String PREF_TIME_SHOW_SECOND = "time_show_second";
     public static final String PREF_SHOW_ACCURATE_BATTERY = "show_accurate_battery";
@@ -33,4 +35,25 @@ public final class SettingsConstants {
     public static final String PREF_MUSIC_ITEMS = "music_items";
     public static final String PREF_CRASH_SHOW_LOG = "crash_show_log";
     public static final String PREF_SCREENSHOT_BEFORE_FAKEUI = "screenshot_before_fakeui";
+
+    /** 主菜单中额外显示的已安装应用（包名，用分号分隔） */
+    public static final String PREF_MENU_EXTERNAL_APPS = "menu_external_apps";
+    /** 工具箱中显示的已安装应用（包名，用分号分隔） */
+    public static final String PREF_TOOLBOX_EXTERNAL_APPS = "toolbox_external_apps";
+    /** 工具箱应用重命名（pkg=新名称，用分号分隔） */
+    public static final String PREF_TOOLBOX_DISPLAY_NAMES = "toolbox_display_names";
+    /** 启动快捷键：按键（空/关闭则不生效） */
+    public static final String PREF_HOTKEY_KEY = "hotkey_key";
+    /** 启动快捷键：触发方式 long_press / double_press / triple_press */
+    public static final String PREF_HOTKEY_METHOD = "hotkey_method";
+    /** 启动快捷键：无障碍服务指引 */
+    public static final String PREF_HOTKEY_GUIDE = "hotkey_guide";
+    /** 启动快捷键：自定义按键录入中标记 */
+    public static final String PREF_HOTKEY_CAPTURE = "hotkey_capture";
+    /** 启动快捷键：自定义按键 keycode */
+    public static final String PREF_HOTKEY_CUSTOM_KEY = "hotkey_custom_key";
+    /** 启动快捷键：一键开启无障碍（通过 Shizuku 绕过受限设置） */
+    public static final String PREF_HOTKEY_ENABLE_ACCESSIBILITY = "hotkey_enable_accessibility";
+    /** 伪装界面熄屏时间（秒；<=0 表示不干预系统设置） */
+    public static final String PREF_FAKEUI_SCREEN_TIMEOUT = "fakeui_screen_timeout";
 }

@@ -55,6 +55,11 @@ public class OptionMenuFragment extends BaseFragment {
                 }
             }
             case KeyEvent.KEYCODE_BACK -> requireSubActivity().closeOptionMenu();
+            case KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_SOFT_LEFT -> {
+                // 左软键（菜单键）= 底部“确定”：确认当前选项（与方向键中间确定一致）
+                return listener.onKeyUp(KeyEvent.KEYCODE_DPAD_CENTER, event, position,
+                        adapter.getTextView(position));
+            }
         }
         return listener.onKeyUp(keyCode, event, position, adapter.getTextView(position));
     }

@@ -279,8 +279,19 @@ public class PhoneWindowManagerHook extends HookHelper {
                 if (PinningHook.getLockState()) {
                     XposedHelpers.setBooleanField(param.thisObject, "mPowerKeyHandled", true);
                     XposedHelpers.callMethod(param.thisObject, "sendCloseSystemWindows");
-                    Object mWindowManagerFuncs = XposedHelpers.getObjectField(param.thisObject, "mWindowManagerFuncs");
-                    XposedHelpers.callMethod(mWindowManagerFuncs, "shutdown", false);
+                    // 伪关机菜单：长按电源键弹出 关机/重启 选择界面（不再直接关机）
+                    try {
+                        Context mContext = (Context) getObjectField(param.thisObject, "mContext");
+                        if (mContext != null) {
+                            android.content.Intent i = new android.content.Intent();
+                            i.setClassName("com.wtbruh.fakelauncher", "com.wtbruh.fakelauncher.ShutdownActivity");
+                            i.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(i);
+                            logI(TAG, "power long press -> fake shutdown menu");
+                        }
+                    } catch (Throwable t) {
+                        logE(TAG, "start ShutdownActivity err: " + t);
+                    }
                     param.setResult(null);
                 }
             }

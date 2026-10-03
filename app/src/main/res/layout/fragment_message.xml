@@ -25,4 +25,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/message_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/menu_rounded_bg"
+        android:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

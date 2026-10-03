@@ -15,6 +15,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -49,6 +50,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rikka.shizuku.Shizuku;
@@ -159,6 +162,13 @@ public class PrivilegeProvider {
                 // Filter out permissions defined by Android, other program defined permissions are not required
                 // 筛选出Android的权限，其他程序定义的权限不需要
                 if (permission.contains("android.permission.")) {
+                    // 通知使用权为系统特殊权限，必须在系统设置手动开启；
+                    // 且设备有 Device Owner 时系统会限制该设置（受限制的设置）。
+                    // 该服务当前未被启用，不参与"全部权限"判定，避免一直显示权限不足。
+                    if (permission.equals("android.permission.BIND_NOTIFICATION_LISTENER_SERVICE")) continue;
+                    // 展锐等 ROM 不会授予 MODIFY_AUDIO_ROUTING（granted 恒为 false），
+                    // 但免提切换已有 setSpeakerphoneOn 兜底；不参与"全部权限"判定，避免一直误报权限不足。
+                    if (permission.equals("android.permission.MODIFY_AUDIO_ROUTING")) continue;
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                         switch (permission) {
                             case Manifest.permission.READ_MEDIA_AUDIO:
@@ -205,6 +215,17 @@ public class PrivilegeProvider {
             arrayList.add("pm grant com.wtbruh.fakelauncher " + permission);
         }
         runCommand(context, method, arrayList.toArray(new String[0]));
+        // WRITE_SETTINGS 是特殊权限，pm grant 无法授予，需跳系统设置页手动开启
+        if (!Settings.System.canWrite(context)) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                        Uri.parse("package:" + context.getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            } catch (Exception e) {
+                Log.e(TAG, "write settings jump failed: " + e);
+            }
+        }
     }
 
     /**
@@ -377,6 +398,14 @@ public class PrivilegeProvider {
      * @return 设备管理员权限级别对应的常量 | Constant corresponding to device admin level
      */
     public static int checkDeviceAdmin(Context context) {
+        // 优先识别应用自身已是 Device Owner / Device Admin（最高权限，不依赖 Dhizuku 开关；
+        // 避免 enable_dhizuku 开着但 Dhizuku 已不是设备所有者时误报“未激活”）
+        DevicePolicyManager dpmSelf = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        if (dpmSelf != null) {
+            if (dpmSelf.isDeviceOwnerApp(context.getPackageName())) return DEVICE_OWNER;
+            if (dpmSelf.isAdminActive(new ComponentName(context, DeviceAdminReceiver.class))) return DEVICE_ADMIN;
+        }
+
         boolean dhizuku = PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(SettingsConstants.PREF_ENABLE_DHIZUKU, false);
 
@@ -425,14 +454,22 @@ public class PrivilegeProvider {
     public static Bundle runCommand(Context context, int method, String... cmd) {
         if (method == PRIVILEGE_SHIZUKU && context != null) {
             AtomicReference<Bundle> bundle = new AtomicReference<>();
+            CountDownLatch latch = new CountDownLatch(1);
             useShizuku(context, (iBinder, connection) -> {
                 try {
                     bundle.set(IUserService.Stub.asInterface(iBinder).runMultiCmd(cmd));
                     Shizuku.unbindUserService(getShizukuUserServiceArgs(context), connection, true);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
+                } finally {
+                    latch.countDown();
                 }
             });
+            try {
+                latch.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "runCommand shizuku interrupted", e);
+            }
             return bundle.get();
         }
 

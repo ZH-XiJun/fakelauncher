@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.45"/>
+        app:layout_constraintGuide_percent="0.32"/>
 
     <TextView
         android:id="@+id/appName"
@@ -49,22 +49,36 @@
 
     <Button
         android:id="@+id/jumpToGithub"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="50dp"
         android:text="@string/pref_jump_to_github"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/declareBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appVersion" />
+        app:layout_constraintTop_toBottomOf="@+id/appVersion"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="24dp" />
+
+    <Button
+        android:id="@+id/declareBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:minWidth="0dp"
+        android:text="@string/pref_about_declaration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/jumpToGithub"
+        app:layout_constraintTop_toTopOf="@+id/jumpToGithub"
+        android:layout_marginEnd="24dp" />
+
     <TextView
         android:id="@+id/debugVariant"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="@string/pref_debug_variant"
+        android:layout_height="50dp"
+        android:text="原作者what_the_bruhhhh\n修改作者：败亡D假期"
         android:textAlignment="center"
-        android:visibility="gone"
         app:autoSizeTextType="uniform"
         app:layout_constraintTop_toBottomOf="@+id/jumpToGithub"
         android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"/>
+        android:layout_marginEnd="15dp"
+        tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".IncomingCallActivity">
+
+    <!-- 中央内容：联系人姓名 → 电话号码 → 来电图标 + 提示 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="30dp"
+        android:paddingBottom="90dp">
+
+        <!-- 联系人姓名（大字，上方） -->
+        <TextView
+            android:id="@+id/incoming_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/fake_incall_unknown"
+            android:textColor="@color/white"
+            android:textSize="44sp"
+            android:textStyle="bold" />
+
+        <!-- 电话号码（小字） -->
+        <TextView
+            android:id="@+id/incoming_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="marquee"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:alpha="0.7"
+            android:visibility="gone" />
+
+        <!-- 来电图标 -->
+        <ImageView
+            android:id="@+id/incoming_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="26dp"
+            android:contentDescription="@string/incoming_call_title"
+            android:src="@drawable/ic_incoming_call" />
+
+        <!-- 通话计时（接通后显示，与呼出界面统一） -->
+        <TextView
+            android:id="@+id/incoming_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="00:00"
+            android:textColor="@color/white"
+            android:textSize="36sp"
+            android:visibility="gone" />
+
+        <!-- 提示 -->
+        <TextView
+            android:id="@+id/incoming_footer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:alpha="0.7"
+            android:text="@string/incoming_ignore_hint"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <!-- 左下角：接听 -->
+    <TextView
+        android:id="@+id/btn_answer"
+        android:layout_width="110dp"
+        android:layout_height="52dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_incall"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/incoming_answer"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- 右下角：挂断 -->
+    <TextView
+        android:id="@+id/btn_ignore"
+        android:layout_width="110dp"
+        android:layout_height="52dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_incall"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/incoming_hangup"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+</FrameLayout>

@@ -27,6 +27,7 @@ public class UserService extends IUserService.Stub {
 
     @Override
     public void destroy() {
-        System.exit(0);
+        // 不退出进程：Shizuku 解绑时进程存活，KeyInterceptService 不随之崩溃，native 按键不丢失（2026-09-29 修复无法唤醒根因）
+        android.util.Log.d("UserService", "destroy called - keep process alive");
     }
 }

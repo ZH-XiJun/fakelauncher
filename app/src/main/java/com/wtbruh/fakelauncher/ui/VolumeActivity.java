@@ -1,6 +1,7 @@
 package com.wtbruh.fakelauncher.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,12 +22,21 @@ import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
+/**
+ * 音量调节（与亮度调节同风格）：0~100 无百分号，可输入数字控制。
+ * 数字键输入（不预览），左菜单键删除末位，右菜单键/确定键保存并返回；
+ * 音量键与方向键即时调整（±1 系统步进）。
+ */
 public class VolumeActivity extends BaseAppCompatActivity {
     private AudioManager mAudioManager;
     private ProgressBar bar;
     private ImageView icon;
     private TextView text;
     private final int AUDIO_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+    private int mMaxVol = 15;
+    private int percent = 50;                    // 0~100 百分比（显示与控制值）
+    private final StringBuilder input = new StringBuilder(); // 编辑输入串
+    private int shownOverride = -1;              // 无输入删除时仅改显示（-1=未启用），不影响实际音量
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +49,39 @@ public class VolumeActivity extends BaseAppCompatActivity {
             return insets;
         });
         init();
+        // Android 13 返回预测可能不走 onKeyUp：注册返回回调，保证右菜单键必定保存并返回
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                applyInput();
+                finish();
+            }
+        });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // singleTop 复用：音量键再次按下时刷新当前系统音量
+        if (mAudioManager != null) {
+            shownOverride = -1;
+            getVolume();
+        }
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return switch (keyCode) {
-            // Volume key interruption
-            // 音量键拦截
-            case KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN -> {
+            // 音量键/方向键即时调整；BACK 拦截（由 onKeyUp 保存返回）
+            case KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN,
+                 KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_RIGHT,
+                 KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT -> {
                 adjustVolume(keyCode);
+                yield true;
+            }
+            case KeyEvent.KEYCODE_BACK -> {
+                applyInput();
+                finish();
                 yield true;
             }
             default -> super.onKeyDown(keyCode, event);
@@ -69,58 +104,115 @@ public class VolumeActivity extends BaseAppCompatActivity {
         icon = findViewById(R.id.volume_logo);
         text = findViewById(R.id.volumeLevel);
         icon.setTag("unmute");
-        // max volume defined in system 系统定义的最大音量
-        int mMaxVol = mAudioManager.getStreamMaxVolume(AUDIO_STREAM_TYPE);
-        bar.setMax(mMaxVol);
+        mMaxVol = mAudioManager.getStreamMaxVolume(AUDIO_STREAM_TYPE);
+        if (mMaxVol <= 0) mMaxVol = 15;
+        bar.setMax(100);
         getVolume();
     }
 
     /**
-     * Adjust volume and show current volume
-     * 调整音量，并同步显示
-     * @param keyCode 键值
+     * Adjust volume and show current volume 调整音量（音量键/方向键，即时生效）
      */
     private void adjustVolume(int keyCode) {
         if (mAudioManager == null) return;
         int operation;
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_DPAD_UP:
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
                 operation = AudioManager.ADJUST_RAISE;
                 break;
             case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+            case KeyEvent.KEYCODE_DPAD_LEFT:
                 operation = AudioManager.ADJUST_LOWER;
                 break;
             default:
                 return;
         }
         mAudioManager.adjustStreamVolume(AUDIO_STREAM_TYPE, operation, AudioManager.FLAG_PLAY_SOUND);
+        input.setLength(0);
+        shownOverride = -1;
         getVolume();
     }
 
     private void getVolume() {
-        // Current volume 当前音量大小
+        // Current volume 当前音量 → 0~100
         int volume = mAudioManager.getStreamVolume(AUDIO_STREAM_TYPE);
-        // Volume bar 音量条
-        bar.setProgress(volume);
-        // Volume text view 音量文字显示
-        /*
-        text.setText(String.valueOf(
-                // The volume range is not 0~100 in common, convert it by an expression
-                // x: result, y: max vol from system, z: current vol
-                // Expression: 100/y=x/z, x=100z/y
-                // Android 音量范围普遍不是0~100，通过公式转换成0~100
-                // x：最终结果，y：系统最大音量, z：当前音量
-                // 公式：100/y=x/z，即x=100z/y
-                volume*100/mMaxVol
-        ));
-         */
-        text.setText(String.valueOf(volume)); // Originally display volume 直接按照系统提供的范围显示音量，不转换为0~100形式，避免bug
-        if (volume == 0 && "unmute".equals(icon.getTag())) {
+        percent = Math.round(volume * 100f / mMaxVol);
+        refresh();
+    }
+
+    /** 刷新进度条与数字：编辑中显示输入串（0~100 无%），否则显示当前值 */
+    private void refresh() {
+        int shown;
+        if (input.length() > 0) {
+            shown = Math.min(100, Integer.parseInt(input.toString()));
+        } else if (shownOverride >= 0) {
+            shown = shownOverride;
+        } else {
+            shown = percent;
+        }
+        bar.setProgress(shown);
+        text.setText(String.valueOf(shown));
+        if (shown == 0 && "unmute".equals(icon.getTag())) {
             icon.setImageResource(R.drawable.ic_volume_speaker_off);
             icon.setTag("mute");
-        } else if (volume != 0 && "mute".equals(icon.getTag())) {
+        } else if (shown != 0 && "mute".equals(icon.getTag())) {
             icon.setImageResource(R.drawable.ic_volume_speaker_on);
             icon.setTag("unmute");
+        }
+    }
+
+    /** 应用输入值（0~100）到媒体音量（保存时才调用，不预览） */
+    private void applyInput() {
+        if (input.length() > 0) {
+            percent = Math.min(100, Integer.parseInt(input.toString()));
+            input.setLength(0);
+        }
+        shownOverride = -1;
+        int sysVol = Math.round(percent * mMaxVol / 100f);
+        mAudioManager.setStreamVolume(AUDIO_STREAM_TYPE, sysVol, 0);
+        getVolume();
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // 数字键：编辑输入新值（不实时预览）
+        if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {
+            int digit = keyCode - KeyEvent.KEYCODE_0;
+            if (input.length() < 3) {
+                input.append(digit);
+                if (Integer.parseInt(input.toString()) > 100) {
+                    input.deleteCharAt(input.length() - 1);
+                }
+            }
+            refresh();
+            return true;
+        }
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_MENU:
+                // 左菜单键：删除末位数字——有输入删输入；无输入仅改显示值，不影响实际音量
+                if (input.length() > 0) {
+                    input.deleteCharAt(input.length() - 1);
+                } else {
+                    shownOverride = percent / 10;
+                }
+                refresh();
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                // 右菜单键：保存并返回
+                applyInput();
+                finish();
+                return true;
+            case KeyEvent.KEYCODE_ENTER:
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+                // 方向键中间确定：保存并返回
+                applyInput();
+                finish();
+                return true;
+            default:
+                return false;
         }
     }
 }

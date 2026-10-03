@@ -51,8 +51,14 @@ public class MenuFragment extends BaseFragment {
     }
     @Override
     public void onResume() {
-        setFooterBar(L_DEFAULT, R_DEFAULT);
         super.onResume();
+        // 重新读取菜单列表：菜单管理配置可能已变更
+        Bundle[] newList = UIHelper.getMainMenuAppList(requireContext());
+        boolean changed = newList.length != (mAppList == null ? 0 : mAppList.length);
+        mAppList = newList;
+        if (mNumber >= mAppList.length) mNumber = 0;
+        switchSection(mNumber);
+        setFooterBar(L_DEFAULT, R_DEFAULT);
     }
 
     @Override
@@ -86,7 +92,7 @@ public class MenuFragment extends BaseFragment {
     }
 
     private void init() {
-        mAppList = UIHelper.getInternalAppList(UIHelper.getCurrentUIType(requireContext()));
+        mAppList = UIHelper.getMainMenuAppList(requireContext());
         switchSection(mNumber);
         setFooterBar(L_DEFAULT, R_DEFAULT);
         mGesture = new GestureDetector(requireContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -146,8 +152,15 @@ public class MenuFragment extends BaseFragment {
         TextView appName = rootView.findViewById(R.id.appName);
         try {
             Bundle appInfo = mAppList[number];
-            appIcon.setImageResource(appInfo.getInt(UIHelper.APP_ICON_RES));
-            appName.setText(appInfo.getInt(UIHelper.APP_NAME));
+            if (UIHelper.isExternalApp(appInfo)) {
+                // 外部应用：真实应用图标 + 应用名（未安装时回退通用图标）
+                appIcon.setImageDrawable(UIHelper.getExternalAppIcon(requireContext(),
+                        appInfo.getString(UIHelper.EXT_APP_PKG)));
+                appName.setText(appInfo.getString(UIHelper.EXT_APP_LABEL));
+            } else {
+                appIcon.setImageResource(appInfo.getInt(UIHelper.APP_ICON_RES));
+                appName.setText(appInfo.getInt(UIHelper.APP_NAME));
+            }
         } catch (IndexOutOfBoundsException | NullPointerException e) {
             Log.e(TAG, "WTF is going on? Got null mAppList!", e);
         }
@@ -155,12 +168,19 @@ public class MenuFragment extends BaseFragment {
 
     /**
      * Launch the corresponding activity using the var "number"<br>
-     * 通过number启动对应的Activity
+     * 通过number启动对应的App
      * @param number 第几个App
      */
     private void startApp (int number) {
+        if (number < 0 || number >= mAppList.length) return;
+        Bundle appInfo = mAppList[number];
+        if (UIHelper.isExternalApp(appInfo)) {
+            // 外部应用：直接启动（自动处理屏幕固定解锁）
+            UIHelper.launchExternalApp(requireContext(), appInfo.getString(UIHelper.EXT_APP_PKG));
+            return;
+        }
         Fragment fragment = UIHelper.findFragmentByName(
-                mAppList[number].getString(UIHelper.TARGET_FRAGMENT));
+                appInfo.getString(UIHelper.TARGET_FRAGMENT));
 
         if (fragment != null) ((SubActivity)requireActivity()).fragmentStarter(fragment);
     }

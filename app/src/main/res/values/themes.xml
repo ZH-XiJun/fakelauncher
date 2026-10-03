@@ -9,6 +9,12 @@
         <item name="android:windowBackground">@color/black</item>
     </style>
 
+    <!-- 伪关机弹窗：无进入/退出动画，全屏黑瞬间盖住系统菜单 -->
+    <style name="Theme.FakeLauncher.ShutdownNoAnim" parent="Theme.FakeLauncher">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
     <style name="Theme.FakeLauncher.Settings" parent="Base.Theme.FakeLauncher">
         <item name="android:windowBackground">?attr/colorSurface</item>
         <item name="preferenceTheme">@style/ThemeOverlay.FakeLauncher.Preference</item>
@@ -126,5 +132,12 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:divider">@null</item>
         <item name="android:dividerHeight">0dp</item>
+    </style>
+
+    <!-- 来电界面：透明窗口，浮在伪装桌面上方 -->
+    <style name="Theme.FakeLauncher.Translucent" parent="Theme.FakeLauncher">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

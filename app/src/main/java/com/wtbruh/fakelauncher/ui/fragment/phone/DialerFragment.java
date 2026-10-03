@@ -71,6 +71,8 @@ public class DialerFragment extends BaseFragment {
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_POUND) {
             if (content.equals(getString(R.string.dialer_empty))) {
                 setFooterBar(R_EDITTEXT);
+                // 输入数字：切回数字大字（66sp），与占位提示的单字高度保持一致
+                mEditText.setTextSize(66);
                 mEditText.setText(UIHelper.textEditor(keyCode, ""));
             } else {
                 mEditText.setText(UIHelper.textEditor(keyCode, content));
@@ -85,6 +87,8 @@ public class DialerFragment extends BaseFragment {
                 // 如果有字，右键应该是删除键
                 if (content.length() == 1) {
                     setFooterBar(R_DEFAULT);
+                    // 删除到空：恢复占位提示字号（单字高度与数字一致）
+                    mEditText.setTextSize(51);
                     mEditText.setText(R.string.dialer_empty);
                 } else {
                     mEditText.setText(UIHelper.textEditor(keyCode, content));
@@ -111,12 +115,17 @@ public class DialerFragment extends BaseFragment {
                 }
             }
 
-            // Real call + forced fake in-call cover.
+            // Real call: dial out via system TelecomManager, then show the feature-phone in-call UI.
+            // 真实拨号：通过系统拨号接口真正呼出电话，呼出成功后显示老人机风格通话界面。
             String number = mEditText.getText().toString().trim();
             if (!number.isEmpty() && !number.equals(getString(R.string.dialer_empty))) {
-                //TODO: real incall ui
-                Log.d(TAG, "Attempting to dial with fake in-call cover: " + number);
-                placeFakeCall(number);
+                Log.d(TAG, "Attempting to place a real call to: " + number);
+                boolean placed = CallHelper.placeCall(requireContext(), number);
+                if (placed) {
+                    startOutgoingCall(number);
+                } else {
+                    UIHelper.showCustomDialog(requireContext(), R.string.dialer_call_fail, null);
+                }
             }
         } else {
             return false;
@@ -129,7 +138,13 @@ public class DialerFragment extends BaseFragment {
         mEditText = rootView.findViewById(R.id.dialer);
         if (getArguments() != null) {
             mEditText.setText(getArguments().getString(ARG_INPUT));
+            mEditText.setTextSize(66);
             setFooterBar(R_EDITTEXT);
+        } else if (mEditText.getText().equals(getString(R.string.dialer_empty))) {
+            // 占位提示：字号调小（51sp），使中文单字高度与输入数字（66sp）在屏幕上一致
+            mEditText.setTextSize(51);
+        } else {
+            mEditText.setTextSize(66);
         }
 
     }
@@ -138,10 +153,12 @@ public class DialerFragment extends BaseFragment {
         return false;
     }
 
-    private void placeFakeCall(String number) {
-        Bundle args = new Bundle();
-        args.putString(FakeInCallFragment.ARG_NUMBER, number);
-        requireSubActivity().fragmentStarter(FakeInCallFragment.newInstance(args));
+    /** 呼出成功：启动独立呼出界面 Activity（避免 lock task 解除导致 SubActivity 被关、界面消失）。 */
+    private void startOutgoingCall(String number) {
+        android.content.Intent i = new android.content.Intent(requireContext(), com.wtbruh.fakelauncher.OutgoingCallActivity.class)
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                .putExtra(com.wtbruh.fakelauncher.OutgoingCallActivity.EXTRA_NUMBER, number);
+        requireContext().startActivity(i);
     }
 
     private void doSelfDestroy() {

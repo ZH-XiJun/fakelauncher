@@ -203,7 +203,6 @@
     <string name="pref_page_about">关于</string>
     <string name="pref_page_about_summary">原作者what_the_bruhhhh\n修改作者：败亡D假期</string>
     <string name="pref_jump_to_github">跳转原作者 GitHub</string>
-    <string name="pref_about_declaration">声明</string>
     <string name="pref_debug_variant">正在运行Debug版，开发人员功能已启用</string>
 
     <string name="fun_restore_touch">恢复触控</string>

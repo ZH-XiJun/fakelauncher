@@ -59,8 +59,5 @@ public class AboutFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPO_URL));
             startActivity(intent);
         });
-        Button declareBtn = rootView.findViewById(R.id.declareBtn);
-        declareBtn.setOnClickListener(v ->
-                ((SettingsActivity) requireActivity()).showChangelogDialog());
     }
 }

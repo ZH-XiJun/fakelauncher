@@ -6,17 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 
@@ -32,7 +24,7 @@ import java.util.TimerTask;
 /**
  * Overlay 式状态栏控制器。
  * 在目标 View 的 {@link android.view.ViewOverlay} 上叠加绘制状态图标：
- * 双卡信号、WiFi、蓝牙、飞行模式、电池。
+ * 双卡信号、蓝牙、电池。
  * <p>
  * 用法：
  * <pre>
@@ -59,7 +51,6 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
     private Drawable mBatteryDrawable;
     private int mBatteryLevel = 4;
     private int mPreviousBattery = -1;
-    private boolean mCharging;
     private Timer mChargingAnimTimer;
 
     // ── 双卡信号 ──
@@ -68,18 +59,9 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
     private boolean mDualSim;           // 设备是否双卡
     private boolean mSim1Ready, mSim2Ready;
 
-    // ── WiFi ──
-    private Drawable mWifiDrawable;
-    private int mWifiLevel = -1;        // -1 隐藏，0-3 显示
-    private WifiManager mWifiManager;
-
     // ── 蓝牙 ──
     private Drawable mBluetoothDrawable;
     private boolean mBluetoothOn;
-
-    // ── 飞行模式 ──
-    private Drawable mAirplaneDrawable;
-    private boolean mAirplaneMode;
 
     // ── 轮询 ──
     private Timer mPollTimer;
@@ -93,10 +75,6 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
     private static final int[] SIGNAL_ICONS = {
             R.drawable.ic_signal_0, R.drawable.ic_signal_1,
             R.drawable.ic_signal_2, R.drawable.ic_signal_3, R.drawable.ic_signal_4
-    };
-    private static final int[] WIFI_ICONS = {
-            R.drawable.ic_wifi_0, R.drawable.ic_wifi_1,
-            R.drawable.ic_wifi_2, R.drawable.ic_wifi_3
     };
     private static final int[] BATTERY_ICONS = {
             R.drawable.ic_battery_0,  // 0-10%  电量告急，将军救急
@@ -131,7 +109,6 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
     public void start(long pollMs) {
         // 设备信息（只取一次）
         mDualSim = mTelephonyHelper.getPhoneCount() >= 2;
-        mWifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         // 初始状态立即同步
         Intent batteryStatus = mContext.registerReceiver(null,
@@ -160,9 +137,7 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
             removeDrawable(mBatteryDrawable);   mBatteryDrawable = null;
             removeDrawable(mSignal1Drawable);   mSignal1Drawable = null;
             removeDrawable(mSignal2Drawable);   mSignal2Drawable = null;
-            removeDrawable(mWifiDrawable);      mWifiDrawable = null;
             removeDrawable(mBluetoothDrawable); mBluetoothDrawable = null;
-            removeDrawable(mAirplaneDrawable);  mAirplaneDrawable = null;
         });
     }
 
@@ -229,20 +204,8 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
 
     private void syncAll() {
         syncBattery();
-        // 飞行模式优先：开启时隐藏信号/WiFi/BT
-        mAirplaneMode = isAirplaneModeOn();
-        if (mAirplaneMode) {
-            mSignal1Level = 0;
-            mSignal2Level = 0;
-            mSim1Ready = false;
-            mSim2Ready = false;
-            mWifiLevel = -1;
-            mBluetoothOn = false;
-        } else {
-            syncSignals();
-            syncWifi();
-            syncBluetooth();
-        }
+        syncSignals();
+        syncBluetooth();
         redrawAll();
     }
 
@@ -272,16 +235,6 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
         }
     }
 
-    private void syncWifi() {
-        boolean enabled = isWifiEnabled();
-        boolean connected = isWifiConnected();
-        if (!enabled && !connected) {
-            mWifiLevel = -1; // 隐藏
-            return;
-        }
-        mWifiLevel = getWifiLevel();
-    }
-
     private void syncBluetooth() {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         try {
@@ -291,58 +244,8 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
         }
     }
 
-    // ── WiFi 辅助 ──
-
-    private boolean isWifiEnabled() {
-        try {
-            return mWifiManager != null && mWifiManager.isWifiEnabled();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @SuppressWarnings("MissingPermission")
-    private boolean isWifiConnected() {
-        ConnectivityManager cm = (ConnectivityManager)
-                mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm == null) return false;
-        if (Build.VERSION.SDK_INT >= 23) {
-            Network network = cm.getActiveNetwork();
-            if (network == null) return false;
-            NetworkCapabilities cap = cm.getNetworkCapabilities(network);
-            return cap != null && cap.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
-        } else {
-            NetworkInfo ni = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            return ni != null && ni.isConnected();
-        }
-    }
-
-    private int getWifiLevel() {
-        if (mWifiManager == null) return 3;
-        try {
-            WifiInfo info = mWifiManager.getConnectionInfo();
-            if (info == null) return 0;
-            int rssi = info.getRssi();
-            int lvl = WifiManager.calculateSignalLevel(rssi, 4); // 0-3
-            return Math.max(0, Math.min(3, lvl));
-        } catch (Exception e) {
-            return 3;
-        }
-    }
-
-    // ── 飞行模式 ──
-
-    private boolean isAirplaneModeOn() {
-        try {
-            return Settings.Global.getInt(mContext.getContentResolver(),
-                    Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     // ═══════════════════════════════════════════
-    // 状态广播（WiFi / 蓝牙 / 飞行模式 / 电池 实时更新）
+    // 状态广播（蓝牙 / 电池 实时更新）
     // ═══════════════════════════════════════════
 
     private void registerStateReceiver() {
@@ -353,23 +256,8 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
                 String action = intent.getAction();
                 if (action == null) return;
                 switch (action) {
-                    case WifiManager.RSSI_CHANGED_ACTION:
-                    case WifiManager.NETWORK_STATE_CHANGED_ACTION:
-                    case WifiManager.WIFI_STATE_CHANGED_ACTION:
-                        if (!mAirplaneMode) syncWifi();
-                        redrawAll();
-                        break;
                     case BluetoothAdapter.ACTION_STATE_CHANGED:
-                        if (!mAirplaneMode) syncBluetooth();
-                        redrawAll();
-                        break;
-                    case Intent.ACTION_AIRPLANE_MODE_CHANGED:
-                        mAirplaneMode = isAirplaneModeOn();
-                        if (mAirplaneMode) {
-                            mSignal1Level = 0; mSignal2Level = 0;
-                            mSim1Ready = false; mSim2Ready = false;
-                            mWifiLevel = -1; mBluetoothOn = false;
-                        }
+                        syncBluetooth();
                         redrawAll();
                         break;
                     case Intent.ACTION_BATTERY_CHANGED:
@@ -379,11 +267,7 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
             }
         };
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
-        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         filter.addAction(Intent.ACTION_BATTERY_CHANGED);
         mContext.registerReceiver(mStateReceiver, filter);
         mReceiverRegistered = true;
@@ -409,7 +293,7 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
 
             removeAllDrawables();
 
-            // ── 左侧图标组：SIM1 → SIM2 → WiFi → 蓝牙 → 飞行模式 ──
+            // ── 左侧图标组：SIM1 → SIM2 → 蓝牙 ──
             int x = MARGIN;
             int y = MARGIN;
 
@@ -425,22 +309,10 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
                 x = placeIcon(mSignal2Drawable, x, y);
             }
 
-            // WiFi（wifiLevel >= 0 才显示；开启未连接显示 level=0）
-            if (mWifiLevel >= 0) {
-                mWifiDrawable = ContextCompat.getDrawable(mContext, WIFI_ICONS[mWifiLevel]);
-                x = placeIcon(mWifiDrawable, x, y);
-            }
-
             // 蓝牙
             if (mBluetoothOn) {
                 mBluetoothDrawable = ContextCompat.getDrawable(mContext, R.drawable.ic_bluetooth);
                 x = placeIcon(mBluetoothDrawable, x, y);
-            }
-
-            // 飞行模式
-            if (mAirplaneMode) {
-                mAirplaneDrawable = ContextCompat.getDrawable(mContext, R.drawable.ic_airplane);
-                x = placeIcon(mAirplaneDrawable, x, y);
             }
 
             // ── 右侧：电池 ──
@@ -500,9 +372,7 @@ public class StatusBarOverlay implements PowerConnectionReceiver.getStat {
         removeDrawable(mBatteryDrawable);   mBatteryDrawable = null;
         removeDrawable(mSignal1Drawable);   mSignal1Drawable = null;
         removeDrawable(mSignal2Drawable);   mSignal2Drawable = null;
-        removeDrawable(mWifiDrawable);      mWifiDrawable = null;
         removeDrawable(mBluetoothDrawable); mBluetoothDrawable = null;
-        removeDrawable(mAirplaneDrawable);  mAirplaneDrawable = null;
     }
 
     // ═══════════════════════════════════════════

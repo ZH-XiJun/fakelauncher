@@ -26,7 +26,6 @@ import com.wtbruh.fakelauncher.ui.fragment.BaseFragment;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.fragment.phone.OptionMenuFragment;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
-import com.wtbruh.fakelauncher.utils.ContentProvider;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.lang.reflect.Method;
@@ -176,20 +175,8 @@ public class SubActivity extends BaseAppCompatActivity implements View.OnTouchLi
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
         if (fm.getBackStackEntryCount() <= 0) {
-            // 主菜单按右软键（返回）：回到伪装锁屏桌面（待机），不退出伪装。
-            // 退出伪装只走设置页输入退出密码这一条路（或显式 exit 指令）。
-            Log.d(TAG, "menu back -> fakeui desktop (lock)");
-            try {
-                UIHelper.setLockApp(this, ContentProvider.NOT_SET);
-            } catch (Throwable ignored) {
-            }
-            try {
-                sendBroadcast(new Intent(MainActivity.ACTION_BACK_FROM_MENU));
-            } catch (Throwable ignored) {
-            }
-            finish();
-            overridePendingTransition(0, 0);
-            return;
+            Log.d(TAG, "do back action");
+            super.onBackPressed();
         }
         else {
             fm.popBackStackImmediate();

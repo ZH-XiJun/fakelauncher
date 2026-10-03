@@ -78,8 +78,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
     public final static String
             EXTRA_PREVIEW = "preview",
             EXTRA_EXIT = "exit";
-    // 主菜单按右软键返回 -> 回到伪装锁屏桌面（待机）
-    public final static String ACTION_BACK_FROM_MENU = "com.wtbruh.fakelauncher.ACTION_BACK_FROM_MENU";
     private String mStyle;
 
     // 挂机键锁屏息屏
@@ -149,18 +147,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     // is screen off 是否熄屏
     private boolean mLocked = false;
-
-    // 主菜单返回标志：为 true 时 onResume 自动回到锁屏待机
-    private boolean mBackFromMenu = false;
-    private final BroadcastReceiver mBackFromMenuReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (ACTION_BACK_FROM_MENU.equals(intent.getAction())) {
-                mBackFromMenu = true;
-                Log.d(TAG, "back-from-menu received");
-            }
-        }
-    };
 
     // key long press check 按键长按检查
     private boolean mKeyLongPressed = false;
@@ -241,15 +227,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         } catch (Exception e) {
             Log.e(TAG, "register powerkey receiver failed: " + e);
         }
-        // 注册主菜单返回广播：回到伪装锁屏桌面
-        try {
-            androidx.core.content.ContextCompat.registerReceiver(this, mBackFromMenuReceiver,
-                    new IntentFilter(ACTION_BACK_FROM_MENU),
-                    androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED);
-        } catch (Exception e) {
-            Log.e(TAG, "register back-from-menu receiver failed: " + e);
-        }
-
         // If expected preview, then only initialize UI
         // 如果只需要预览，就只做UI初始化
         if (getIntent().getBooleanExtra(EXTRA_PREVIEW, false)) {
@@ -507,13 +484,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
                 UIHelper.setLockApp(MainActivity.this, getTaskId());
             } catch (Throwable ignored) { }
         }, 300);
-        // 主菜单按右软键返回：直接回到可用桌面，不自动上锁（熄屏后才上锁）
-        if (mBackFromMenu) {
-            mBackFromMenu = false;
-            mLocked = false;
-            setFooterBar(R.string.main_leftButton);
-            Log.d(TAG, "menu back -> desktop (no lock)");
-        }
     }
 
     @Override

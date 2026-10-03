@@ -44,6 +44,7 @@
     <string name="menu_sms">短信</string>
     <string name="menu_set">设置</string>
     <string name="menu_utils">工具箱</string>
+    <string name="menu_more_apps">更多应用</string>
     <string name="menu_media">音乐</string>
     <!-- 主界面文字 -->
     <string name="sim_inserted">已插入</string>
@@ -178,6 +179,8 @@
 
     <string name="pref_page_behaviour">行为</string>
     <string name="pref_page_behaviour_summary">控制程序的一些行为</string>
+    <string name="pref_config_internal_apps">配置内部应用</string>
+    <string name="pref_config_internal_apps_summary">管理哪些应用将被显示</string>
     <string name="pref_dpad_center_open_menu">Dpad center键可以打开App菜单</string>
     <string name="pref_dpad_center_open_menu_summary">Dpad center就是方向键中间那个</string>
     <string name="pref_vibrate_on_start">打开伪装界面时振动一下</string>

@@ -45,6 +45,7 @@
     <string name="menu_sms">SMS</string>
     <string name="menu_set">Settings</string>
     <string name="menu_utils">Utilities</string>
+    <string name="menu_more_apps">More Apps</string>
     <string name="menu_media">Music</string>
     <!-- Menu manager (main menu / toolbox customization) -->
     <string name="menu_manager_title">Menu Manager</string>
@@ -213,6 +214,8 @@
 
     <string name="pref_page_behaviour">Behaviour</string>
     <string name="pref_page_behaviour_summary">Control some behaviours of the program</string>
+    <string name="pref_config_internal_apps">Configure internal apps</string>
+    <string name="pref_config_internal_apps_summary">Manage which apps will be shown</string>
     <string name="pref_dpad_center_open_menu">Dpad center can open menu</string>
     <string name="pref_dpad_center_open_menu_summary">"Dpad center" is the center of the direction keys</string>
     <string name="pref_vibrate_on_start">Vibrate when opening fake UI</string>

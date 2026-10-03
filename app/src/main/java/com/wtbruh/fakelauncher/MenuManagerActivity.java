@@ -29,19 +29,19 @@ import java.util.List;
 
 /**
  * 菜单管理（老人机风格）：
- * 选择已安装的应用加入“主菜单”或“工具箱”二级菜单。
+ * 选择已安装的应用加入“主菜单”或“更多应用”二级菜单。
  * 方向键上下选择，确认键加入/移除，返回键保存并退出。
  */
 public class MenuManagerActivity extends BaseAppCompatActivity {
 
     private static final int MODE_MAIN = 0;
-    private static final int MODE_TOOLBOX = 1;
+    private static final int MODE_MORE_APPS = 1;
     private static final int MODE_PREVIEW = 2;
     private static final int MODE_COUNT = 3;
 
     private int mode = MODE_MAIN;
     private TextView modeMainBtn;
-    private TextView modeToolboxBtn;
+    private TextView modeMoreAppsBtn;
     private TextView modePreviewBtn;
     private RecyclerView appList;
     private AppAdapter adapter;
@@ -49,9 +49,9 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
 
     private final List<android.os.Bundle> apps = new ArrayList<>();
     private LinkedHashSet<String> mainSelection = new LinkedHashSet<>();
-    private LinkedHashSet<String> toolboxSelection = new LinkedHashSet<>();
+    private LinkedHashSet<String> moreAppsSelection = new LinkedHashSet<>();
 
-    // 预览模式数据：工具箱有序应用
+    // 预览模式数据：更多应用有序应用
     private final List<String> previewPkgs = new ArrayList<>();
     private final List<String> previewOrig = new ArrayList<>();
     private final List<String> previewShown = new ArrayList<>();
@@ -78,11 +78,11 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
         });
 
         modeMainBtn = findViewById(R.id.mm_mode_main);
-        modeToolboxBtn = findViewById(R.id.mm_mode_toolbox);
+        modeMoreAppsBtn = findViewById(R.id.mm_mode_more_apps);
         modePreviewBtn = findViewById(R.id.mm_mode_preview);
         // 触屏：点击顶部标签切换子页面
         modeMainBtn.setOnClickListener(v -> { mode = MODE_MAIN; updateModeUi(); });
-        modeToolboxBtn.setOnClickListener(v -> { mode = MODE_TOOLBOX; updateModeUi(); });
+        modeMoreAppsBtn.setOnClickListener(v -> { mode = MODE_MORE_APPS; updateModeUi(); });
         modePreviewBtn.setOnClickListener(v -> { mode = MODE_PREVIEW; updateModeUi(); });
         appList = findViewById(R.id.mm_app_list);
         appList.setLayoutManager(new LinearLayoutManager(this));
@@ -119,7 +119,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
                         java.util.Collections.swap(previewPkgs, from, to);
                         java.util.Collections.swap(previewOrig, from, to);
                         java.util.Collections.swap(previewShown, from, to);
-                        UIHelper.saveToolboxOrder(MenuManagerActivity.this, previewPkgs);
+                        UIHelper.saveMoreAppsOrder(MenuManagerActivity.this, previewPkgs);
                         previewAdapter.notifyItemMoved(from, to);
                         previewAdapter.setSelectedPosition(to);
                         return true;
@@ -131,7 +131,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         mainSelection = UIHelper.loadAppSelection(this, SettingsConstants.PREF_MENU_EXTERNAL_APPS);
-        toolboxSelection = UIHelper.loadAppSelection(this, SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS);
+        moreAppsSelection = UIHelper.loadAppSelection(this, SettingsConstants.PREF_MORE_APPS_EXTERNAL_APPS);
 
         apps.addAll(UIHelper.getInstalledLauncherApps(this));
         adapter = new AppAdapter();
@@ -142,20 +142,20 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
 
     private void updateModeUi() {
         boolean main = mode == MODE_MAIN;
-        boolean toolbox = mode == MODE_TOOLBOX;
+        boolean moreApps = mode == MODE_MORE_APPS;
         boolean preview = mode == MODE_PREVIEW;
         modeMainBtn.setSelected(main);
-        modeToolboxBtn.setSelected(toolbox);
+        modeMoreAppsBtn.setSelected(moreApps);
         modePreviewBtn.setSelected(preview);
         modeMainBtn.setAlpha(main ? 1f : 0.45f);
-        modeToolboxBtn.setAlpha(toolbox ? 1f : 0.45f);
+        modeMoreAppsBtn.setAlpha(moreApps ? 1f : 0.45f);
         modePreviewBtn.setAlpha(preview ? 1f : 0.45f);
         if (preview) {
             // 进入预览前先持久化当前勾选，避免退出时旧选择集覆盖预览排序
             UIHelper.saveAppSelection(this, SettingsConstants.PREF_MENU_EXTERNAL_APPS,
                     new ArrayList<>(mainSelection));
-            UIHelper.saveAppSelection(this, SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS,
-                    new ArrayList<>(toolboxSelection));
+            UIHelper.saveAppSelection(this, SettingsConstants.PREF_MORE_APPS_EXTERNAL_APPS,
+                    new ArrayList<>(moreAppsSelection));
             reloadPreview();
             if (previewAdapter == null) {
                 previewAdapter = new SingleTextviewAdapter(previewShown);
@@ -202,13 +202,13 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
         }
     }
 
-    /** 重新加载工具箱预览数据（新名（原名）） */
+    /** 重新加载更多应用预览数据（新名（原名）） */
     private void reloadPreview() {
         previewPkgs.clear();
         previewOrig.clear();
         previewShown.clear();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        String raw = sp.getString(SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS, "");
+        String raw = sp.getString(SettingsConstants.PREF_MORE_APPS_EXTERNAL_APPS, "");
         android.content.pm.PackageManager pm = getPackageManager();
         for (String pkg : raw.split(";")) {
             if (pkg == null || pkg.isEmpty()) continue;
@@ -216,7 +216,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
             try {
                 orig = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString();
             } catch (Exception ignored) { }
-            String renamed = UIHelper.getToolboxDisplayName(this, pkg);
+            String renamed = UIHelper.getMoreAppsDisplayName(this, pkg);
             previewPkgs.add(pkg);
             previewOrig.add(orig);
             previewShown.add(renamed == null || renamed.isEmpty() ? orig : renamed + "（" + orig + "）");
@@ -231,7 +231,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
         java.util.Collections.swap(previewPkgs, position, target);
         java.util.Collections.swap(previewOrig, position, target);
         java.util.Collections.swap(previewShown, position, target);
-        UIHelper.saveToolboxOrder(this, previewPkgs);
+        UIHelper.saveMoreAppsOrder(this, previewPkgs);
         previewAdapter.setSelectedPosition(target);
     }
 
@@ -262,7 +262,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
         android.widget.EditText et = new android.widget.EditText(this);
         et.setSingleLine(true);
         et.setTextSize(20);
-        String cur = UIHelper.getToolboxDisplayName(this, pkg);
+        String cur = UIHelper.getMoreAppsDisplayName(this, pkg);
         et.setText(cur == null ? "" : cur);
         et.setHint(R.string.menu_manager_rename_hint);
         new androidx.appcompat.app.AlertDialog.Builder(this)
@@ -270,7 +270,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
                 .setView(et)
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     String name = et.getText().toString().trim();
-                    UIHelper.setToolboxDisplayName(this, pkg, name);
+                    UIHelper.setMoreAppsDisplayName(this, pkg, name);
                     reloadPreview();
                     if (previewAdapter != null) previewAdapter.notifyDataSetChanged();
                     android.widget.Toast.makeText(this,
@@ -279,7 +279,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .setNeutralButton(R.string.menu_manager_rename_clear, (d, w) -> {
-                    UIHelper.setToolboxDisplayName(this, pkg, "");
+                    UIHelper.setMoreAppsDisplayName(this, pkg, "");
                     reloadPreview();
                     if (previewAdapter != null) previewAdapter.notifyDataSetChanged();
                     android.widget.Toast.makeText(this, R.string.menu_manager_rename_removed,
@@ -293,11 +293,11 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
         if (position < 0 || position >= apps.size()) return;
         String pkg = apps.get(position).getString(UIHelper.EXT_APP_PKG);
         if (pkg == null) return;
-        LinkedHashSet<String> target = mode == MODE_MAIN ? mainSelection : toolboxSelection;
+        LinkedHashSet<String> target = mode == MODE_MAIN ? mainSelection : moreAppsSelection;
         if (!target.remove(pkg)) target.add(pkg);
         // 已勾选的应用直接从另一个菜单中移除（避免重复）
         if (mode == MODE_MAIN) {
-            toolboxSelection.remove(pkg);
+            moreAppsSelection.remove(pkg);
         } else {
             mainSelection.remove(pkg);
         }
@@ -308,8 +308,8 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
     private void saveSelections() {
         UIHelper.saveAppSelection(this, SettingsConstants.PREF_MENU_EXTERNAL_APPS,
                 new ArrayList<>(mainSelection));
-        UIHelper.saveAppSelection(this, SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS,
-                new ArrayList<>(toolboxSelection));
+        UIHelper.saveAppSelection(this, SettingsConstants.PREF_MORE_APPS_EXTERNAL_APPS,
+                new ArrayList<>(moreAppsSelection));
     }
 
     @Override
@@ -343,7 +343,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
                     showPreviewAction(pos);
                     return true;
                 case KeyEvent.KEYCODE_BACK:
-                    // 预览模式：主菜单照常保存；工具箱顺序已在 movePreviewItem 中保存，勿用旧选择集覆盖
+                    // 预览模式：主菜单照常保存；更多应用顺序已在 movePreviewItem 中保存，勿用旧选择集覆盖
                     UIHelper.saveAppSelection(this, SettingsConstants.PREF_MENU_EXTERNAL_APPS,
                             new ArrayList<>(mainSelection));
                     finish();
@@ -405,8 +405,8 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
             String pkg = b.getString(UIHelper.EXT_APP_PKG);
             holder.icon.setImageDrawable(UIHelper.getExternalAppIcon(holder.itemView.getContext(), pkg));
             holder.name.setText(b.getString(UIHelper.EXT_APP_LABEL));
-            boolean inTarget = (mode == MODE_MAIN ? mainSelection : toolboxSelection).contains(pkg);
-            boolean inOther = (mode == MODE_MAIN ? toolboxSelection : mainSelection).contains(pkg);
+            boolean inTarget = (mode == MODE_MAIN ? mainSelection : moreAppsSelection).contains(pkg);
+            boolean inOther = (mode == MODE_MAIN ? moreAppsSelection : mainSelection).contains(pkg);
             holder.state.setText(inTarget ? holder.itemView.getContext().getString(R.string.menu_manager_added)
                     : inOther ? holder.itemView.getContext().getString(R.string.menu_manager_other)
                     : holder.itemView.getContext().getString(R.string.menu_manager_not_added));

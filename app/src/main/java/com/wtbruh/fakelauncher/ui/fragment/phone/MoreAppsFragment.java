@@ -21,29 +21,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 工具箱：二级菜单，显示用户在设置中勾选的已安装应用。
+ * 更多应用：二级菜单，显示用户在设置中勾选的已安装应用。
  * 风格与其余老人机界面一致（黑底白字，方向键 + 确认键操作）。
  */
-public class ToolboxFragment extends BaseFragment {
+public class MoreAppsFragment extends BaseFragment {
 
-    private static final String TAG = ToolboxFragment.class.getSimpleName();
+    private static final String TAG = MoreAppsFragment.class.getSimpleName();
     private RecyclerView menuView;
     private SingleTextviewAdapter adapter;
     private List<String> appNames = new ArrayList<>();
     private List<String> appPkgs = new ArrayList<>();
 
-    public ToolboxFragment() {
+    public MoreAppsFragment() {
         // Required empty public constructor
     }
 
-    public static ToolboxFragment newInstance() {
-        return new ToolboxFragment();
+    public static MoreAppsFragment newInstance() {
+        return new MoreAppsFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_toolbox, container, false);
+        rootView = inflater.inflate(R.layout.fragment_more_apps, container, false);
         init();
         return rootView;
     }
@@ -55,7 +55,7 @@ public class ToolboxFragment extends BaseFragment {
     }
 
     private void init() {
-        menuView = rootView.findViewById(R.id.toolbox_list);
+        menuView = rootView.findViewById(R.id.more_apps_list);
         menuView.setLayoutManager(new LinearLayoutManager(requireContext()));
         menuView.setFocusable(false);
         menuView.setItemAnimator(null);
@@ -68,12 +68,12 @@ public class ToolboxFragment extends BaseFragment {
     private void reloadApps() {
         appNames.clear();
         appPkgs.clear();
-        for (android.os.Bundle b : UIHelper.getToolboxAppList(requireContext())) {
+        for (android.os.Bundle b : UIHelper.getMoreAppsAppList(requireContext())) {
             appNames.add(b.getString(UIHelper.EXT_APP_LABEL));
             appPkgs.add(b.getString(UIHelper.EXT_APP_PKG));
         }
         // 无论是否添加应用，都显示列表界面；未添加时列表为空（无提示文字）
-        rootView.findViewById(R.id.toolbox_textHint).setVisibility(View.GONE);
+        rootView.findViewById(R.id.more_apps_textHint).setVisibility(View.GONE);
         menuView.setVisibility(View.VISIBLE);
         adapter = new SingleTextviewAdapter(appNames);
         menuView.setAdapter(adapter);
@@ -81,7 +81,7 @@ public class ToolboxFragment extends BaseFragment {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        android.util.Log.d("ToolboxFragment", "KEY onKeyUp code=" + keyCode
+        android.util.Log.d("MoreAppsFragment", "KEY onKeyUp code=" + keyCode
                 + " adapterNull=" + (adapter == null) + " itemCount=" + (adapter == null ? -1 : adapter.getItemCount())
                 + " pos=" + (adapter == null ? -1 : adapter.getSelectedPosition())
                 + " pkgs=" + appPkgs.size());

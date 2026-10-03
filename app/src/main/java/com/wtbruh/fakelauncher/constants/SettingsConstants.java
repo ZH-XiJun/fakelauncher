@@ -45,10 +45,10 @@ public final class SettingsConstants {
 
     /** 主菜单中额外显示的已安装应用（包名，用分号分隔） */
     public static final String PREF_MENU_EXTERNAL_APPS = "menu_external_apps";
-    /** 工具箱中显示的已安装应用（包名，用分号分隔） */
-    public static final String PREF_TOOLBOX_EXTERNAL_APPS = "toolbox_external_apps";
-    /** 工具箱应用重命名（pkg=新名称，用分号分隔） */
-    public static final String PREF_TOOLBOX_DISPLAY_NAMES = "toolbox_display_names";
+    /** 更多应用中显示的已安装应用（包名，用分号分隔） */
+    public static final String PREF_MORE_APPS_EXTERNAL_APPS = "toolbox_external_apps";
+    /** 更多应用应用重命名（pkg=新名称，用分号分隔） */
+    public static final String PREF_MORE_APPS_DISPLAY_NAMES = "toolbox_display_names";
     /** 启动快捷键：按键（空/关闭则不生效） */
     public static final String PREF_HOTKEY_KEY = "hotkey_key";
     /** 启动快捷键：触发方式 long_press / double_press / triple_press */

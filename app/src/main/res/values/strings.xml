@@ -46,17 +46,16 @@
     <string name="menu_set">Settings</string>
     <string name="menu_more_apps">More Apps</string>
     <string name="menu_media">Music</string>
-    <!-- Menu manager (main menu / toolbox customization) -->
+    <!-- Menu manager (main menu / more apps customization) -->
     <string name="menu_manager_title">Menu Manager</string>
     <string name="menu_manager_mode_main">Main Menu</string>
-    <string name="menu_manager_mode_toolbox">Toolbox</string>
     <string name="menu_manager_added">Added</string>
     <string name="menu_manager_not_added">Not Added</string>
     <string name="menu_manager_other">In Other Menu</string>
     <string name="menu_manager_footer">◀ ▶ Switch   OK Add/Remove   Back Save</string>
     <string name="app_not_found">App not found</string>
-    <!-- Toolbox -->
-    <string name="toolbox_empty">No app here.\nAdd apps in Settings</string>
+    <!-- More apps -->
+    <string name="more_apps_empty">No app here.\nAdd apps in Settings</string>
     <!-- Main UI hint -->
     <string name="sim_inserted">Inserted</string>
     <string name="sim_removed">Removed</string>
@@ -305,7 +304,7 @@
     <string name="music_timer_set">Timer set</string>
     <string name="menu_manager_mode_preview">Preview</string>
     <string name="menu_manager_preview_footer">◀ ▶ Switch  OK Action  Back Exit</string>
-    <string name="menu_manager_preview_empty">Toolbox is empty&#10;Add apps in Toolbox tab</string>
+    <string name="menu_manager_preview_empty">More apps is empty&#10;Add apps in the More Apps tab</string>
     <string name="menu_manager_opt_rename">Rename</string>
     <string name="menu_manager_opt_up">Move Up</string>
     <string name="menu_manager_opt_down">Move Down</string>

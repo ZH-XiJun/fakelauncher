@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context=".ui.fragment.phone.ToolboxFragment">
+    tools:context=".ui.fragment.phone.MoreAppsFragment">
 
     <TextView
-        android:id="@+id/toolbox_title"
+        android:id="@+id/more_apps_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -20,12 +20,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/toolbox_textHint"
+        android:id="@+id/more_apps_textHint"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
         android:padding="40dp"
-        android:text="@string/toolbox_empty"
+        android:text="@string/more_apps_empty"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:visibility="invisible"
@@ -33,15 +33,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbox_title" />
+        app:layout_constraintTop_toBottomOf="@id/more_apps_title" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/toolbox_list"
+        android:id="@+id/more_apps_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/menu_rounded_bg"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbox_title" />
+        app:layout_constraintTop_toBottomOf="@id/more_apps_title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

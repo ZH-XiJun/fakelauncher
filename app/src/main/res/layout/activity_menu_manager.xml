@@ -39,7 +39,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/mm_mode_toolbox"
+            android:id="@+id/mm_mode_more_apps"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
@@ -47,7 +47,7 @@
             android:background="@drawable/mm_mode_bg"
             android:gravity="center"
             android:padding="10dp"
-            android:text="@string/menu_manager_mode_toolbox"
+            android:text="@string/menu_more_apps"
             android:textColor="@color/white"
             android:textSize="22sp"
             android:textStyle="bold" />

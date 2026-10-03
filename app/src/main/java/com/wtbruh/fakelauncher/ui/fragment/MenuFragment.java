@@ -19,22 +19,12 @@ import android.widget.TextView;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SubActivity;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
-import com.wtbruh.fakelauncher.ui.fragment.phone.CameraFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.ContactsFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.GalleryFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.MessageFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.MusicPlayerFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.PasswordFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.ToolboxFragment;
 import com.wtbruh.fakelauncher.utils.UIHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class MenuFragment extends BaseFragment {
@@ -45,22 +35,6 @@ public class MenuFragment extends BaseFragment {
     private int mNumber = 0;
 
     private Bundle[] mAppList;
-
-    /**
-     * 内置应用标识（写入 PREF_CONFIG_INTERNAL_APPS 的值）→ 对应的 Fragment 类名。
-     * 用户自选的第三方应用不在此表内，始终显示。
-     */
-    private static final Map<String, String> INTERNAL_APP_KEY_BY_FRAGMENT = new HashMap<>();
-    static {
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(DialerFragment.class.getName(), "call");
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(ContactsFragment.class.getName(), "contact");
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(MessageFragment.class.getName(), "sms");
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(CameraFragment.class.getName(), "camera");
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(GalleryFragment.class.getName(), "gallery");
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(MusicPlayerFragment.class.getName(), "media");
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(PasswordFragment.class.getName(), "set");
-        INTERNAL_APP_KEY_BY_FRAGMENT.put(ToolboxFragment.class.getName(), "more_apps");
-    }
 
     public MenuFragment() {
         // Required empty public constructor
@@ -217,7 +191,9 @@ public class MenuFragment extends BaseFragment {
                 result.add(app);
                 continue;
             }
-            String key = INTERNAL_APP_KEY_BY_FRAGMENT.get(app.getString(UIHelper.TARGET_FRAGMENT));
+            // 内置应用的标识由 UIHelper 直接放进 Bundle（APP_ID），
+            // 这里不引用任何具体 Fragment 类，与内置应用的实现保持解耦
+            String key = app.getString(UIHelper.APP_ID);
             if (key == null || enabled.contains(key)) result.add(app);
         }
         return result.toArray(new Bundle[0]);

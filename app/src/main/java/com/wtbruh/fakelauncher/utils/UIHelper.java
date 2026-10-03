@@ -39,7 +39,7 @@ import com.wtbruh.fakelauncher.ui.fragment.phone.DialerFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.GalleryFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.MessageFragment;
 import com.wtbruh.fakelauncher.ui.fragment.phone.PasswordFragment;
-import com.wtbruh.fakelauncher.ui.fragment.phone.ToolboxFragment;
+import com.wtbruh.fakelauncher.ui.fragment.phone.MoreAppsFragment;
 import com.wtbruh.fakelauncher.ui.fragment.player.MusicPlayerFragment;
 import com.wtbruh.fakelauncher.ui.widget.FitTextView;
 
@@ -67,21 +67,27 @@ public class UIHelper {
     public final static String APP_NAME = "name";
     public final static String APP_ICON_RES = "iconRes";
     public final static String TARGET_FRAGMENT = "target_fragment";
+    /**
+     * 内置应用标识，与「配置内部应用」偏好里的值一一对应。
+     * 调用方（如 MenuFragment）据此判断是否显示，无需引用具体 Fragment 类。
+     */
+    public final static String APP_ID = "appId";
+
     public static Bundle[] getInternalAppList(String uiType) {
         if (uiType.equals(STYLE_PHONE)) {
             return new Bundle[] {
-                    createAppListBundle(R.string.menu_call, R.drawable.ic_menu_call, DialerFragment.class.getName()),
-                    createAppListBundle(R.string.menu_contact, R.drawable.ic_menu_contact, ContactsFragment.class.getName()),
-                    createAppListBundle(R.string.menu_sms, R.drawable.ic_menu_sms, MessageFragment.class.getName()),
-                    createAppListBundle(R.string.menu_camera, R.drawable.ic_menu_camera, CameraFragment.class.getName()),
-                    createAppListBundle(R.string.menu_gallery, R.drawable.ic_menu_gallery, GalleryFragment.class.getName()),
-                    createAppListBundle(R.string.menu_media, R.drawable.ic_menu_media, MusicPlayerFragment.class.getName()),
-                    createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName()),
+                    createAppListBundle(R.string.menu_call, R.drawable.ic_menu_call, DialerFragment.class.getName(), "call"),
+                    createAppListBundle(R.string.menu_contact, R.drawable.ic_menu_contact, ContactsFragment.class.getName(), "contact"),
+                    createAppListBundle(R.string.menu_sms, R.drawable.ic_menu_sms, MessageFragment.class.getName(), "sms"),
+                    createAppListBundle(R.string.menu_camera, R.drawable.ic_menu_camera, CameraFragment.class.getName(), "camera"),
+                    createAppListBundle(R.string.menu_gallery, R.drawable.ic_menu_gallery, GalleryFragment.class.getName(), "gallery"),
+                    createAppListBundle(R.string.menu_media, R.drawable.ic_menu_media, MusicPlayerFragment.class.getName(), "media"),
+                    createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName(), "set"),
             };
         } else if (uiType.equals(STYLE_PLAYER)) {
             return new Bundle[] {
-                    createAppListBundle(R.string.menu_media, R.drawable.ic_menu_media, MusicPlayerFragment.class.getName()),
-                    createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName()),
+                    createAppListBundle(R.string.menu_media, R.drawable.ic_menu_media, MusicPlayerFragment.class.getName(), "media"),
+                    createAppListBundle(R.string.menu_set, R.drawable.ic_menu_set, PasswordFragment.class.getName(), "set"),
             };
         } else {
             Log.e(TAG, "Unknown UI type: " + uiType + ", Falling back to phone ui.");
@@ -89,11 +95,12 @@ public class UIHelper {
         }
     }
 
-    private static Bundle createAppListBundle(int nameRes, int iconRes, String fragment) {
+    private static Bundle createAppListBundle(int nameRes, int iconRes, String fragment, String id) {
         Bundle bundle = new Bundle();
         bundle.putInt(APP_NAME, nameRes);
         bundle.putInt(APP_ICON_RES, iconRes);
         bundle.putString(TARGET_FRAGMENT, fragment);
+        bundle.putString(APP_ID, id);
         return bundle;
     }
 
@@ -429,13 +436,13 @@ public class UIHelper {
         ContentProvider.resetTaskId(context);
     }
 
-    // ── 主菜单 / 工具箱自定义（已安装应用） ──────────────────────────────────────────
+    // ── 主菜单 / 更多应用自定义（已安装应用） ──────────────────────────────────────────
 
     public final static String EXT_APP_PKG = "pkg";
     public final static String EXT_APP_LABEL = "label";
     public final static String EXT_APP_ICON = "icon";
 
-    /** 内置功能 + 工具箱入口 + 用户勾选的已安装应用（主菜单完整列表），设置始终排在最后 */
+    /** 内置功能 + 更多应用入口 + 用户勾选的已安装应用（主菜单完整列表），设置始终排在最后 */
     public static Bundle[] getMainMenuAppList(Context context) {
         List<Bundle> list = new ArrayList<>();
         String uiType = getCurrentUIType(context);
@@ -448,8 +455,8 @@ public class UIHelper {
                 list.add(b);
             }
         }
-        // 工具箱入口（二级菜单）
-        list.add(createAppListBundle(R.string.menu_more_apps, R.drawable.ic_toolbox, ToolboxFragment.class.getName()));
+        // 更多应用入口（二级菜单）
+        list.add(createAppListBundle(R.string.menu_more_apps, R.drawable.ic_more_apps, MoreAppsFragment.class.getName(), "more_apps"));
         // 用户自定义的已安装应用
         list.addAll(getExternalAppBundles(context, SettingsConstants.PREF_MENU_EXTERNAL_APPS));
         // 设置放最后
@@ -457,17 +464,17 @@ public class UIHelper {
         return list.toArray(new Bundle[0]);
     }
 
-    /** 工具箱二级菜单：用户勾选的已安装应用 */
-    public static Bundle[] getToolboxAppList(Context context) {
-        List<Bundle> list = getExternalAppBundles(context, SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS);
+    /** 更多应用二级菜单：用户勾选的已安装应用 */
+    public static Bundle[] getMoreAppsAppList(Context context) {
+        List<Bundle> list = getExternalAppBundles(context, SettingsConstants.PREF_MORE_APPS_EXTERNAL_APPS);
         return list.toArray(new Bundle[0]);
     }
 
-    /** 读取工具箱应用的重命名（pkg=新名; 格式）；无重命名返回 null */
-    public static String getToolboxDisplayName(Context context, String pkg) {
+    /** 读取更多应用应用的重命名（pkg=新名; 格式）；无重命名返回 null */
+    public static String getMoreAppsDisplayName(Context context, String pkg) {
         if (pkg == null || pkg.isEmpty()) return null;
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        String raw = sp.getString(SettingsConstants.PREF_TOOLBOX_DISPLAY_NAMES, "");
+        String raw = sp.getString(SettingsConstants.PREF_MORE_APPS_DISPLAY_NAMES, "");
         if (raw == null) return null;
         for (String pair : raw.split(";")) {
             int eq = pair.indexOf('=');
@@ -478,11 +485,11 @@ public class UIHelper {
         return null;
     }
 
-    /** 保存/清除工具箱应用重命名（name 为空则清除） */
-    public static void setToolboxDisplayName(Context context, String pkg, String name) {
+    /** 保存/清除更多应用应用重命名（name 为空则清除） */
+    public static void setMoreAppsDisplayName(Context context, String pkg, String name) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         Map<String, String> map = new LinkedHashMap<>();
-        String raw = sp.getString(SettingsConstants.PREF_TOOLBOX_DISPLAY_NAMES, "");
+        String raw = sp.getString(SettingsConstants.PREF_MORE_APPS_DISPLAY_NAMES, "");
         if (raw != null) {
             for (String pair : raw.split(";")) {
                 int eq = pair.indexOf('=');
@@ -496,12 +503,12 @@ public class UIHelper {
             if (sb.length() > 0) sb.append(";");
             sb.append(e.getKey()).append('=').append(e.getValue());
         }
-        sp.edit().putString(SettingsConstants.PREF_TOOLBOX_DISPLAY_NAMES, sb.toString()).apply();
+        sp.edit().putString(SettingsConstants.PREF_MORE_APPS_DISPLAY_NAMES, sb.toString()).apply();
     }
 
-    /** 保存工具箱应用完整顺序（排序后调用） */
-    public static void saveToolboxOrder(Context context, List<String> orderedPkgs) {
-        saveAppSelection(context, SettingsConstants.PREF_TOOLBOX_EXTERNAL_APPS, orderedPkgs);
+    /** 保存更多应用应用完整顺序（排序后调用） */
+    public static void saveMoreAppsOrder(Context context, List<String> orderedPkgs) {
+        saveAppSelection(context, SettingsConstants.PREF_MORE_APPS_EXTERNAL_APPS, orderedPkgs);
     }
 
     /** 从 SharedPreferences 读取用户勾选的外部应用，组装成菜单 Bundle 列表 */
@@ -518,7 +525,7 @@ public class UIHelper {
                 label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString();
             } catch (Exception ignored) { }
             // 重命名覆盖：伪装界面显示用户自定义名称
-            String renamed = getToolboxDisplayName(context, pkg);
+            String renamed = getMoreAppsDisplayName(context, pkg);
             if (renamed != null && !renamed.isEmpty()) label = renamed;
             Bundle b = new Bundle();
             b.putString(EXT_APP_PKG, pkg);
@@ -618,7 +625,7 @@ public class UIHelper {
                 setLockApp(context, ContentProvider.NOT_SET);
                 // 同步解除屏幕固定：ContentObserver 解除是异步的，若不等它执行完，
                 // 系统仍处于 lock task mode，startActivity 外部应用会被系统拦截
-                // （表现为工具箱"按两下才启动"）。
+                // （表现为更多应用"按两下才启动"）。
                 if (context instanceof Activity) {
                     try {
                         ((Activity) context).stopLockTask();

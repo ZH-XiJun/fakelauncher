@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <MultiSelectListPreference
-        android:defaultValue="@array/pref_config_internal_apps_default"
-        android:entries="@array/pref_config_internal_apps_string"
-        android:entryValues="@array/pref_config_internal_apps"
-        android:key="config_internal_apps"
-        android:summary="@string/pref_config_internal_apps_summary"
-        android:title="@string/pref_config_internal_apps" />
     <SwitchPreference
         android:defaultValue="false"
         android:key="dpad_center_open_menu"

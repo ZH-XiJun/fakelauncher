@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <MultiSelectListPreference
+        android:defaultValue="@array/pref_config_internal_apps_default"
+        android:entries="@array/pref_config_internal_apps_string"
+        android:entryValues="@array/pref_config_internal_apps"
+        android:key="config_internal_apps"
+        android:summary="@string/pref_config_internal_apps_summary"
+        android:title="@string/pref_config_internal_apps" />
     <ListPreference
         android:defaultValue="@string/pref_style_default"
         android:entries="@array/pref_style_string"

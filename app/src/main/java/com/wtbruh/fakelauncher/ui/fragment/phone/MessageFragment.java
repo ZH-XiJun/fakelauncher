@@ -193,42 +193,41 @@ public class MessageFragment extends BaseFragment {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            requireSubActivity().fragmentStarter(SmsComposeFragment.newInstance("", ""));
+            return true;
+        }
         if (adapter == null || adapter.getItemCount() == 0) {
-            return keyCode == KeyEvent.KEYCODE_BACK;
+            return false;
         }
         int position = adapter.getSelectedPosition();
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_UP:
+        return switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_UP -> {
                 if (position > 0) {
                     messageView.scrollToPosition(position - 1);
                     adapter.setSelectedPosition(position - 1);
                 }
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
+                yield true;
+            }
+            case KeyEvent.KEYCODE_DPAD_DOWN -> {
                 if (position < adapter.getItemCount() - 1) {
                     messageView.scrollToPosition(position + 1);
                     adapter.setSelectedPosition(position + 1);
                 }
-                return true;
-            case KeyEvent.KEYCODE_MENU:
-                // 左下角"写信"：按左软键进入发短信界面
-                requireSubActivity().fragmentStarter(SmsComposeFragment.newInstance("", ""));
-                return true;
-            case KeyEvent.KEYCODE_ENTER:
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-            case KeyEvent.KEYCODE_CALL:
-            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                yield true;
+            }
+            // 左下角"写信"：按左软键进入发短信界面
+            case KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_CALL,
+                 KeyEvent.KEYCODE_NUMPAD_ENTER -> {
                 // 确定键：查看具体短信
                 if (position >= 0 && position < threads.size()) {
                     SmsThread t = threads.get(position);
                     requireSubActivity().fragmentStarter(
                             SmsConversationFragment.newInstance(t.address, t.name));
                 }
-                return true;
-            case KeyEvent.KEYCODE_BACK:
-                return false;
-            default:
-                return false;
-        }
+                yield true;
+            }
+            default -> false;
+        };
     }
 }

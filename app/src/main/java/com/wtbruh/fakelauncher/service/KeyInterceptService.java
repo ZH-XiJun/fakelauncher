@@ -4,14 +4,10 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -20,7 +16,6 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 
-import com.wtbruh.fakelauncher.IUserService;
 import com.wtbruh.fakelauncher.ShutdownActivity;
 import com.wtbruh.fakelauncher.SplashActivity;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
@@ -30,20 +25,17 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-import rikka.shizuku.Shizuku;
 
 /**
  * 按键拦截服务（0.6.1）：
- * 通过 Shizuku 启动 native keyintercept（EVIOCGRAB 独占 /dev/input），
- * 物理按键事件经 TCP 转发到本服务：
+ * 以特权身份（按设置里的授权方式：Root 或 Shizuku）启动 native keyintercept
+ * （EVIOCGRAB 独占 /dev/input），物理按键事件经 TCP 转发到本服务：
  * - 电源键短按 -> 发 ROM 广播（android.powerkey.short-press）让 MainActivity 锁屏息屏
  * - 电源键长按 -> 弹出功能机风格关机/重启界面（系统菜单不会出现）
- * - 其他按键 -> 通过 Shizuku 重新注入回系统（input keyevent），伪装界面正常处理
+ * - 其他按键 -> 重新注入回系统（input keyevent），伪装界面正常处理
  */
 public class KeyInterceptService extends Service {
     private static final String TAG = "KeyInterceptService";
@@ -55,10 +47,6 @@ public class KeyInterceptService extends Service {
     /** keyintercept 打包进 lib/<abi>/ 的名字（本体是可执行文件，只是套了 .so 后缀） */
     private static final String BIN_LIB_NAME = "libkeyintercept.so";
     private static final String BIN_PATH = "/data/local/tmp/keyintercept";
-
-    // 常驻 Shizuku UserService 绑定缓存（避免每次命令都重启 UserService 进程）
-    private static volatile IUserService mUserService = null;
-    private static final Object SVC_LOCK = new Object();
 
     private volatile boolean running = false;
     private Thread serverThread;
@@ -116,66 +104,7 @@ public class KeyInterceptService extends Service {
         }
     }
 
-    /** 建立常驻 Shizuku UserService 绑定 */
-    private static void ensureConnected(Context ctx) {
-        if (mUserService != null) return;
-        synchronized (SVC_LOCK) {
-            if (mUserService != null) return;
-            try {
-                if (!Shizuku.pingBinder()) {
-                    Log.e(TAG, "shizuku binder not available");
-                    return;
-                }
-                if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "shizuku not granted");
-                    return;
-                }
-                CountDownLatch latch = new CountDownLatch(1);
-                ServiceConnection conn = new ServiceConnection() {
-                    @Override
-                    public void onServiceConnected(ComponentName name, IBinder binder) {
-                        mUserService = IUserService.Stub.asInterface(binder);
-                        Log.d(TAG, "UserService connected");
-                        latch.countDown();
-                    }
-
-                    @Override
-                    public void onServiceDisconnected(ComponentName name) {
-                        Log.d(TAG, "UserService disconnected");
-                        mUserService = null;
-                    }
-                };
-                Shizuku.bindUserService(PrivilegeProvider.getShizukuUserServiceArgs(ctx), conn);
-                try {
-                    latch.await(5, TimeUnit.SECONDS);
-                } catch (InterruptedException ignored) { }
-            } catch (Exception e) {
-                Log.e(TAG, "ensureConnected err", e);
-            }
-        }
-    }
-
-    /** 通过 Shizuku 以 shell 权限执行命令（同步等待结果） */
-    public static void shizukuExec(Context ctx, String cmd) {
-        try {
-            ensureConnected(ctx);
-            if (mUserService == null) {
-                Log.e(TAG, "user service not connected: " + (cmd.length() > 60 ? cmd.substring(0, 60) : cmd));
-                return;
-            }
-            Bundle b = mUserService.runMultiCmd(new String[]{cmd});
-            if (b == null) {
-                Log.e(TAG, "shizuku exec null result: " + (cmd.length() > 60 ? cmd.substring(0, 60) : cmd));
-            } else {
-                Log.d(TAG, "shizuku exec ok: " + (cmd.length() > 60 ? cmd.substring(0, 60) + "..." : cmd)
-                        + " code=" + b.getInt(PrivilegeProvider.CMD_RESULT_CODE, -1));
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "shizukuExec err: " + (cmd.length() > 60 ? cmd.substring(0, 60) : cmd) + " -> " + e);
-        }
-    }
-
-    /** 通过 Shizuku 安装并启动 native 拦截进程 */
+    /** 以特权身份（按设置：Root / Shizuku）安装并启动 native 拦截进程 */
     private void ensureNative() {
         exec.execute(() -> {
             try {
@@ -187,10 +116,10 @@ public class KeyInterceptService extends Service {
                 String b64 = Base64.encodeToString(buf, Base64.NO_WRAP);
                 // 先杀旧实例（单实例），再写入并后台启动
                 // （不再做“文件存在就跳过”：随 APK 升级要保证换成新版本二进制）
-                shizukuExec(this, "pkill -f " + BIN_PATH);
-                shizukuExec(this, "echo " + b64 + " | base64 -d > " + BIN_PATH
+                PrivilegeProvider.execPrivileged(this, "pkill -f " + BIN_PATH);
+                PrivilegeProvider.execPrivileged(this, "echo " + b64 + " | base64 -d > " + BIN_PATH
                         + " && chmod 755 " + BIN_PATH);
-                shizukuExec(this, "nohup " + BIN_PATH + " " + PORT + " >/dev/null 2>&1 &");
+                PrivilegeProvider.execPrivileged(this, "nohup " + BIN_PATH + " " + PORT + " >/dev/null 2>&1 &");
                 Log.d(TAG, "native ensure issued");
             } catch (Exception e) {
                 Log.e(TAG, "ensureNative err", e);
@@ -218,9 +147,9 @@ public class KeyInterceptService extends Service {
         }
     }
 
-    /** 通过 Shizuku 杀掉 native 进程，释放按键 */
+    /** 杀掉 native 进程，释放按键 */
     public static void killNative(Context ctx) {
-        shizukuExec(ctx, "pkill -f " + BIN_PATH);
+        PrivilegeProvider.execPrivileged(ctx, "pkill -f " + BIN_PATH);
         Log.d("KeyInterceptService", "native killed");
     }
 
@@ -229,7 +158,7 @@ public class KeyInterceptService extends Service {
             exec.execute(() -> {
                 try {
                     // native 不在则重新拉起（幂等；若在则不重复安装/启动）
-                    shizukuExec(this, "pgrep -f " + BIN_PATH + " >/dev/null || (nohup " + BIN_PATH + " " + PORT + " >/dev/null 2>&1 &)");
+                    PrivilegeProvider.execPrivileged(this, "pgrep -f " + BIN_PATH + " >/dev/null || (nohup " + BIN_PATH + " " + PORT + " >/dev/null 2>&1 &)");
                 } catch (Exception e) {
                     Log.e(TAG, "watchdog err: " + e);
                 }
@@ -360,7 +289,7 @@ public class KeyInterceptService extends Service {
                 } else {
                     // 未激活：注入 keyevent 26 交系统原生处理亮屏/息屏
                     Log.d(TAG, "power short press -> inject keyevent 26");
-                    exec.execute(() -> shizukuExec(this, "input keyevent 26"));
+                    exec.execute(() -> PrivilegeProvider.execPrivileged(this, "input keyevent 26"));
                 }
             }
             }
@@ -420,7 +349,7 @@ public class KeyInterceptService extends Service {
         if (down && fakeActive) {
             final int kc = linuxToAndroid(code);
             Log.d(TAG, "inject linux " + code + " -> android " + kc);
-            exec.execute(() -> shizukuExec(this, "input keyevent " + kc));
+            exec.execute(() -> PrivilegeProvider.execPrivileged(this, "input keyevent " + kc));
         }
     }
 
@@ -488,7 +417,7 @@ public class KeyInterceptService extends Service {
                 handler.removeCallbacks(hotkeyLongRunnable);
                 hotkeyLongRunnable = null;
                 final int kc = linuxToAndroid(code);
-                exec.execute(() -> shizukuExec(this, "input keyevent " + kc));
+                exec.execute(() -> PrivilegeProvider.execPrivileged(this, "input keyevent " + kc));
             }
         }
     }

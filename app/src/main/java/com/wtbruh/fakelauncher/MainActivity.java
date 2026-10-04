@@ -743,9 +743,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
             }
         } catch (Exception e) {
             Log.e(TAG, "shizuku wake failed: " + e);
-            // 兜底：反射失败时通过 Shizuku shell 注入 keyevent 26（adb shell 已验证可亮屏）
+            // 兜底：反射失败时通过特权 shell（Root / Shizuku）注入 keyevent 26（adb shell 已验证可亮屏）
             try {
-                com.wtbruh.fakelauncher.service.KeyInterceptService.shizukuExec(this, "input keyevent 26");
+                PrivilegeProvider.execPrivileged(this, "input keyevent 26");
                 Log.d(TAG, "wake fallback: injected keyevent 26");
                 return true;
             } catch (Throwable t) {

@@ -243,6 +243,89 @@ public class PrivilegeProvider {
                 .version(1);
     }
 
+    // ── 常驻 Shizuku UserService 绑定（供高频/常驻调用方） ─────────────────────────
+    // 与 runCommand 的区别：Shizuku 侧只 bind 一次并长期复用，
+    // 不每条命令都 bind/unbind（按键拦截的注入是热路径，禁不起那个开销）。
+
+    private static volatile IUserService sKeepAliveUserService = null;
+    private static final Object KEEP_ALIVE_LOCK = new Object();
+
+    /** 建立/复用常驻 Shizuku UserService；不可用返回 null */
+    private static IUserService getKeepAliveUserService(Context context) {
+        if (sKeepAliveUserService != null) return sKeepAliveUserService;
+        synchronized (KEEP_ALIVE_LOCK) {
+            if (sKeepAliveUserService != null) return sKeepAliveUserService;
+            try {
+                if (!Shizuku.pingBinder()) {
+                    Log.e(TAG, "keepAlive: shizuku binder not available");
+                    return null;
+                }
+                if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "keepAlive: shizuku not granted");
+                    return null;
+                }
+                CountDownLatch latch = new CountDownLatch(1);
+                ServiceConnection conn = new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder binder) {
+                        sKeepAliveUserService = IUserService.Stub.asInterface(binder);
+                        Log.d(TAG, "keepAlive: UserService connected");
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
+                        Log.d(TAG, "keepAlive: UserService disconnected");
+                        sKeepAliveUserService = null;
+                    }
+                };
+                Shizuku.bindUserService(getShizukuUserServiceArgs(context), conn);
+                latch.await(5, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                Log.e(TAG, "keepAlive bind err", e);
+            }
+            return sKeepAliveUserService;
+        }
+    }
+
+    /**
+     * 以「当前授权方式」执行一条 shell 命令。
+     * <p>Root：走 {@link #runCommand} 的 su 通道；Shizuku（或未配置授权器）：复用上面的常驻 UserService。
+     * <p>与 {@link #runCommand} 的区别只在 Shizuku 侧：这里不 bind/unbind，适合高频调用。
+     *
+     * @param context Context
+     * @param cmd     单条 shell 命令
+     */
+    public static void execPrivileged(Context context, String cmd) {
+        if (cmd == null || cmd.isEmpty()) return;
+        if (context != null && getCurrentPrivilegeProvider(context) == PRIVILEGE_ROOT) {
+            Bundle r = runCommand(context, PRIVILEGE_ROOT, cmd);
+            Log.d(TAG, "root exec: " + abbreviate(cmd)
+                    + " code=" + (r == null ? -1 : r.getInt(CMD_RESULT_CODE, -1)));
+            return;
+        }
+        if (context == null) {
+            Log.e(TAG, "execPrivileged: no context for shizuku");
+            return;
+        }
+        IUserService svc = getKeepAliveUserService(context);
+        if (svc == null) {
+            Log.e(TAG, "execPrivileged: user service unavailable: " + abbreviate(cmd));
+            return;
+        }
+        try {
+            svc.runMultiCmd(new String[]{cmd});
+            Log.d(TAG, "shizuku exec: " + abbreviate(cmd));
+        } catch (RemoteException e) {
+            Log.e(TAG, "execPrivileged err: " + e);
+            sKeepAliveUserService = null;   // 断开后下次重新绑定
+        }
+    }
+
+    private static String abbreviate(String s) {
+        return s != null && s.length() > 60 ? s.substring(0, 60) + "..." : s;
+    }
+
     /**
      * Do operation using Shizuku privilege<br>
      * 使用Shizuku权限进行操作

@@ -214,6 +214,8 @@
     <string name="pref_page_behaviour_summary">Control some behaviours of the program</string>
     <string name="pref_config_internal_apps">Configure internal apps</string>
     <string name="pref_config_internal_apps_summary">Manage which apps will be shown</string>
+    <string name="pref_config_external_apps">Configure external apps</string>
+    <string name="pref_config_external_apps_summary">Allow opening third-party apps within the fake UI. NOT RECOMMENDED FOR REGULAR USE</string>
     <string name="pref_dpad_center_open_menu">Dpad center can open menu</string>
     <string name="pref_dpad_center_open_menu_summary">"Dpad center" is the center of the direction keys</string>
     <string name="pref_vibrate_on_start">Vibrate when opening fake UI</string>

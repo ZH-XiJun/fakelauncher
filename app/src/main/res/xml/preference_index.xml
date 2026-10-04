@@ -19,10 +19,6 @@
         android:title="@string/pref_page_view"
         android:summary="@string/pref_page_view_summary"/>
     <Preference
-        android:key="page_menu"
-        android:title="@string/menu_manager_title"
-        android:summary="@string/menu_manager_footer"/>
-    <Preference
         android:key="fun_shortcut_desktop"
         android:title="@string/pref_shortcut_desktop"
         android:summary="@string/pref_shortcut_desktop_summary"/>

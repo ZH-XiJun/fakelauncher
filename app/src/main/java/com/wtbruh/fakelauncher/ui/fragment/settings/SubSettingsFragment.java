@@ -42,6 +42,7 @@ import com.tencent.mmkv.MMKV;
 import android.widget.Toast;
 
 import com.wtbruh.fakelauncher.MainActivity;
+import com.wtbruh.fakelauncher.MenuManagerActivity;
 import com.wtbruh.fakelauncher.R;
 import com.wtbruh.fakelauncher.SettingsActivity;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
@@ -229,7 +230,8 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
             case SettingsFragment.PAGE_VIEW:
                 clickablePrefs = new String[]{
                         SettingsConstants.PREF_TEXT_STROKE_WIDTH,
-                        SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE
+                        SettingsConstants.PREF_MAIN_UI_HEIGHT_SCALE,
+                        SettingsConstants.PREF_CONFIG_EXTERNAL_APPS
                 };
                 listPrefs = new String[]{
                         SettingsConstants.PREF_STYLE
@@ -613,6 +615,10 @@ public class SubSettingsFragment extends PreferenceFragmentCompat implements Sha
                     UIHelper.makeIntent(requireActivity(), MainActivity.class)
                             .putExtra(MainActivity.EXTRA_PREVIEW, true)
             );
+            case SettingsConstants.PREF_CONFIG_EXTERNAL_APPS ->
+                    // 配置外部应用：独立老人机风格的菜单管理界面
+                    requireActivity().startActivity(
+                            new Intent(requireContext(), MenuManagerActivity.class));
             case SettingsConstants.PREF_HOTKEY_GUIDE ->
                     requireActivity().startActivity(
                             new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)

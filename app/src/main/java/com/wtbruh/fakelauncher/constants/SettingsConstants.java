@@ -43,6 +43,9 @@ public final class SettingsConstants {
      */
     public static final String PREF_CONFIG_INTERNAL_APPS = "config_internal_apps";
 
+    /** 「配置外部应用」入口（点击打开菜单管理界面 MenuManagerActivity） */
+    public static final String PREF_CONFIG_EXTERNAL_APPS = "config_external_apps";
+
     /** 主菜单中额外显示的已安装应用（包名，用分号分隔） */
     public static final String PREF_MENU_EXTERNAL_APPS = "menu_external_apps";
     /** 更多应用中显示的已安装应用（包名，用分号分隔） */

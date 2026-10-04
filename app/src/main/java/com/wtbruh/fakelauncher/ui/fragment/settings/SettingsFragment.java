@@ -27,7 +27,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     public final static String PAGE_BEHAVIOUR = "page_behaviour";
     public final static String PAGE_DEBUG = "page_debug";
     public final static String PAGE_ABOUT = "page_about";
-    public final static String PAGE_MENU = "page_menu";
     public final static String PAGE_HOTKEY = "page_hotkey";
     public final static String FUN_OPEN_FAKEUI = "fun_fakeui";
     public final static String FUN_TOUCH = "fun_touch";
@@ -44,7 +43,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 FUN_SHORTCUT_DESKTOP,
                 FUN_HOTKEY,
                 PAGE_PERMISSION,
-                PAGE_MENU,
                 PAGE_VIEW,
                 PAGE_BEHAVIOUR,
                 PAGE_DEBUG,
@@ -61,11 +59,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
-        if (PAGE_MENU.equals(preference.getKey())) {
-            // 菜单管理：独立老人机风格界面
-            requireActivity().startActivity(new Intent(requireContext(), com.wtbruh.fakelauncher.MenuManagerActivity.class));
-            return true;
-        }
         if (FUN_SHORTCUT_DESKTOP.equals(preference.getKey())) {
             addDesktopShortcut();
             return true;

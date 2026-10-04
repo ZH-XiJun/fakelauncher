@@ -8,13 +8,12 @@
     android:orientation="vertical"
     tools:context=".MenuManagerActivity">
 
-    <!-- 顶部标题栏（无返回按钮；纯触屏页，用系统返回） -->
+    <!-- 顶部标题栏（标题居左；无返回按钮，纯触屏页用系统返回） -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/mm_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:title="@string/menu_manager_title"
-        app:titleCentered="true" />
+        app:title="@string/menu_manager_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mm_app_list"

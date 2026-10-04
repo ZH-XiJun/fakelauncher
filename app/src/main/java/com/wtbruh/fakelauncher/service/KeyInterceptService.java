@@ -27,7 +27,7 @@ import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.utils.PrivilegeProvider;
 
 import java.io.DataInputStream;
-import java.io.InputStream;
+import java.io.File;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
@@ -52,7 +52,8 @@ public class KeyInterceptService extends Service {
     private static final long LONG_PRESS_MS = 800;
 
     private static final String ACTION_POWERKEY_SHORT = "android.powerkey.short-press";
-    private static final String ASSET_BIN = "keyintercept";
+    /** keyintercept 打包进 lib/<abi>/ 的名字（本体是可执行文件，只是套了 .so 后缀） */
+    private static final String BIN_LIB_NAME = "libkeyintercept.so";
     private static final String BIN_PATH = "/data/local/tmp/keyintercept";
 
     // 常驻 Shizuku UserService 绑定缓存（避免每次命令都重启 UserService 进程）
@@ -174,27 +175,47 @@ public class KeyInterceptService extends Service {
         }
     }
 
-    /** 通过 Shizuku 安装并启动 native 拦截进程（幂等） */
+    /** 通过 Shizuku 安装并启动 native 拦截进程 */
     private void ensureNative() {
         exec.execute(() -> {
             try {
-                String b64;
-                try (InputStream is = getAssets().open(ASSET_BIN)) {
-                    byte[] buf = new byte[is.available()];
-                    int off = 0, n;
-                    while ((n = is.read(buf, off, buf.length - off)) > 0) off += n;
-                    b64 = Base64.encodeToString(buf, Base64.NO_WRAP);
+                byte[] buf = readNativeBinary();
+                if (buf == null || buf.length == 0) {
+                    Log.e(TAG, "native binary not found: " + BIN_LIB_NAME);
+                    return;
                 }
-                // 先杀旧实例（单实例），再首次安装（幂等）+ 后台启动
+                String b64 = Base64.encodeToString(buf, Base64.NO_WRAP);
+                // 先杀旧实例（单实例），再写入并后台启动
+                // （不再做“文件存在就跳过”：随 APK 升级要保证换成新版本二进制）
                 shizukuExec(this, "pkill -f " + BIN_PATH);
-                shizukuExec(this, "if [ ! -x " + BIN_PATH + " ]; then echo " + b64
-                        + " | base64 -d > " + BIN_PATH + " && chmod 755 " + BIN_PATH + "; fi");
+                shizukuExec(this, "echo " + b64 + " | base64 -d > " + BIN_PATH
+                        + " && chmod 755 " + BIN_PATH);
                 shizukuExec(this, "nohup " + BIN_PATH + " " + PORT + " >/dev/null 2>&1 &");
                 Log.d(TAG, "native ensure issued");
             } catch (Exception e) {
                 Log.e(TAG, "ensureNative err", e);
             }
         });
+    }
+
+    /**
+     * 读回打包成 lib*.so 的可执行文件。
+     * 用 nativeLibraryDir 而不是 assets：Android 只会把 native 产物放进 lib/&lt;abi&gt;/，
+     * 也因此能拿到 16 KB 对齐、ABI 过滤等构建期保障。
+     */
+    private byte[] readNativeBinary() {
+        File f = new File(getApplicationInfo().nativeLibraryDir, BIN_LIB_NAME);
+        if (!f.exists()) return null;
+        try (java.io.InputStream is = new java.io.FileInputStream(f)) {
+            java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream((int) f.length());
+            byte[] chunk = new byte[8192];
+            int n;
+            while ((n = is.read(chunk)) > 0) bos.write(chunk, 0, n);
+            return bos.toByteArray();
+        } catch (Exception e) {
+            Log.e(TAG, "read native binary failed", e);
+            return null;
+        }
     }
 
     /** 通过 Shizuku 杀掉 native 进程，释放按键 */

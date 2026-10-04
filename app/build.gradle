@@ -23,6 +23,8 @@ android {
     }
     namespace 'com.wtbruh.fakelauncher'
     compileSdk 35
+    // 固定 NDK 版本（keyintercept 用它编译；AGP 8.9 默认的 NDK 未安装）
+    ndkVersion '26.1.10909125'
 
     defaultConfig {
         applicationId "com.wtbruh.fakelauncher"
@@ -32,6 +34,17 @@ android {
         versionName "0.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // 只编进需要抓取实体按键的 ABI
+        ndk {
+            abiFilters 'arm64-v8a'
+        }
+        externalNativeBuild {
+            cmake {
+                // 只用 libc/liblog，不引 STL（否则会把 libc++_shared.so 也打进 APK）
+                arguments '-DANDROID_STL=none'
+            }
+        }
     }
 
     buildTypes {
@@ -53,6 +66,22 @@ android {
     }
     kotlinOptions {
         jvmTarget = '17'
+    }
+
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
+
+    packaging {
+        jniLibs {
+            // keyintercept 是“可执行文件穿 .so 外套”，必须真解压到 nativeLibraryDir
+            // 才能被 App 读出并交给 Shizuku 安装；同时别让 AGP 去 strip 它
+            useLegacyPackaging = true
+            keepDebugSymbols.add('**/libkeyintercept.so')
+        }
     }
 }
 

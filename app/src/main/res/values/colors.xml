@@ -5,4 +5,18 @@
     <color name="ok_green">#80B2FF59</color>
     <color name="warn_yellow">#80FFD740</color>
     <color name="error_red">#80D32F2F</color>
+
+    <!-- ===== 菜单管理（M3）浅色表面；深色见 values-night/colors.xml ===== -->
+    <color name="mm_card">#FFECE6F0</color>
+    <color name="mm_card_selected">#FFEADDFF</color>
+    <color name="mm_card_stroke">#FFCAC4D0</color>
+    <color name="mm_card_selected_stroke">#FF6750A4</color>
+    <color name="mm_on_card">#FF1D1B20</color>
+    <color name="mm_on_card_variant">#FF49454F</color>
+    <color name="mm_on_card_selected">#FF21005D</color>
+    <color name="mm_pill_bg">#FFE6E0E9</color>
+    <color name="mm_pill_text">#FF49454F</color>
+    <color name="mm_pill_sel_bg">#FF6750A4</color>
+    <color name="mm_pill_sel_text">#FFFFFFFF</color>
+    <color name="mm_tab_bg">#FFF3EDF7</color>
 </resources>

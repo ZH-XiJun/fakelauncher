@@ -52,7 +52,6 @@
     <string name="menu_manager_added">Added</string>
     <string name="menu_manager_not_added">Not Added</string>
     <string name="menu_manager_other">In Other Menu</string>
-    <string name="menu_manager_footer">◀ ▶ Switch   OK Add/Remove   Back Save</string>
     <string name="app_not_found">App not found</string>
     <!-- More apps -->
     <string name="more_apps_empty">No app here.\nAdd apps in Settings</string>
@@ -305,7 +304,6 @@
     <string name="music_playlist_empty">Playlist empty</string>
     <string name="music_timer_set">Timer set</string>
     <string name="menu_manager_mode_preview">Preview</string>
-    <string name="menu_manager_preview_footer">◀ ▶ Switch  OK Action  Back Exit</string>
     <string name="menu_manager_preview_empty">More apps is empty&#10;Add apps in the More Apps tab</string>
     <string name="menu_manager_opt_rename">Rename</string>
     <string name="menu_manager_opt_up">Move Up</string>

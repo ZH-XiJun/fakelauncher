@@ -252,7 +252,6 @@
     <string name="menu_manager_added">已添加</string>
     <string name="menu_manager_not_added">未添加</string>
     <string name="menu_manager_other">在其他菜单</string>
-    <string name="menu_manager_footer">◀ ▶ 切换　确定 添加/移除　返回 保存</string>
     <string name="app_not_found">未找到该应用</string>
     <string name="more_apps_empty">这里还没有应用&#10;请到设置中添加</string>
 
@@ -300,7 +299,6 @@
     <string name="music_playlist_empty">播放列表为空</string>
     <string name="music_timer_set">定时关闭已开启</string>
     <string name="menu_manager_mode_preview">预览</string>
-    <string name="menu_manager_preview_footer">◀ ▶ 切换　确定 操作　返回 退出</string>
     <string name="menu_manager_preview_empty">更多应用暂无应用&#10;先切换到“更多应用”添加</string>
     <string name="menu_manager_opt_rename">重命名</string>
     <string name="menu_manager_opt_up">上移</string>

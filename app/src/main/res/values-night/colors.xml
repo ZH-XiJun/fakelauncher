@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== 菜单管理（M3）深色表面（对应 values/colors.xml 的浅色版本）===== -->
+    <color name="mm_card">#FF2B2930</color>
+    <color name="mm_card_selected">#FF4F378B</color>
+    <color name="mm_card_stroke">#FF49454F</color>
+    <color name="mm_card_selected_stroke">#FFD0BCFF</color>
+    <color name="mm_on_card">#FFE6E1E5</color>
+    <color name="mm_on_card_variant">#FFCAC4D0</color>
+    <color name="mm_on_card_selected">#FFEADDFF</color>
+    <color name="mm_pill_bg">#FF36343B</color>
+    <color name="mm_pill_text">#FFCAC4D0</color>
+    <color name="mm_pill_sel_bg">#FFD0BCFF</color>
+    <color name="mm_pill_sel_text">#FF381E72</color>
+    <color name="mm_tab_bg">#FF211F26</color>
+</resources>

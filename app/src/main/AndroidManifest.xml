@@ -125,7 +125,7 @@
         <activity
             android:name=".MenuManagerActivity"
             android:exported="false"
-            android:theme="@style/Theme.FakeLauncher" />
+            android:theme="@style/Theme.FakeLauncher.Settings" />
         <activity
             android:name=".ShutdownActivity"
             android:excludeFromRecents="true"

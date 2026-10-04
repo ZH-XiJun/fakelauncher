@@ -1,8 +1,8 @@
 package com.wtbruh.fakelauncher;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,6 +19,8 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.tabs.TabLayout;
 import com.wtbruh.fakelauncher.constants.SettingsConstants;
 import com.wtbruh.fakelauncher.ui.BaseAppCompatActivity;
 import com.wtbruh.fakelauncher.ui.view.SingleTextviewAdapter;
@@ -28,9 +31,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * 菜单管理（老人机风格）：
- * 选择已安装的应用加入“主菜单”或“更多应用”二级菜单。
- * 方向键上下选择，确认键加入/移除，返回键保存并退出。
+ * 菜单管理（Material 3 触屏界面）：
+ * 底部 TabLayout 切换“主菜单 / 更多应用 / 预览”；
+ * 点击卡片把已安装应用加入/移出当前菜单；预览页可点击唤出操作、长按拖动排序。
  */
 public class MenuManagerActivity extends BaseAppCompatActivity {
 
@@ -40,9 +43,7 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
     private static final int MODE_COUNT = 3;
 
     private int mode = MODE_MAIN;
-    private TextView modeMainBtn;
-    private TextView modeMoreAppsBtn;
-    private TextView modePreviewBtn;
+    private TabLayout mmTabs;
     private RecyclerView appList;
     private AppAdapter adapter;
     private SingleTextviewAdapter previewAdapter;
@@ -77,13 +78,23 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
             return insets;
         });
 
-        modeMainBtn = findViewById(R.id.mm_mode_main);
-        modeMoreAppsBtn = findViewById(R.id.mm_mode_more_apps);
-        modePreviewBtn = findViewById(R.id.mm_mode_preview);
-        // 触屏：点击顶部标签切换子页面
-        modeMainBtn.setOnClickListener(v -> { mode = MODE_MAIN; updateModeUi(); });
-        modeMoreAppsBtn.setOnClickListener(v -> { mode = MODE_MORE_APPS; updateModeUi(); });
-        modePreviewBtn.setOnClickListener(v -> { mode = MODE_PREVIEW; updateModeUi(); });
+        // 底部页面菜单（M3 TabLayout）：纯触屏，点击切换
+        mmTabs = findViewById(R.id.mm_tabs);
+        mmTabs.addTab(mmTabs.newTab().setText(R.string.menu_manager_mode_main));
+        mmTabs.addTab(mmTabs.newTab().setText(R.string.menu_more_apps));
+        mmTabs.addTab(mmTabs.newTab().setText(R.string.menu_manager_mode_preview));
+        mmTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (mode == tab.getPosition()) return;
+                mode = tab.getPosition();
+                updateModeUi();
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) { }
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
+        });
         appList = findViewById(R.id.mm_app_list);
         appList.setLayoutManager(new LinearLayoutManager(this));
         appList.setFocusable(false);
@@ -141,21 +152,16 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
     }
 
     private void updateModeUi() {
-        boolean main = mode == MODE_MAIN;
-        boolean moreApps = mode == MODE_MORE_APPS;
         boolean preview = mode == MODE_PREVIEW;
-        modeMainBtn.setSelected(main);
-        modeMoreAppsBtn.setSelected(moreApps);
-        modePreviewBtn.setSelected(preview);
-        modeMainBtn.setAlpha(main ? 1f : 0.45f);
-        modeMoreAppsBtn.setAlpha(moreApps ? 1f : 0.45f);
-        modePreviewBtn.setAlpha(preview ? 1f : 0.45f);
+        // 与底部 TabLayout 同步（mode 被外部改动时）
+        if (mmTabs != null && mmTabs.getSelectedTabPosition() != mode) {
+            mmTabs.selectTab(mmTabs.getTabAt(mode));
+        }
+        // 预览页保留旧样式（黑底白框），主菜单/更多应用用 M3 表面
         if (preview) {
+            appList.setBackgroundResource(R.drawable.menu_rounded_bg);
             // 进入预览前先持久化当前勾选，避免退出时旧选择集覆盖预览排序
-            UIHelper.saveAppSelection(this, SettingsConstants.PREF_MENU_EXTERNAL_APPS,
-                    new ArrayList<>(mainSelection));
-            UIHelper.saveAppSelection(this, SettingsConstants.PREF_MORE_APPS_EXTERNAL_APPS,
-                    new ArrayList<>(moreAppsSelection));
+            saveSelections();
             reloadPreview();
             if (previewAdapter == null) {
                 previewAdapter = new SingleTextviewAdapter(previewShown);
@@ -185,20 +191,11 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
                 previewAdapter.notifyDataSetChanged();
             }
         } else {
+            appList.setBackground(null);
             if (appList.getAdapter() != adapter) {
                 appList.setAdapter(adapter);
             }
             adapter.notifyDataSetChanged();
-        }
-        setFooterText();
-    }
-
-    private void setFooterText() {
-        TextView footer = findViewById(R.id.mm_footer);
-        if (mode == MODE_PREVIEW) {
-            footer.setText(getString(R.string.menu_manager_preview_footer));
-        } else {
-            footer.setText(getString(R.string.menu_manager_footer));
         }
     }
 
@@ -312,90 +309,13 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
                 new ArrayList<>(moreAppsSelection));
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (mode == MODE_PREVIEW) {
-            int pos = previewAdapter != null ? previewAdapter.getSelectedPosition() : 0;
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_DPAD_UP:
-                    if (pos > 0) {
-                        appList.scrollToPosition(pos - 1);
-                        previewAdapter.setSelectedPosition(pos - 1);
-                    }
-                    return true;
-                case KeyEvent.KEYCODE_DPAD_DOWN:
-                    if (previewAdapter != null && pos < previewAdapter.getItemCount() - 1) {
-                        appList.scrollToPosition(pos + 1);
-                        previewAdapter.setSelectedPosition(pos + 1);
-                    }
-                    return true;
-                case KeyEvent.KEYCODE_DPAD_LEFT:
-                    mode = (mode - 1 + MODE_COUNT) % MODE_COUNT;
-                    updateModeUi();
-                    return true;
-                case KeyEvent.KEYCODE_DPAD_RIGHT:
-                    mode = (mode + 1) % MODE_COUNT;
-                    updateModeUi();
-                    return true;
-                case KeyEvent.KEYCODE_MENU:
-                case KeyEvent.KEYCODE_ENTER:
-                case KeyEvent.KEYCODE_DPAD_CENTER:
-                    showPreviewAction(pos);
-                    return true;
-                case KeyEvent.KEYCODE_BACK:
-                    // 预览模式：主菜单照常保存；更多应用顺序已在 movePreviewItem 中保存，勿用旧选择集覆盖
-                    UIHelper.saveAppSelection(this, SettingsConstants.PREF_MENU_EXTERNAL_APPS,
-                            new ArrayList<>(mainSelection));
-                    finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        int position = adapter != null ? adapter.getSelectedPosition() : 0;
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_UP:
-                if (position > 0) {
-                    appList.scrollToPosition(position - 1);
-                    adapter.setSelectedPosition(position - 1);
-                }
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                if (position < adapter.getItemCount() - 1) {
-                    appList.scrollToPosition(position + 1);
-                    adapter.setSelectedPosition(position + 1);
-                }
-                return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                mode = (mode - 1 + MODE_COUNT) % MODE_COUNT;
-                updateModeUi();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                mode = (mode + 1) % MODE_COUNT;
-                updateModeUi();
-                return true;
-            case KeyEvent.KEYCODE_MENU:
-            case KeyEvent.KEYCODE_ENTER:
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-                toggleApp(position);
-                return true;
-            case KeyEvent.KEYCODE_BACK:
-                saveSelections();
-                finish();
-                return true;
-            default:
-                return false;
-        }
-    }
-
     private class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
-        private int selected = 0;
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.menu_manager_item, parent, false);
+                    .inflate(R.layout.menu_manager_item_m3, parent, false);
             return new Holder(v);
         }
 
@@ -403,33 +323,41 @@ public class MenuManagerActivity extends BaseAppCompatActivity {
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             android.os.Bundle b = apps.get(position);
             String pkg = b.getString(UIHelper.EXT_APP_PKG);
-            holder.icon.setImageDrawable(UIHelper.getExternalAppIcon(holder.itemView.getContext(), pkg));
+            Context ctx = holder.itemView.getContext();
+            holder.icon.setImageDrawable(UIHelper.getExternalAppIcon(ctx, pkg));
             holder.name.setText(b.getString(UIHelper.EXT_APP_LABEL));
+
             boolean inTarget = (mode == MODE_MAIN ? mainSelection : moreAppsSelection).contains(pkg);
             boolean inOther = (mode == MODE_MAIN ? moreAppsSelection : mainSelection).contains(pkg);
-            holder.state.setText(inTarget ? holder.itemView.getContext().getString(R.string.menu_manager_added)
-                    : inOther ? holder.itemView.getContext().getString(R.string.menu_manager_other)
-                    : holder.itemView.getContext().getString(R.string.menu_manager_not_added));
-            holder.itemView.setSelected(selected == position);
-            holder.itemView.setAlpha(selected == position ? 1f : 0.8f);
-            holder.itemView.setOnClickListener(v -> {
-                selected = holder.getAdapterPosition();
-                toggleApp(selected);
-            });
+            holder.state.setText(inTarget ? ctx.getString(R.string.menu_manager_added)
+                    : inOther ? ctx.getString(R.string.menu_manager_other)
+                    : ctx.getString(R.string.menu_manager_not_added));
+
+            // M3：已添加 -> primaryContainer 卡片 + primary 描边 + 高亮胶囊
+            MaterialCardView card = (MaterialCardView) holder.itemView;
+            float density = ctx.getResources().getDisplayMetrics().density;
+            if (inTarget) {
+                card.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.mm_card_selected));
+                card.setStrokeColor(ContextCompat.getColor(ctx, R.color.mm_card_selected_stroke));
+                card.setStrokeWidth(Math.round(density * 2));
+                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.mm_on_card_selected));
+                holder.state.setBackgroundResource(R.drawable.mm_pill_selected);
+                holder.state.setTextColor(ContextCompat.getColor(ctx, R.color.mm_pill_sel_text));
+            } else {
+                card.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.mm_card));
+                card.setStrokeColor(ContextCompat.getColor(ctx, R.color.mm_card_stroke));
+                card.setStrokeWidth(Math.round(density));
+                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.mm_on_card));
+                holder.state.setBackgroundResource(R.drawable.mm_pill_normal);
+                holder.state.setTextColor(ContextCompat.getColor(ctx, R.color.mm_pill_text));
+            }
+            // 触屏：点击卡片 = 加入/移除当前菜单
+            holder.itemView.setOnClickListener(v -> toggleApp(holder.getAdapterPosition()));
         }
 
         @Override
         public int getItemCount() {
             return apps.size();
-        }
-
-        public int getSelectedPosition() {
-            return selected;
-        }
-
-        public void setSelectedPosition(int pos) {
-            selected = pos;
-            notifyDataSetChanged();
         }
 
         class Holder extends RecyclerView.ViewHolder {

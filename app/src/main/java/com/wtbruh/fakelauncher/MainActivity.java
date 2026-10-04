@@ -91,6 +91,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "powerkey short-press received");
+            // 纯预览：忽略（预览模式不接管电源键，更不锁任务/息屏）
+            if (mPreviewMode) return;
             // 以系统真实屏幕状态为准（mScreenOff 应用标志可能与实际不同步，例如屏幕超时息屏）
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
             boolean interactive = pm != null && pm.isInteractive();
@@ -204,6 +206,11 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                // 纯预览：直接退出，不做上锁/息屏
+                if (mPreviewMode) {
+                    finish();
+                    return;
+                }
                 if (mScreenOff) {
                     wakeFromSleep();
                     return;
@@ -437,7 +444,9 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     protected void onDestroy() {
-        if (UIHelper.getLockApp(MainActivity.this) != -1) UIHelper.setLockApp(MainActivity.this, -1);
+        // 纯预览：从未锁过任务，不要在这里去解锁
+        if (!mPreviewMode && UIHelper.getLockApp(MainActivity.this) != -1)
+            UIHelper.setLockApp(MainActivity.this, -1);
         // Unregister the receiver on destroy
         receiverRegister(false);
         // 停止计时任务 Stop timer
@@ -460,12 +469,20 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         if (mStatusBarOverlay != null) mStatusBarOverlay.destroy();
         super.onDestroy();
         // Enable touch screen
-        UIHelper.setTouchscreenState(true, this);
+        // 纯预览：预览不改动触控状态
+        if (!mPreviewMode) UIHelper.setTouchscreenState(true, this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (mPreviewMode) {
+            // 纯预览：只刷新 UI，不改任何系统/应用状态
+            // （不写 fakeui_active、不锁任务、不禁触控、不动系统熄屏超时）
+            batteryAccurate();
+            if (mStatusBarOverlay != null && !mShowAccurateBattery) mStatusBarOverlay.start();
+            return;
+        }
         try {
             PreferenceManager.getDefaultSharedPreferences(this).edit()
                     .putBoolean("fakeui_active", true).apply();
@@ -522,6 +539,8 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // 纯预览：不响应任何伪装按键逻辑（挂机键上锁/息屏、音量键弹伪装音量页等）
+        if (mPreviewMode) return super.onKeyDown(keyCode, event);
         // 挂机键：桌面态上锁并息屏；伪息屏态任意键亮屏
         if (keyCode == KeyEvent.KEYCODE_ENDCALL) {
             if (mScreenOff) {

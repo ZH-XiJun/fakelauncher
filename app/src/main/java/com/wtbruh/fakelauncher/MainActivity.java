@@ -477,13 +477,6 @@ public class MainActivity extends BaseAppCompatActivity implements PowerConnecti
         batteryAccurate();
         // 恢复 overlay 轮询
         if (mStatusBarOverlay != null && !mShowAccurateBattery) mStatusBarOverlay.start();
-        // After call session ends, keep pin on MainActivity so keys work again.
-        // 同样延迟 post 再锁（时序：onResume 内 sCurrentActivity 可能未更新）
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            try {
-                UIHelper.setLockApp(MainActivity.this, getTaskId());
-            } catch (Throwable ignored) { }
-        }, 300);
     }
 
     @Override

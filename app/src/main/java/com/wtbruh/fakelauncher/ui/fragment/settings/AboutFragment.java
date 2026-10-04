@@ -59,5 +59,9 @@ public class AboutFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPO_URL));
             startActivity(intent);
         });
+        TextView debugVariant = rootView.findViewById(R.id.debugVariant);
+        if (BuildConfig.DEBUG) {
+            debugVariant.setVisibility(View.VISIBLE);
+        }
     }
 }
